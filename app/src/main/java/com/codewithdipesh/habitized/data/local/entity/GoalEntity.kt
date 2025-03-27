@@ -6,7 +6,7 @@ import java.util.Date
 import java.util.UUID
 
 @Entity(tableName = "goals")
-data class Goal(
+data class GoalEntity(
     @PrimaryKey val goal_id: UUID = UUID.randomUUID(),
     val title: String,
     val description: String? = null,

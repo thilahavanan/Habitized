@@ -4,20 +4,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.codewithdipesh.habitized.data.local.entity.Habit
+import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 @Dao
 interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHabit(habit: Habit)
+    suspend fun insertHabit(habit: HabitEntity)
 
     @Query("SELECT * FROM habits WHERE habit_id = :habitId")
-    suspend fun getHabitById(habitId: UUID): Habit?
+    suspend fun getHabitById(habitId: UUID): HabitEntity?
 
     @Query("SELECT * FROM habits")
-    fun getAllHabits(): Flow<List<Habit>>
+    fun getAllHabits(): Flow<List<HabitEntity>>
 
     @Query("DELETE FROM habits WHERE habit_id = :habitId")
     suspend fun deleteHabit(habitId: UUID)
@@ -30,5 +30,5 @@ interface HabitDao {
     suspend fun updateHabitStatus(habitId: UUID, isActive: Boolean)
 
     @Query("SELECT * FROM habits WHERE goal_id = :goalId")
-    suspend fun getHabitsByGoal(goalId: UUID): Flow<List<Habit>>
+    suspend fun getHabitsByGoal(goalId: UUID): Flow<List<HabitEntity>>
 }

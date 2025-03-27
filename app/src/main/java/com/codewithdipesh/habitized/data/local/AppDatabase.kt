@@ -9,18 +9,18 @@ import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
-import com.codewithdipesh.habitized.data.local.entity.Goal
-import com.codewithdipesh.habitized.data.local.entity.Habit
-import com.codewithdipesh.habitized.data.local.entity.HabitProgress
+import com.codewithdipesh.habitized.data.local.entity.GoalEntity
+import com.codewithdipesh.habitized.data.local.entity.HabitEntity
+import com.codewithdipesh.habitized.data.local.entity.HabitProgressEntity
 import com.codewithdipesh.habitized.data.local.entity.OneTimeTaskEntity
 import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
 
 @Database(
     entities = [
         OneTimeTaskEntity::class,
-        Goal::class,
-        Habit::class,
-        HabitProgress::class,
+        GoalEntity::class,
+        HabitEntity::class,
+        HabitProgressEntity::class,
         SubtaskEntity::class
     ],
     version = 1,
