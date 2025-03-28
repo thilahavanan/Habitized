@@ -12,6 +12,6 @@ data class OneTimeTaskEntity(
     val title :String,
     val isCompleted : Boolean = false,
     val date : LocalDate,
-    val startTime :String ,
-    val finishTime :String ,
+    val startTime :LocalTime ,
+    val finishTime :LocalTime ,
 )

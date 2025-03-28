@@ -12,5 +12,5 @@ data class OneTimeTask(
     val isCompleted : Boolean = false,
     val date : LocalDate,
     val startTime : LocalTime,
-    val finishTime :String,
+    val finishTime :LocalTime,
 )
