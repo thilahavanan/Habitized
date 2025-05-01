@@ -15,7 +15,7 @@ data class HabitEntity(
     val title: String,
     val description: String?= null,
     val type: String = HabitType.Count.toString(), //(Count, Duration, Percentage, Session)
-    val goal_id: UUID,
+    val goal_id: UUID? = null,
     val start_date: LocalDate,
     val frequency: String = Frequency.Daily.toString(), // (Daily, Weekly, Monthly, Custom)
     val days_of_week: String, //"1,0,0,1,0,1,1"
@@ -24,8 +24,8 @@ data class HabitEntity(
     val is_active: Boolean,
     val icon: Int,
     val color :Int,
-    val countParam : String? = null,
-    val countTarget:Int,
-    val durationParam: String,
-    val duration:Float,
+    val countParam : String,
+    val countTarget:Int? = null,
+    val durationParam: String? = null,
+    val duration:Float? = null,
 )

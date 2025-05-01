@@ -26,7 +26,7 @@ sealed class CountParam(val displayName: String) {
     override fun toString(): String = displayName
 
     companion object {
-        fun fromString(value: String): CountParam? {
+        fun fromString(value: String): CountParam {
             return when (value.lowercase()) {
                 "glasses" -> Glasses
                 "reps" -> Reps
@@ -49,7 +49,7 @@ sealed class CountParam(val displayName: String) {
                 "miles" -> Miles
                 "lessons", "lessons completed" -> Lessons
                 "attempts" -> Attempts
-                else -> null
+                else -> Tasks
             }
         }
         fun getParams(type: HabitType): List<CountParam> {

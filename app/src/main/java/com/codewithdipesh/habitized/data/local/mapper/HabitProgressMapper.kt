@@ -15,16 +15,17 @@ fun HabitProgress.toEntity(): HabitProgressEntity {
         habitId = habitId,
         title = title,
         date = date,
+        type = type.toString(),
+        countParam = countParam.toString(),
         currentCount = currentCount,
         targetCount = targetCount,
-        durationValue = durationValue,
-        percentageValue = percentageValue,
-        numberSessionDone = numberSessionDone,
+        currentDurationValue = currentDurationValue,
+        targetDurationValue = targetDurationValue,
+        currentSessionNumber = currentSessionNumber,
+        targetSessionNumber = targetSessionNumber,
         status = status.toString(),
         notes = notes,
-        excuse = excuse,
-        fallAsleepTime = fallAsleepTime,
-        wakeUpTime = wakeUpTime
+        excuse = excuse
     )
 }
 
@@ -35,15 +36,16 @@ fun HabitProgressEntity.toHabitProgress(): HabitProgress {
         habitId = habitId,
         title = title,
         date = date,
+        type = HabitType.fromString(type),
+        countParam = CountParam.fromString(countParam),
         currentCount = currentCount,
         targetCount = targetCount,
-        durationValue = durationValue,
-        percentageValue = percentageValue,
-        numberSessionDone = numberSessionDone,
+        currentDurationValue = currentDurationValue,
+        targetDurationValue = targetDurationValue,
+        currentSessionNumber = currentSessionNumber,
+        targetSessionNumber = targetSessionNumber,
         status = Status.fromString(status),
         notes = notes,
-        excuse = excuse,
-        fallAsleepTime = fallAsleepTime,
-        wakeUpTime = wakeUpTime
+        excuse = excuse
     )
 }

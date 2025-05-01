@@ -23,7 +23,7 @@ fun Habit.toEntity(): HabitEntity {
         is_active = is_active,
         icon = icon,
         color = color,
-        countParam = countParam?.displayName,
+        countParam = countParam.toString(),
         countTarget = countTarget,
         durationParam = durationParam,
         duration = duration
@@ -45,7 +45,7 @@ fun HabitEntity.toHabit() : Habit {
         is_active = is_active,
         icon = icon,
         color = color,
-        countParam = countParam?.let { CountParam.fromString(countParam) },
+        countParam = CountParam.fromString(countParam),
         countTarget = countTarget,
         durationParam = durationParam,
         duration = duration

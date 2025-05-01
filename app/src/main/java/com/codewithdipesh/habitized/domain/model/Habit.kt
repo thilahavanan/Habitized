@@ -24,8 +24,8 @@ data class Habit(
     val is_active: Boolean,
     @DrawableRes val icon: Int,
     @ColorRes val color : Int,
-    val countParam : CountParam? = null,
-    val countTarget:Int,
-    val durationParam: String, // the Minute or Hour or Second
-    val duration:Float,
+    val countParam : CountParam,
+    val countTarget:Int?,
+    val durationParam: String?, // the Minute or Hour or Second
+    val duration:Float?,
 )
