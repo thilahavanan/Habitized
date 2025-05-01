@@ -11,7 +11,7 @@ import java.util.UUID
 
 @Entity(tableName = "habits")
 data class HabitEntity(
-    @PrimaryKey val habit_id: UUID = UUID.randomUUID(),
+    @PrimaryKey val  habit_id: UUID = UUID.randomUUID(),
     val title: String,
     val description: String?= null,
     val type: String = HabitType.Count.toString(), //(Count, Duration, Percentage, Session)

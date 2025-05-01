@@ -52,5 +52,41 @@ sealed class CountParam(val displayName: String) {
                 else -> null
             }
         }
+        fun getParams(type: HabitType): List<CountParam> {
+            return when (type) {
+                HabitType.Count -> listOf(
+                    Glasses,
+                    Reps,
+                    Pages,
+                    Steps,
+                    Kilometers,
+                    Meters,
+                    Kilograms,
+                    Calories,
+                    Sets,
+                    Tasks,
+                    Exercises,
+                    Liters,
+                    Times,
+                    Chapters,
+                    Miles,
+                    Lessons,
+                    Attempts
+                )
+
+                HabitType.Duration -> listOf(
+                    Minutes,
+                    Hours,
+                    Seconds
+                )
+
+                HabitType.Session -> listOf(
+                    Sessions,
+                    Lessons,
+                    Chapters
+                )
+            }
+
+        }
     }
 }

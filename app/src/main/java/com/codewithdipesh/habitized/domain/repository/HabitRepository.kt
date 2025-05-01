@@ -12,16 +12,16 @@ import java.util.UUID
 interface HabitRepository {
 
     // Habits
-    suspend fun addHabits(habit: Habit)
-    suspend fun updateHabit(habit: Habit)
+    suspend fun addOrUpdateHabit(habit: Habit)
     suspend fun deleteHabit(habitId: UUID)
-    fun getHabitById(habitId: UUID): Flow<Habit?>
+    suspend fun getHabitById(habitId: UUID): Habit?
 
     // Habit Progress
-    suspend fun addHabitProgress(progress: HabitProgress)
+    suspend fun addHabitProgressJob(date: LocalDate)
     suspend fun updateHabitProgress(progress: HabitProgress)
-    fun getHabitProgress(habitId: UUID, date: String): Flow<HabitProgress?>
-    fun getAllHabitProgress(habitId: UUID): Flow<List<HabitProgress>>
+    suspend fun getHabitProgress(habitId: UUID, date: String): HabitProgress?
+    suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>?
+    suspend fun getTodayHabitProgresses(date: LocalDate): List<HabitProgress>?
 
     // Goals
     suspend fun addGoal(goal: Goal)

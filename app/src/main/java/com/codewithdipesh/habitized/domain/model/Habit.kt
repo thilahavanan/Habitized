@@ -11,11 +11,11 @@ import java.util.Date
 import java.util.UUID
 
 data class Habit(
-    val habit_id: UUID,
+    val habit_id: UUID? = null,
     val title: String,
     val description: String?= null,
     val type: HabitType = HabitType.Count,
-    val goal_id: UUID,
+    val goal_id: UUID? = null,
     val start_date: LocalDate,
     val frequency: Frequency = Frequency.Daily, // (Daily, Weekly, Monthly, Custom)
     val days_of_week: List<Int> = mutableListOf(0,0,0,0,0,0,0), //"1,0,0,1,0,1,1"
@@ -26,6 +26,6 @@ data class Habit(
     @ColorRes val color : Int,
     val countParam : CountParam? = null,
     val countTarget:Int,
-    val durationParam: String,
+    val durationParam: String, // the Minute or Hour or Second
     val duration:Float,
 )

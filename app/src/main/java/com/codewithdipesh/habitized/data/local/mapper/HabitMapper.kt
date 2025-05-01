@@ -5,11 +5,12 @@ import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
+import java.util.UUID
 
 fun Habit.toEntity(): HabitEntity {
     val days_of_Month = daysOfMonth?.joinToString(",")
     return HabitEntity(
-        habit_id = habit_id,
+        habit_id = habit_id ?: UUID.randomUUID(),
         title = title,
         description = description,
         type = type.displayName,
