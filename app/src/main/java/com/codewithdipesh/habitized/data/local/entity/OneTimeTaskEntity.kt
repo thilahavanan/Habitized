@@ -12,6 +12,6 @@ data class OneTimeTaskEntity(
     val title :String,
     val isCompleted : Boolean = false,
     val date : LocalDate,
-    val startTime :LocalTime ,
-    val finishTime :LocalTime ,
+    val reminder_time :LocalTime?
 )
+

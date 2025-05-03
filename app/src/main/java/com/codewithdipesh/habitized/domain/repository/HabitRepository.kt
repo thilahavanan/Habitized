@@ -1,5 +1,4 @@
 package com.codewithdipesh.habitized.domain.repository
-import com.codewithdipesh.habitized.domain.model.DayWiseTodo
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
@@ -42,5 +41,6 @@ interface HabitRepository {
     suspend fun deleteSubtask(subtaskId: UUID)
     suspend fun markSubTask(subtaskId: UUID,status:Boolean)
 
-    fun getTotalTasks(date: LocalDate): DayWiseTodo
+    fun getHabitsForDay(date: LocalDate): Flow<List<HabitProgress>>
+    fun getTasksForDay(date: LocalDate): Flow<List<OneTimeTask>>
 }

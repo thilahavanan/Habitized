@@ -11,8 +11,7 @@ fun OneTimeTask.toEntity() : OneTimeTaskEntity {
         title = title,
         isCompleted = isCompleted,
         date = date,
-        startTime = startTime,
-        finishTime = finishTime
+        reminder_time = reminder_time
     )
 }
 
@@ -22,7 +21,6 @@ fun OneTimeTaskEntity.toOneTimeTask() : OneTimeTask {
        title = title,
        isCompleted = isCompleted,
        date = date,
-       startTime = startTime,
-       finishTime = finishTime
+       reminder_time = reminder_time,
    )
 }

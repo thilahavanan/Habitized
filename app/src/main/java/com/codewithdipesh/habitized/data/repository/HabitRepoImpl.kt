@@ -7,7 +7,8 @@ import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
 import com.codewithdipesh.habitized.data.local.mapper.toEntity
 import com.codewithdipesh.habitized.data.local.mapper.toHabit
-import com.codewithdipesh.habitized.domain.model.DayWiseTodo
+import com.codewithdipesh.habitized.data.local.mapper.toHabitProgress
+import com.codewithdipesh.habitized.data.local.mapper.toOneTimeTask
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
@@ -15,6 +16,7 @@ import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.util.UUID
 
@@ -56,21 +58,23 @@ class HabitRepoImpl(
     override suspend fun addHabitProgressJob(date: LocalDate) {
         //fetch all habits available
         val habits  = habitDao.getAllHabits()
-        habits.collect {
-            it.forEach {
-                val habitProgress = HabitProgress(
-                    habitId = it.habit_id,
-                    date = date,
-                    currentCount = 0,
-                    durationValue = 0f,
-                    percentageValue = 0f,
-                    subtasks = emptyList(),
-                    title = it.title,
-                    progressId = UUID.randomUUID()
-                ).toEntity()
-                habitProgressDao.insertProgress(habitProgress)
-            }
-        }
+//        habits.collect {
+//            it.forEach {
+//                val habitProgress = HabitProgress(
+//                    habitId = it.habit_id,
+//                    date = date,
+//                    currentCount = 0,
+//                    type = it.type,
+//                    targetCount = it.countTarget
+//                     = 0f,
+//                    percentageValue = 0f,
+//                    subtasks = emptyList(),
+//                    title = it.title,
+//                    progressId = UUID.randomUUID()
+//                ).toEntity()
+//                habitProgressDao.insertProgress(habitProgress)
+//            }
+//        }
     }
     override suspend fun updateHabitProgress(progress: HabitProgress) {
         TODO("Not yet implemented")
@@ -80,7 +84,7 @@ class HabitRepoImpl(
         habitId: UUID,
         date: String
     ): HabitProgress? {
-        val habitProgress = habitProgressDao.getHabitProgress()
+        TODO("Not yet implemented")
     }
 
     override suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>? {
@@ -138,7 +142,24 @@ class HabitRepoImpl(
     }
 
   
-    override fun getTotalTasks(date: LocalDate): DayWiseTodo {
-        TODO("Not yet implemented")
+    override fun getHabitsForDay(date: LocalDate): Flow<List<HabitProgress>> {
+
+        return habitProgressDao.getAllProgress(date)
+            .map {list->
+                list.map {
+                    it.toHabitProgress()
+                }
+            }
     }
+
+    override fun getTasksForDay(date: LocalDate): Flow<List<OneTimeTask>> {
+        return oneTimeTaskDao.getAllTasks(date)
+            .map {list->
+                list.map {
+                    it.toOneTimeTask()
+                }
+            }
+    }
+
+
 }

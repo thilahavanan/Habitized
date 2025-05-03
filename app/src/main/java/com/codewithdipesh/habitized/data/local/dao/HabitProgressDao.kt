@@ -23,20 +23,8 @@ interface HabitProgressDao {
     @Query("SELECT * FROM habit_progress WHERE progressId = :habitProgressId")
     suspend fun getHabitProgressById(habitProgressId: UUID): HabitProgressEntity
 
-    @Query("SELECT * FROM habit_progress WHERE date = :date")
+    @Query("SELECT * FROM habit_progress WHERE date = :date ORDER BY reminder_time ASC")
     fun getAllProgress(date: LocalDate): Flow<List<HabitProgressEntity>>
 
-    @Query("""
-        UPDATE habit_progress 
-        SET currentCount = :currentCount, 
-            durationValue = :durationValue, 
-            percentageValue = :percentageValue 
-        WHERE progressId = :progressId
-    """)
-    suspend fun updateProgress(
-        progressId: UUID,
-        currentCount: Int?,
-        durationValue: Float?,
-        percentageValue: Float?
-    )
+
 }

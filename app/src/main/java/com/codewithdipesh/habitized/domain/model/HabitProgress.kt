@@ -14,6 +14,7 @@ data class HabitProgress(
     val title :String,
     val date: LocalDate,
     val type: HabitType = HabitType.Count,
+    val reminder_time : LocalTime? = null,
     val countParam: CountParam,
     val currentCount: Int? = null, //count
     val targetCount: Int? = null,

@@ -20,7 +20,7 @@ data class Habit(
     val frequency: Frequency = Frequency.Daily, // (Daily, Weekly, Monthly, Custom)
     val days_of_week: List<Int> = mutableListOf(0,0,0,0,0,0,0), //"1,0,0,1,0,1,1"
     val daysOfMonth: List<Int>? = null, //"1,15,30"
-    val reminder_time: LocalTime,
+    val reminder_time: LocalTime?,
     val is_active: Boolean,
     @DrawableRes val icon: Int,
     @ColorRes val color : Int,
