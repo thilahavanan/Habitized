@@ -13,10 +13,8 @@ fun HabitProgress.toEntity(): HabitProgressEntity {
     return HabitProgressEntity(
         progressId = progressId,
         habitId = habitId,
-        title = title,
         date = date,
         type = type.toString(),
-        reminder_time = reminder_time,
         countParam = countParam.toString(),
         currentCount = currentCount,
         targetCount = targetCount,
@@ -35,10 +33,8 @@ fun HabitProgressEntity.toHabitProgress(): HabitProgress {
     return HabitProgress(
         progressId = progressId,
         habitId = habitId,
-        title = title,
         date = date,
         type = HabitType.fromString(type),
-        reminder_time = reminder_time,
         countParam = CountParam.fromString(countParam),
         currentCount = currentCount,
         targetCount = targetCount,
@@ -47,7 +43,6 @@ fun HabitProgressEntity.toHabitProgress(): HabitProgress {
         currentSessionNumber = currentSessionNumber,
         targetSessionNumber = targetSessionNumber,
         status = Status.fromString(status),
-        notes = notes,
-        excuse = excuse
+        notes = notes
     )
 }

@@ -2,6 +2,7 @@ package com.codewithdipesh.habitized.domain.repository
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
+import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.SubTask
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ interface HabitRepository {
     suspend fun getHabitById(habitId: UUID): Habit?
 
     // Habit Progress
-    suspend fun addHabitProgressJob(date: LocalDate)
+    suspend fun addHabitProgresses()
     suspend fun updateHabitProgress(progress: HabitProgress)
     suspend fun getHabitProgress(habitId: UUID, date: String): HabitProgress?
     suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>?
@@ -41,6 +42,6 @@ interface HabitRepository {
     suspend fun deleteSubtask(subtaskId: UUID)
     suspend fun markSubTask(subtaskId: UUID,status:Boolean)
 
-    fun getHabitsForDay(date: LocalDate): Flow<List<HabitProgress>>
-    fun getTasksForDay(date: LocalDate): Flow<List<OneTimeTask>>
+    suspend fun getHabitsForDay(date: LocalDate): List<HabitWithProgress>
+    suspend fun getTasksForDay(date: LocalDate): List<OneTimeTask>
 }

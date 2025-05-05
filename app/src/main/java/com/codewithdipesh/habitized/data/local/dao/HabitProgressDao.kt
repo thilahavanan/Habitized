@@ -17,13 +17,16 @@ interface HabitProgressDao {
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId")
     fun getHabitProgress(habitId: UUID): Flow<List<HabitProgressEntity>>
 
+    @Query("SELECT * FROM habit_progress WHERE habitId = :habitId AND date = :date")
+    suspend fun getHabitProgressOfTheDay(habitId: UUID, date: LocalDate): HabitProgressEntity?
+
     @Query("DELETE FROM habit_progress WHERE progressId = :progressId")
     suspend fun deleteProgress(progressId: UUID)
 
     @Query("SELECT * FROM habit_progress WHERE progressId = :habitProgressId")
     suspend fun getHabitProgressById(habitProgressId: UUID): HabitProgressEntity
 
-    @Query("SELECT * FROM habit_progress WHERE date = :date ORDER BY reminder_time ASC")
+    @Query("SELECT * FROM habit_progress WHERE date = :date ")
     fun getAllProgress(date: LocalDate): Flow<List<HabitProgressEntity>>
 
 

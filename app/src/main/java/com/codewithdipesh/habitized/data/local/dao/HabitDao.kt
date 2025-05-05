@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import java.util.UUID
 
 @Dao
@@ -21,6 +22,9 @@ interface HabitDao {
 
     @Query("DELETE FROM habits WHERE habit_id = :habitId")
     suspend fun deleteHabit(habitId: UUID)
+
+    @Query("SELECT * FROM habits WHERE start_date >= :date")
+    suspend fun getHabitsForTheDay(date: LocalDate) : List<HabitEntity>
 
     @Query("""
         UPDATE habits 

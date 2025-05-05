@@ -12,10 +12,8 @@ import java.util.UUID
 data class HabitProgressEntity(
     @PrimaryKey val progressId: UUID = UUID.randomUUID(),
     val habitId: UUID,
-    val title :String,
     val date: LocalDate,  // Store as "YYYY-MM-DD"
     val type: String = HabitType.Count.displayName,
-    val reminder_time : LocalTime? = null,
     val countParam: String,
     val currentCount: Int? = null,
     val targetCount: Int? = null,

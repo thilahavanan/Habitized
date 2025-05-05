@@ -1,0 +1,73 @@
+package com.codewithdipesh.habitized.presentation.homescreen.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DatePickerDefaults.dateFormatter
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.ui.theme.ndot
+import com.codewithdipesh.habitized.ui.theme.regular
+import com.kizitonwose.calendar.core.WeekDay
+import java.time.LocalDate
+import java.util.Locale
+
+@Composable
+fun WeekDayComponent(
+    day: WeekDay,
+    selected: Boolean = false,
+    onClick: (LocalDate) -> Unit = {},
+) {
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    Box(
+        modifier = Modifier
+            .width(screenWidth / 7)
+            .padding(4.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (selected) colorResource(R.color.red) else colorResource(R.color.secondary_gray))
+            .clickable { onClick(day.date) },
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.padding(bottom = 10.dp, top = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = day.date.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT,Locale.getDefault()),
+                style = TextStyle(
+                    color = colorResource(R.color.white),
+                    fontFamily = regular,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Light
+                )
+            )
+            Text(
+                text = day.date.dayOfMonth.toString(),
+                style = TextStyle(
+                    color = colorResource(R.color.white),
+                    fontFamily = ndot,
+                    fontSize = 24.sp
+                )
+            )
+        }
+    }
+}

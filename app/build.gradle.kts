@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.codewithdipesh.habitized"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -74,5 +74,8 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     implementation("androidx.room:room-paging:$room_version")
+
+    //calendar
+    implementation("com.kizitonwose.calendar:compose:2.6.2")
 
 }

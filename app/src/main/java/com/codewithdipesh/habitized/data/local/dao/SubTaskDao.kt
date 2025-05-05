@@ -14,7 +14,7 @@ interface SubTaskDao {
     suspend fun insertSubtask(subtask: SubtaskEntity)
 
     @Query("SELECT * FROM sub_tasks WHERE habitProgressId = :habitProgressId")
-    fun getSubtasksByHabitProgressId(habitProgressId: UUID): Flow<List<SubtaskEntity>>
+    suspend fun getSubtasksByHabitProgressId(habitProgressId: UUID): List<SubtaskEntity>?
 
     @Query("DELETE FROM sub_tasks WHERE subtaskId = :subtaskId")
     suspend fun deleteSubtask(subtaskId: UUID)

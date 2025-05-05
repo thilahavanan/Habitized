@@ -11,10 +11,8 @@ import java.util.UUID
 data class HabitProgress(
     val progressId: UUID,
     val habitId: UUID,
-    val title :String,
     val date: LocalDate,
     val type: HabitType = HabitType.Count,
-    val reminder_time : LocalTime? = null,
     val countParam: CountParam,
     val currentCount: Int? = null, //count
     val targetCount: Int? = null,
@@ -25,6 +23,5 @@ data class HabitProgress(
     //2 session 25 minute -> targetSession = 2, currentSession = 0 ,targetDuration=25 minute
     val status: Status = Status.NotStarted,
     val notes: String? = null,
-    val excuse: String? = null,
-    val subtasks : List<SubTask>? = null
+    val excuse: String? = null
 )
