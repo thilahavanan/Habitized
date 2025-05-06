@@ -47,7 +47,7 @@ fun WeekDayComponent(
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier.padding(bottom = 10.dp, top = 6.dp),
+            modifier = Modifier.padding(vertical = 14.dp, horizontal = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -56,7 +56,7 @@ fun WeekDayComponent(
                 style = TextStyle(
                     color = colorResource(R.color.white),
                     fontFamily = regular,
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Light
                 )
             )
@@ -65,7 +65,7 @@ fun WeekDayComponent(
                 style = TextStyle(
                     color = colorResource(R.color.white),
                     fontFamily = ndot,
-                    fontSize = 24.sp
+                    fontSize = 26.sp
                 )
             )
         }

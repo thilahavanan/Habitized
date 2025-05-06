@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.codewithdipesh.habitized.data.local.converter.Converters
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
 import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
@@ -26,6 +28,7 @@ import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
     version = 1,
     exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun oneTimeTaskDao(): OneTimeTaskDao

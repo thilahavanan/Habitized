@@ -7,6 +7,8 @@ import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
+import com.codewithdipesh.habitized.data.repository.HabitRepoImpl
+import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,4 +45,22 @@ object Module {
     @Provides
     @Singleton
     fun provideSubtaskDao(db: AppDatabase): SubTaskDao = db.subtaskDao()
+
+    @Provides
+    @Singleton
+    fun provideHabitRepository(
+        habitDao: HabitDao,
+        habitProgressDao: HabitProgressDao,
+        oneTimeTaskDao: OneTimeTaskDao,
+        subtaskDao: SubTaskDao,
+        goalDao: GoalDao
+    ): HabitRepository {
+        return HabitRepoImpl(
+            habitDao = habitDao,
+            habitProgressDao = habitProgressDao,
+            oneTimeTaskDao = oneTimeTaskDao,
+            subtaskDao = subtaskDao,
+            goalDao = goalDao
+        )
+    }
 }
