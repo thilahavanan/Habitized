@@ -10,6 +10,8 @@
     <color name="background_black">#FF010101</color>
     <color name="red">#FFD71921</color>
     <color name="secondary_gray">#FF1B1B1D</color>
+    <color name="tertiary_gray">#FF414141</color>
+    <color name="little_white">#FFD4D4D4</color>
     <color name="medium_gray">#FF575757</color>
     <color name="light_gray">#FF5F5F5F</color>
 </resources>

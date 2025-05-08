@@ -41,7 +41,7 @@ fun WeekDayComponent(
         modifier = Modifier
             .width(screenWidth / 7)
             .padding(4.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(if (selected) colorResource(R.color.red) else colorResource(R.color.secondary_gray))
             .clickable { onClick(day.date) },
         contentAlignment = Alignment.Center,
