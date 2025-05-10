@@ -23,7 +23,7 @@ data class Habit(
     val reminder_time: LocalTime?,
     val is_active: Boolean,
     @ColorRes val color : Int,
-    val countParam : CountParam,
+    val countParam : CountParam? = null,
     val countTarget:Int?,
     val durationParam: String?, // the Minute or Hour or Second
     val duration:Float?,

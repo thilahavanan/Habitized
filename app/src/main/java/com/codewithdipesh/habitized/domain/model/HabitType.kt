@@ -1,20 +1,25 @@
 package com.codewithdipesh.habitized.domain.model
 
 sealed class HabitType(val displayName: String) {
-    object Count : HabitType("Count-Based")
-    object Duration : HabitType("Duration-Based")
-    object Session : HabitType("Session-Based")
+    object OneTime : HabitType("onetime")
+    object Count : HabitType("count")
+    object Duration : HabitType("duration")
+    object Session : HabitType("session")
 
     override fun toString(): String = displayName
 
     companion object {
         fun fromString(value: String): HabitType {
             return when (value.lowercase()) {
-                "count", "count-based" -> Count
-                "duration", "duration-based" -> Duration
-                "session", "session-based" -> Session
+                "count" -> Count
+                "duration" -> Duration
+                "session" -> Session
+                "onetime" -> OneTime
                 else -> Count
             }
+        }
+        fun getHabitTypes(): List<HabitType> {
+            return listOf(OneTime, Count, Duration, Session)
         }
     }
 }

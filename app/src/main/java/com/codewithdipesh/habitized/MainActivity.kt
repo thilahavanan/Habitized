@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.navigation.HabitizedNavHost
 import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
@@ -27,9 +28,11 @@ class MainActivity : ComponentActivity() {
             HabitizedTheme {
                 val navController = rememberNavController()
                 val homeViewModel by viewModels<HomeViewModel>()
+                val addViewModel by viewModels<AddViewModel>()
                 HabitizedNavHost(
                     navController = navController,
-                    homeViewModel = homeViewModel
+                    homeViewModel = homeViewModel,
+                    addViewModel = addViewModel
                 )
             }
         }

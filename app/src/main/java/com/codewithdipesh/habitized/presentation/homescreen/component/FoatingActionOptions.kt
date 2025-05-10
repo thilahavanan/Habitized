@@ -19,7 +19,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FloatingActionOptions(
     showOptions: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddHabitClicked : () -> Unit = {},
 ){
     Box {
         Column(
@@ -40,7 +41,8 @@ fun FloatingActionOptions(
                     Spacer(modifier = Modifier.height(8.dp))
                     AddOptionButton(
                         title = "New Habit",
-                        subtitle = "Daily actionable task"
+                        subtitle = "Daily actionable task",
+                        onClick = {onAddHabitClicked()}
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     AddOptionButton(

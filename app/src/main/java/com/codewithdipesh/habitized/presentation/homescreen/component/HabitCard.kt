@@ -84,7 +84,7 @@ fun HabitCard(
                 )
                 //param ex:- glasses
                 Text(
-                    text = habitWithProgress.habit.countParam.displayName,
+                    text = habitWithProgress.habit.countParam?.displayName ?: "",
                     style = TextStyle(
                         color = colorResource(R.color.white),
                         fontFamily = regular,

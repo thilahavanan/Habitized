@@ -64,7 +64,12 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionOptions(showOptions)
+            FloatingActionOptions(
+                showOptions = showOptions,
+                onAddHabitClicked = {
+                    navController.navigate(Screen.AddHabit.route)
+                }
+            )
         },
         floatingActionButtonPosition = FabPosition.Center
     ){innerPadding->

@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
+import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 
@@ -16,7 +18,8 @@ import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 fun HabitizedNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    addViewModel: AddViewModel
 ){
     NavHost(
         navController = navController,
@@ -26,6 +29,12 @@ fun HabitizedNavHost(
             HomeScreen(
                 navController = navController,
                 viewmodel = homeViewModel
+            )
+        }
+        composable(Screen.AddHabit.route) {
+            AddHabitScreen(
+                navController = navController,
+                viewmodel = addViewModel
             )
         }
     }
