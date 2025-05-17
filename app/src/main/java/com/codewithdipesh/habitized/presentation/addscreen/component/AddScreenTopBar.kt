@@ -22,12 +22,12 @@ import com.codewithdipesh.habitized.ui.theme.ndot
 @Composable
 fun AddScreenTopBar(
     onBackClick: () -> Unit,
-    text : String,
     modifier: Modifier = Modifier
 ){
     Box(
         modifier = Modifier.fillMaxWidth()
-            .height(100.dp)
+            .height(80.dp),
+        contentAlignment = Alignment.Center
     ){
         IconButton(
             onClick = onBackClick,
@@ -39,15 +39,5 @@ fun AddScreenTopBar(
                 tint = Color.White
             )
         }
-
-        Text(
-            text = text,
-            style = TextStyle(
-                color = Color.White,
-                fontFamily = ndot,
-                fontSize = 22.sp
-            ),
-            modifier = Modifier.align(Alignment.Center)
-        )
     }
 }

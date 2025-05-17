@@ -114,7 +114,7 @@ fun BottomNavBar(
                 .size(70.dp)
                 .clip(RoundedCornerShape(50.dp))
                 .background(
-                    if(isShowingAddOption) colorResource(R.color.red)
+                    if(isShowingAddOption) colorResource(R.color.primary)
                     else Color.White
                 )
                 .align(Alignment.TopCenter)
@@ -132,7 +132,7 @@ fun BottomNavBar(
             Icon(
                 painter = painterResource(R.drawable.add_big), // keep just one icon
                 contentDescription = "add",
-                tint = if (isShowingAddOption) colorResource(R.color.white) else colorResource(R.color.red),
+                tint = if (isShowingAddOption) colorResource(R.color.white) else colorResource(R.color.primary),
                 modifier = Modifier.graphicsLayer {
                     rotationZ = rotation
                 }

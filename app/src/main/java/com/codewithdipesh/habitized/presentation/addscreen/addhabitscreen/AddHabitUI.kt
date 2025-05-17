@@ -13,6 +13,7 @@ import java.util.UUID
 data class AddHabitUI(
     val habit_id: UUID? = null,
     val title: String = "",
+    val description: String = "",
     val type: HabitType = HabitType.Count,
     val goal_id: UUID? = null,
     val start_date: LocalDate = LocalDate.now(),
@@ -21,7 +22,7 @@ data class AddHabitUI(
     val daysOfMonth: List<Int>? = null,
     val reminder_time: LocalTime? =null,
     val is_active: Boolean = false,
-    @ColorRes val color : Int = R.color.red,
+    @ColorRes val color : Int = R.color.primary,
     val countParam : CountParam? = CountParam.Glasses,
     val countTarget:Int? = null,
     val durationParam: String? = null,
@@ -35,6 +36,8 @@ data class AddHabitUI(
         R.color.blue,
         R.color.green,
         R.color.yellow,
-        R.color.purple
-    )
+        R.color.purple,
+        R.color.see_green
+    ),
+    val colorOptionAvailable : Boolean = false
 )

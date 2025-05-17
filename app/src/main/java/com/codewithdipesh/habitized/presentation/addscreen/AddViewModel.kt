@@ -26,6 +26,7 @@ class AddViewModel @Inject constructor(
         repo.addOrUpdateHabit(
             Habit(
                 title = _habitUiState.value.title,
+                description = _habitUiState.value.description,
                 type = _habitUiState.value.type,
                 goal_id = _habitUiState.value.goal_id,
                 start_date = _habitUiState.value.start_date,
@@ -90,6 +91,17 @@ class AddViewModel @Inject constructor(
     fun setTitle(title : String){
         _habitUiState.value = _habitUiState.value.copy(
             title = title
+        )
+    }
+
+    fun setDescription(description : String){
+        _habitUiState.value = _habitUiState.value.copy(
+            description = description
+        )
+    }
+    fun toggleColorOption(){
+        _habitUiState.value = _habitUiState.value.copy(
+            colorOptionAvailable = !_habitUiState.value.colorOptionAvailable
         )
     }
 
