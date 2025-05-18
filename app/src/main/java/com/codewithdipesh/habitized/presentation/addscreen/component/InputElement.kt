@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.addscreen.component
 
+import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +28,8 @@ import com.codewithdipesh.habitized.ui.theme.regular
 fun InputElement(
     modifier: Modifier = Modifier,
     title : String? = null,
-    element : @Composable () -> Unit
+    color : androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondary,
+    element : @Composable () -> Unit,
 ) {
 
 
@@ -35,7 +38,7 @@ fun InputElement(
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(shape = RoundedCornerShape(15.dp))
-            .background(colorResource(R.color.secondary_gray))
+            .background(color)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ){
@@ -44,7 +47,7 @@ fun InputElement(
                Text(
                    text = title,
                    style = TextStyle(
-                       color = colorResource(R.color.white),
+                       color = MaterialTheme.colorScheme.onPrimary,
                        fontFamily = regular,
                        fontSize = 16.sp,
                        fontWeight = FontWeight.Normal

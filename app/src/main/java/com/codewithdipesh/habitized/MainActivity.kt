@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HabitizedTheme {
+            HabitizedTheme(){
                 val navController = rememberNavController()
                 val homeViewModel by viewModels<HomeViewModel>()
                 val addViewModel by viewModels<AddViewModel>()

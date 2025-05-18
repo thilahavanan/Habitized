@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import com.codewithdipesh.habitized.R
 
-private val DarkColorScheme = darkColorScheme(
+private val DarkColors = darkColorScheme(
     background = Color(0XFF010101),
     surface = Color(0xFF1A1A1A),
     onSurface = Color(0xFF5F5F5F),
@@ -28,16 +28,16 @@ private val DarkColorScheme = darkColorScheme(
     surfaceVariant = Color(0xFF2F2E2E),
 )
 
-private val LightColorScheme = lightColorScheme(
+private val LightColors = lightColorScheme(
     background = Color(0xFFF7F7F7),
     surface = Color(0xFFEDEEF2),
     onSurface = Color(0xFF6D6E72),
     primary = Color(0xFFEEA445),
-    onPrimary = Color.White,
+    onPrimary = Color.Black,
     secondary = Color.White ,
     onSecondary = Color.Black,
-    tertiary = Color(0xFF7C7878),
-    onTertiary = Color.White,
+    tertiary = Color.White,
+    onTertiary = Color.Black,
     outline = Color(0xFFD9D9D9),
     surfaceVariant = Color(0xFFD9D9D9),
 )
@@ -46,21 +46,21 @@ private val LightColorScheme = lightColorScheme(
 fun HabitizedTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val colors = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> DarkColors
+        else -> LightColors
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colors,
         typography = Typography,
         content = content
     )

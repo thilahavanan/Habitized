@@ -25,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,7 +54,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTo
 import com.codewithdipesh.habitized.presentation.addscreen.component.ColorChoser
 import com.codewithdipesh.habitized.presentation.addscreen.component.DashedDivider
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
-import com.codewithdipesh.habitized.presentation.addscreen.component.TypeSelector
+import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 
@@ -71,7 +72,7 @@ fun AddHabitScreen(
     }
 
     Scaffold(
-        containerColor = colorResource(R.color.background_black),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AddScreenTopBar(
                 onBackClick = {navController.navigateUp()}
@@ -107,7 +108,7 @@ fun AddHabitScreen(
                 Text(
                     text = "Create",
                     style = TextStyle(
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontFamily = regular,
                         fontWeight = FontWeight.Normal,
                         fontSize = 22.sp
@@ -117,7 +118,7 @@ fun AddHabitScreen(
                 Text(
                     text = "Habit",
                     style = TextStyle(
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontFamily = ndot,
                         fontWeight = FontWeight.Normal,
                         fontSize = 26.sp
@@ -125,7 +126,7 @@ fun AddHabitScreen(
                 )
             }
             //title
-            InputElement {
+            InputElement(color = MaterialTheme.colorScheme.surface){
                 Box {
                     BasicTextField(
                         value = state.title,
@@ -133,7 +134,7 @@ fun AddHabitScreen(
                             viewmodel.setTitle(it)
                         },
                         textStyle = TextStyle(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
@@ -159,7 +160,7 @@ fun AddHabitScreen(
                 }
             }
             //description
-            InputElement {
+            InputElement(color = MaterialTheme.colorScheme.surface){
                 Box {
                     BasicTextField(
                         value = state.description,
@@ -167,7 +168,7 @@ fun AddHabitScreen(
                             viewmodel.setDescription(it)
                         },
                         textStyle = TextStyle(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
@@ -203,7 +204,7 @@ fun AddHabitScreen(
                     Text(
                         text = "Color",
                         style = TextStyle(
-                            color = colorResource(R.color.white), // make it look like a placeholder
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
@@ -223,82 +224,91 @@ fun AddHabitScreen(
                 }
             }
             //choose type
-            Text(
-                text = "Type",
-                style = TextStyle(
-                    color = Color.White,
-                    fontFamily = regular,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp
-                )
-            )
-            Spacer(Modifier.height(16.dp))
-            TypeSelector(
-                selectedType = state.type,
-                onTypeSelected = {
-                    viewmodel.setType(it)
-                }
-            )
-            Spacer(Modifier.height(20.dp))
-            //choose param
-            if(state.type != HabitType.OneTime){
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+            InputElement(
+                title = "Type",
+            ){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
-                    Column(
-                        modifier = Modifier.width(64.dp)
-                    ){
-                        BasicTextField(
-                            value = if(state.countTarget != null) state.countTarget.toString() else "",
-                            onValueChange = {
-                                if(it.isEmpty() || it.toIntOrNull() != null){
-                                    if(it.isNotEmpty()){
-                                        viewmodel.setTargetCount(it.toInt())
-                                    }else{
-                                        viewmodel.setTargetCount(0)
-                                    }
-                                }
-                            },
-                            textStyle = TextStyle(
-                                color = Color.White,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 18.sp
-                            ),
-                            singleLine = true,
-                            maxLines = 1,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        DashedDivider(
-                            thickness = 2.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = state.countParam?.displayName ?: "choose",
-                        style = TextStyle(
-                            color = Color.White,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        )
+                    Selector(
+                        options = HabitType.getHabitTypes().map { it.displayName },
+                        selectedOption = state.type.displayName,
+                        onOptionSelected = {
+                            viewmodel.setType(HabitType.fromString(it))
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        nonSelectedTextColor = MaterialTheme.colorScheme.tertiary,
+                        selectedOptionColor = MaterialTheme.colorScheme.tertiary,
+                        nonSelectedOptionColor = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    IconButton(
-                        onClick = {
-                            //TODO OPEN SELECT PARAMS
+
+                    //input of targets
+                    //choose param
+                    if(state.type != HabitType.OneTime){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Column(
+                                modifier = Modifier.width(64.dp)
+                            ){
+                                BasicTextField(
+                                    value = if(state.countTarget != null && state.countTarget != 0) state.countTarget.toString() else "",
+                                    onValueChange = {
+                                        if(it.isEmpty() || it.toIntOrNull() != null){
+                                            if(it.isNotEmpty()){
+                                                if(it.toInt() < 999 ) viewmodel.setTargetCount(it.toInt())
+                                            }else{
+                                                viewmodel.setTargetCount(0)
+                                            }
+                                        }
+                                    },
+                                    textStyle = TextStyle(
+                                        color = Color.White,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 18.sp
+                                    ),
+                                    singleLine = true,
+                                    maxLines = 1,
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                DashedDivider(
+                                    thickness = 2.dp,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = state.countParam?.displayName ?: "choose",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
+                            )
+                            IconButton(
+                                onClick = {
+                                    //todo open choosing param
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.option_up_down_icon),
+                                    contentDescription = "drop down",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+
                         }
-                    ){
-                        Icon(
-                            painter = painterResource(id = R.drawable.option_up_down_icon),
-                            contentDescription = "choose params",
-                            tint = Color.White
-                        )
                     }
 
                 }
