@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -51,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.CountParam
+import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
@@ -60,6 +64,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.InputElemen
 import com.codewithdipesh.habitized.presentation.addscreen.component.ParamChoser
 import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
 import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
+import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 
@@ -71,6 +76,7 @@ fun AddHabitScreen(
     viewmodel: AddViewModel
 ) {
     val state by viewmodel.habitUiState.collectAsState()
+    val scrollstate = rememberScrollState()
 
     BackHandler {
         navController.navigateUp()
@@ -82,6 +88,27 @@ fun AddHabitScreen(
             AddScreenTopBar(
                 onBackClick = {navController.navigateUp()}
             )
+        },
+        floatingActionButton = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(start = 30.dp)
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+                    .clip(RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "Done",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 20.sp
+                    )
+                )
+            }
         }
     ){innerPadding->
 
@@ -119,7 +146,8 @@ fun AddHabitScreen(
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .verticalScroll(scrollstate),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ){
             //heading
@@ -304,6 +332,7 @@ fun AddHabitScreen(
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Number
                                     ),
+                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                     modifier = Modifier.fillMaxWidth()
                                 )
                                 Spacer(Modifier.height(4.dp))
@@ -423,6 +452,52 @@ fun AddHabitScreen(
                                 }
                             )
                         }
+                    }
+                }
+            }
+            //link goal
+            InputElement {
+                //Text
+                Text(
+                    text = if(state.goal_id == null) "+ Link Goal" else state.goal_name,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+            }
+            //frequency
+            InputElement(
+                title = "Frequency"
+            ){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ){
+                    Selector(
+                        options = Frequency.getTypes().map { it.displayName },
+                        selectedOption = state.frequency.displayName,
+                        onOptionSelected = {
+                            viewmodel.setFrequency(Frequency.fromString(it))
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        nonSelectedTextColor = MaterialTheme.colorScheme.tertiary,
+                        selectedOptionColor = MaterialTheme.colorScheme.tertiary,
+                        nonSelectedOptionColor = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if(state.frequency == Frequency.Weekly){
+                        WeekDaySelector(
+                            daysMap = state.days_of_week,
+                            onSelect = {
+                                viewmodel.onSelectDay(it)
+                            }
+                        )
                     }
                 }
             }

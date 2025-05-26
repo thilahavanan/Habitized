@@ -18,5 +18,8 @@ sealed class Frequency(val displayName: String) {
                 else -> Daily
             }
         }
+        fun getTypes() : List<Frequency>{
+            return listOf(Daily, Weekly, Monthly)
+        }
     }
 }

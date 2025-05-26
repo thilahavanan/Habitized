@@ -8,6 +8,7 @@ import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitUI
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
+import com.codewithdipesh.habitized.presentation.util.Days
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,8 +88,7 @@ class AddViewModel @Inject constructor(
 
     fun setFrequency(frequency: Frequency){
         _habitUiState.value = _habitUiState.value.copy(
-            frequency = frequency,
-            days_of_week = if(frequency == Frequency.Daily) mutableListOf(1,1,1,1,1,1,1) else mutableListOf()
+            frequency = frequency
         )
     }
 
@@ -126,5 +126,16 @@ class AddViewModel @Inject constructor(
             isShowingParamOptions = !_habitUiState.value.isShowingParamOptions
         )
     }
+
+    fun onSelectDay(day: Days) {
+        val currentMap = _habitUiState.value.days_of_week.toMutableMap()
+        val currentValue = currentMap[day] ?: false
+        currentMap[day] = !currentValue  // Toggle the value
+
+        _habitUiState.value = _habitUiState.value.copy(
+            days_of_week = currentMap
+        )
+    }
+
 
 }
