@@ -145,7 +145,10 @@ fun AddHabitScreen(
                 )
             }
             //title
-            InputElement(color = MaterialTheme.colorScheme.surface){
+            InputElement(
+                color = if(state.title.isEmpty()) MaterialTheme.colorScheme.surface
+                else MaterialTheme.colorScheme.secondary
+            ){
                 Box {
                     BasicTextField(
                         value = state.title,
@@ -179,7 +182,10 @@ fun AddHabitScreen(
                 }
             }
             //description
-            InputElement(color = MaterialTheme.colorScheme.surface){
+            InputElement(
+                color = if(state.description.isEmpty()) MaterialTheme.colorScheme.surface
+                else MaterialTheme.colorScheme.secondary
+            ){
                 Box {
                     BasicTextField(
                         value = state.description,
