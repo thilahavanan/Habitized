@@ -23,25 +23,25 @@ class AddViewModel @Inject constructor(
     val habitUiState = _habitUiState.asStateFlow()
 
     suspend fun addHabit(){
-        repo.addOrUpdateHabit(
-            Habit(
-                title = _habitUiState.value.title,
-                description = _habitUiState.value.description,
-                type = _habitUiState.value.type,
-                goal_id = _habitUiState.value.goal_id,
-                start_date = _habitUiState.value.start_date,
-                frequency = _habitUiState.value.frequency,
-                days_of_week = _habitUiState.value.days_of_week,
-                daysOfMonth = _habitUiState.value.daysOfMonth,
-                reminder_time = _habitUiState.value.reminder_time,
-                is_active = _habitUiState.value.is_active,
-                color = _habitUiState.value.color,
-                countParam = _habitUiState.value.countParam,
-                countTarget = _habitUiState.value.countTarget,
-                durationParam = _habitUiState.value.durationParam,
-                duration = _habitUiState.value.duration
-            )
-        )
+//        repo.addOrUpdateHabit(
+//            Habit(
+//                title = _habitUiState.value.title,
+//                description = _habitUiState.value.description,
+//                type = _habitUiState.value.type,
+//                goal_id = _habitUiState.value.goal_id,
+//                start_date = _habitUiState.value.start_date,
+//                frequency = _habitUiState.value.frequency,
+//                days_of_week = _habitUiState.value.days_of_week,
+//                daysOfMonth = _habitUiState.value.daysOfMonth,
+//                reminder_time = _habitUiState.value.reminder_time,
+//                is_active = _habitUiState.value.is_active,
+//                color = _habitUiState.value.color,
+//                countParam = _habitUiState.value.countParam,
+//                countTarget = _habitUiState.value.countTarget,
+//                durationParam = _habitUiState.value.durationParam,
+//                duration = _habitUiState.value.duration
+//            )
+//        )
     }
 
     fun setType(type: HabitType){
@@ -63,6 +63,22 @@ class AddViewModel @Inject constructor(
             countTarget = count
         )
     }
+    fun setHours(duration: Int){
+        _habitUiState.value = _habitUiState.value.copy(
+            selectedHour = duration
+        )
+    }
+    fun setMinutes(duration: Int){
+        _habitUiState.value = _habitUiState.value.copy(
+            selectedMinute = duration
+        )
+    }
+    fun setSeconds(duration: Int){
+        _habitUiState.value = _habitUiState.value.copy(
+            selectedSeconds = duration
+        )
+    }
+
     fun setColor(color: Int){
         _habitUiState.value = _habitUiState.value.copy(
             color = color
@@ -102,6 +118,12 @@ class AddViewModel @Inject constructor(
     fun toggleColorOption(){
         _habitUiState.value = _habitUiState.value.copy(
             colorOptionAvailable = !_habitUiState.value.colorOptionAvailable
+        )
+    }
+
+    fun toggleParamOption(){
+        _habitUiState.value = _habitUiState.value.copy(
+            isShowingParamOptions = !_habitUiState.value.isShowingParamOptions
         )
     }
 

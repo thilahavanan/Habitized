@@ -25,10 +25,13 @@ data class AddHabitUI(
     @ColorRes val color : Int = R.color.primary,
     val countParam : CountParam? = CountParam.Glasses,
     val countTarget:Int? = null,
-    val durationParam: String? = null,
-    val duration:Float? = null,
+
+    val selectedHour : Int = 0,
+    val selectedMinute : Int = 45,
+    val selectedSeconds : Int = 0,
 
     val paramOptions: List<CountParam> = CountParam.getParams(type),
+    val isShowingParamOptions : Boolean = false,
     val isShowReminderTime : Boolean = false,
 
     val colorOptions : List<Int> = listOf(

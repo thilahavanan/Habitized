@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,17 +45,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.addscreen.component.ColorChoser
 import com.codewithdipesh.habitized.presentation.addscreen.component.DashedDivider
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
+import com.codewithdipesh.habitized.presentation.addscreen.component.ParamChoser
 import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
+import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 
@@ -80,7 +85,7 @@ fun AddHabitScreen(
         }
     ){innerPadding->
 
-        val sheetstate = rememberModalBottomSheetState()
+        val sheetstate = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
         if(state.colorOptionAvailable){
             ColorChoser(
@@ -94,6 +99,20 @@ fun AddHabitScreen(
                 selectedColor = state.color,
                 colors = state.colorOptions,
                 modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        if(state.isShowingParamOptions){
+            ParamChoser(
+                onParamSelected = {
+                    viewmodel.setParam(it)
+                },
+                onDismiss = {
+                    viewmodel.toggleParamOption()
+                },
+                sheetState = sheetstate,
+                selectedParam = state.countParam ?: CountParam.getParams(state.type).first(),
+                params = state.paramOptions
             )
         }
 
@@ -235,6 +254,7 @@ fun AddHabitScreen(
                         options = HabitType.getHabitTypes().map { it.displayName },
                         selectedOption = state.type.displayName,
                         onOptionSelected = {
+                            //todo reset timer and count viewmodel.setTargetCount(0)
                             viewmodel.setType(HabitType.fromString(it))
                         },
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -247,14 +267,14 @@ fun AddHabitScreen(
 
                     //input of targets
                     //choose param
-                    if(state.type != HabitType.OneTime){
+                    if(state.type != HabitType.OneTime && state.type != HabitType.Duration){
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically
                         ){
                             Column(
-                                modifier = Modifier.width(64.dp)
+                                modifier = Modifier.width(40.dp)
                             ){
                                 BasicTextField(
                                     value = if(state.countTarget != null && state.countTarget != 0) state.countTarget.toString() else "",
@@ -268,7 +288,7 @@ fun AddHabitScreen(
                                         }
                                     },
                                     textStyle = TextStyle(
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         fontFamily = regular,
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 18.sp
@@ -298,7 +318,7 @@ fun AddHabitScreen(
                             )
                             IconButton(
                                 onClick = {
-                                    //todo open choosing param
+                                    viewmodel.toggleParamOption()
                                 }
                             ) {
                                 Icon(
@@ -310,7 +330,94 @@ fun AddHabitScreen(
 
                         }
                     }
-
+                    if(state.type == HabitType.Duration || state.type == HabitType.Session){
+                        if(state.type == HabitType.Session){
+                            Text(
+                                text = "For Each",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontSize = 16.sp
+                                ),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
+                            )
+                        }
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            //hour
+                            TimePicker(
+                                width = 80.dp,
+                                itemHeight = 24.dp,
+                                numberOfDisplayItems = 3,
+                                items = (0..12).toList(),
+                                initialItem = state.selectedHour,
+                                itemScaleFont = 1.5f,
+                                fontSize = 16,
+                                textFont = regular,
+                                textWeight = FontWeight.Normal,
+                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                                onItemSelected = {item->
+                                  viewmodel.setHours(item)
+                                }
+                            )
+                            Text(
+                                text = ":",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontSize = 16.sp
+                                )
+                            )
+                            //minutes
+                            TimePicker(
+                                width = 80.dp,
+                                itemHeight = 24.dp,
+                                numberOfDisplayItems = 3,
+                                items = (0..59).toList(),
+                                initialItem = state.selectedMinute,
+                                itemScaleFont = 1.5f,
+                                fontSize = 16,
+                                textFont = regular,
+                                textWeight = FontWeight.Normal,
+                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                                onItemSelected = {item->
+                                    viewmodel.setMinutes(item)
+                                }
+                            )
+                            Text(
+                                text = ":",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontSize = 16.sp
+                                )
+                            )
+                            //seconds
+                            TimePicker(
+                                width = 80.dp,
+                                itemHeight = 24.dp,
+                                numberOfDisplayItems = 3,
+                                items = (0..59).toList(),
+                                initialItem = state.selectedSeconds,
+                                itemScaleFont = 1.5f,
+                                fontSize = 16,
+                                textFont = regular,
+                                textWeight = FontWeight.Normal,
+                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                                onItemSelected = {item->
+                                    viewmodel.setSeconds(item)
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
