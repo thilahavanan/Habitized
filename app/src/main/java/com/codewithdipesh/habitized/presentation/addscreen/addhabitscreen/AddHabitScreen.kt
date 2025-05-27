@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,12 +62,17 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTo
 import com.codewithdipesh.habitized.presentation.addscreen.component.ColorChoser
 import com.codewithdipesh.habitized.presentation.addscreen.component.DashedDivider
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
+import com.codewithdipesh.habitized.presentation.addscreen.component.MonthlyDaySelector
 import com.codewithdipesh.habitized.presentation.addscreen.component.ParamChoser
+import com.codewithdipesh.habitized.presentation.addscreen.component.ReminderTimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
+import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
 import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -147,6 +153,7 @@ fun AddHabitScreen(
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp)
+                .padding(bottom = 120.dp)
                 .verticalScroll(scrollstate),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ){
@@ -495,10 +502,61 @@ fun AddHabitScreen(
                         WeekDaySelector(
                             daysMap = state.days_of_week,
                             onSelect = {
-                                viewmodel.onSelectDay(it)
+                                viewmodel.onSelectWeekday(it)
                             }
                         )
                     }
+                    if(state.frequency == Frequency.Monthly){
+                        MonthlyDaySelector(
+                            selectedDays = state.daysOfMonth,
+                            onDaySelected = {
+                                viewmodel.onSelectDayofMonth(it)
+                            }
+                        )
+                    }
+                }
+            }
+            //Reminder
+            InputElement{
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(
+                            text = "Reminder",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp
+                            )
+                        )
+                        SlidingButton(
+                            isSelected = state.isShowReminderTime,
+                            onToggle = {
+                                viewmodel.toggleReminderOption()
+                            }
+                        )
+                    }
+                    //timer
+                    ReminderTimePicker(
+                        isShowing = state.isShowReminderTime,
+                        reminderTime = state.reminder_time?.format(
+                            DateTimeFormatter.ofPattern("hh:mm a")
+                        ) ?: "Set Reminder",
+                        onSelect = {
+                            viewmodel.setReminderTime(it)
+                        },
+                        onDismiss = {
+                            viewmodel.toggleReminderOption()
+                        }
+                    )
+
                 }
             }
 
@@ -506,3 +564,5 @@ fun AddHabitScreen(
     }
 
 }
+
+

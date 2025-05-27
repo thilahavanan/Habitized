@@ -10,6 +10,7 @@ import com.codewithdipesh.habitized.presentation.util.DailySelected
 import com.codewithdipesh.habitized.presentation.util.Days
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 data class AddHabitUI(
@@ -22,8 +23,8 @@ data class AddHabitUI(
     val start_date: LocalDate = LocalDate.now(),
     val frequency: Frequency = Frequency.Daily,
     val days_of_week: Map<Days,Boolean> = DailySelected,
-    val daysOfMonth: List<Int>? = null,
-    val reminder_time: LocalTime? =null,
+    val daysOfMonth: List<Int> = emptyList(),
+    val reminder_time: LocalTime? = LocalTime.now(),
     val is_active: Boolean = false,
     @ColorRes val color : Int = R.color.primary,
     val countParam : CountParam? = CountParam.Glasses,

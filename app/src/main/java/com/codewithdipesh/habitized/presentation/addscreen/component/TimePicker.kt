@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 @Composable
-fun  TimePicker(
+fun TimePicker(
     modifier: Modifier = Modifier,
     width:Dp,
     itemHeight:Dp,

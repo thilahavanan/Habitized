@@ -98,9 +98,9 @@ class AddViewModel @Inject constructor(
         )
     }
 
-    fun setReminderTime(time : LocalTime){
+    fun setReminderTime(time : String){
         _habitUiState.value = _habitUiState.value.copy(
-            reminder_time = time
+            reminder_time = LocalTime.parse(time)
         )
     }
 
@@ -127,13 +127,27 @@ class AddViewModel @Inject constructor(
         )
     }
 
-    fun onSelectDay(day: Days) {
+    fun onSelectWeekday(day: Days) {
         val currentMap = _habitUiState.value.days_of_week.toMutableMap()
         val currentValue = currentMap[day] ?: false
         currentMap[day] = !currentValue  // Toggle the value
 
         _habitUiState.value = _habitUiState.value.copy(
             days_of_week = currentMap
+        )
+    }
+
+    fun onSelectDayofMonth(day: Int) {
+        val currentList = _habitUiState.value.daysOfMonth.toMutableList()
+
+        if(currentList.contains(day)){
+            currentList.remove(day)
+        }else{
+            currentList.add(day)
+        }
+
+        _habitUiState.value = _habitUiState.value.copy(
+            daysOfMonth = currentList
         )
     }
 
