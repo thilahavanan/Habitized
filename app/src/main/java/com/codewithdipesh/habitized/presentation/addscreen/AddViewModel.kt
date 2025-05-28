@@ -98,9 +98,9 @@ class AddViewModel @Inject constructor(
         )
     }
 
-    fun setReminderTime(time : String){
+    fun setReminderTime(time : LocalTime){
         _habitUiState.value = _habitUiState.value.copy(
-            reminder_time = LocalTime.parse(time)
+            reminder_time = time
         )
     }
 
