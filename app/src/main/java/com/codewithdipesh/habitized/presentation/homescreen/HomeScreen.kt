@@ -22,6 +22,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,7 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.AddOptionB
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
 import com.codewithdipesh.habitized.presentation.homescreen.component.FloatingActionOptions
+import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 
@@ -52,6 +54,10 @@ fun HomeScreen(
 
     val state by viewmodel.uiState.collectAsState()
     var showOptions by remember { mutableStateOf(false) }
+
+    SideEffect {
+        viewmodel.loadHomePage(state.selectedDate)
+    }
 
     Scaffold(
         containerColor = colorResource(R.color.background_black),
@@ -68,6 +74,9 @@ fun HomeScreen(
                 showOptions = showOptions,
                 onAddHabitClicked = {
                     navController.navigate(Screen.AddHabit.route)
+                },
+                onAddGoalClicked = {
+                    navController.navigate(Screen.AddGoal.route)
                 }
             )
         },
@@ -94,6 +103,15 @@ fun HomeScreen(
                 selectedOption = state.selectedOption,
                 onOptionSelected = {viewmodel.onOptionSelected(it)}
             )
+            Spacer(Modifier.height(16.dp))
+            //habits
+            state.habitWithProgressList.forEach { habit->
+                HabitCard(
+                    habitWithProgress = habit
+                )
+                Spacer(Modifier.height(16.dp))
+            }
+
         }
 
     }

@@ -1,5 +1,7 @@
 package com.codewithdipesh.habitized.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
@@ -9,10 +11,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
+import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalScreen
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HabitizedNavHost(
@@ -33,6 +37,12 @@ fun HabitizedNavHost(
         }
         composable(Screen.AddHabit.route) {
             AddHabitScreen(
+                navController = navController,
+                viewmodel = addViewModel
+            )
+        }
+        composable(Screen.AddGoal.route){
+            AddGoalScreen(
                 navController = navController,
                 viewmodel = addViewModel
             )

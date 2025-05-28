@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -45,8 +47,9 @@ fun HabitCard(
     Box(modifier = Modifier
         .fillMaxWidth()
         .wrapContentSize()
+        .clip(RoundedCornerShape(15.dp))
         .background(
-            color = colorResource(R.color.secondary_gray),
+            color = colorResource( habitWithProgress.habit.color),
             shape = RoundedCornerShape(15.dp)
         ),
         contentAlignment = Alignment.Center

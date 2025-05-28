@@ -9,8 +9,7 @@ data class HomeScreenUI(
     val habitWithProgressList: List<HabitWithProgress> = emptyList(),
     val tasks : List<OneTimeTask> = emptyList(),
     val selectedOption : HomeScreenOption = HomeScreenOption.TODOS,
-    val selectedDate : LocalDate = LocalDate.now(),
-    val streak : Int = 0
+    val selectedDate : LocalDate = LocalDate.now()
 )
 
 enum class HomeScreenOption{

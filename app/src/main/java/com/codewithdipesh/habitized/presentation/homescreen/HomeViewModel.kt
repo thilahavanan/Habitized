@@ -30,7 +30,7 @@ class HomeViewModel @Inject constructor(
         loadHomePage(_uiState.value.selectedDate)
     }
 
-    private fun loadHomePage(date: LocalDate){
+    fun loadHomePage(date: LocalDate){
         viewModelScope.launch(Dispatchers.IO){
             val habits = repo.getHabitsForDay(date)
             val tasks = repo.getTasksForDay(date)

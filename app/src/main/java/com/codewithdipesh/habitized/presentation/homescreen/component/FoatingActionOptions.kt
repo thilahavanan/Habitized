@@ -21,6 +21,7 @@ fun FloatingActionOptions(
     showOptions: Boolean,
     modifier: Modifier = Modifier,
     onAddHabitClicked : () -> Unit = {},
+    onAddGoalClicked : () ->Unit = {}
 ){
     Box {
         Column(
@@ -37,6 +38,7 @@ fun FloatingActionOptions(
                     AddOptionButton(
                         title = "New Goal",
                         subtitle = "Create personalized goal",
+                        onClick = {onAddGoalClicked()}
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     AddOptionButton(

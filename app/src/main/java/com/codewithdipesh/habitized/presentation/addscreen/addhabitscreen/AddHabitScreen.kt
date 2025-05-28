@@ -75,6 +75,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
 import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
 import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
+import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
@@ -225,7 +226,7 @@ fun AddHabitScreen(
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
                         ),
-                        singleLine = true,
+                        singleLine = false,
                         maxLines = 1,
                         cursorBrush = SolidColor(colorResource(R.color.primary)),
                         modifier = Modifier.fillMaxWidth()
@@ -262,8 +263,8 @@ fun AddHabitScreen(
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
                         ),
-                        singleLine = true,
-                        maxLines = 1,
+                        singleLine = false,
+                        maxLines = 5,
                         cursorBrush = SolidColor(colorResource(R.color.primary)),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -494,17 +495,20 @@ fun AddHabitScreen(
             //link goal
             InputElement {
                 //Text
-                Text(
-                    text = if(state.goal_id == null) "+ Link Goal" else state.goal_name,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
+                Box(modifier = Modifier.fillMaxWidth()){
+                    Text(
+                        text = if(state.goal_id == null) "+ Link Goal" else state.goal_name,
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        ),
+                        modifier = Modifier.clickable{
+                            navController.navigate(Screen.AddGoal.route)
+                        }
+                    )
+                }
             }
             //frequency
             InputElement(
