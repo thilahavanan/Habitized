@@ -115,32 +115,3 @@ fun HabitCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HabitCardPreview() {
-    HabitCard(
-        habitWithProgress = HabitWithProgress(
-            habit = Habit(
-                habit_id = UUID.randomUUID(),
-                title = "Morning Run",
-                description = "Run every morning for better health",
-                type = HabitType.Duration,
-                goal_id = UUID.randomUUID(),
-                start_date = LocalDate.now(),
-                frequency = Frequency.Daily,
-                days_of_week = listOf(1, 1, 1, 1, 1, 0, 0),
-                daysOfMonth = null,
-                reminder_time = LocalTime.of(6, 30),
-                is_active = true,
-                color = android.R.color.holo_blue_light,
-                countParam = CountParam.Times,
-                countTarget = null,
-                durationParam = "Minutes",
-                duration = 30f
-            ),
-            date = LocalDate.now(),
-            progress = null,
-            subtasks = emptyList()
-        )
-    )
-}

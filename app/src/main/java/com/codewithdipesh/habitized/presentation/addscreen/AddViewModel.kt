@@ -1,6 +1,9 @@
 package com.codewithdipesh.habitized.presentation.addscreen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
@@ -9,10 +12,16 @@ import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitUI
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.util.Days
+import com.codewithdipesh.habitized.presentation.util.WeekDayMapToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 
 @HiltViewModel
@@ -23,26 +32,34 @@ class AddViewModel @Inject constructor(
     private val _habitUiState = MutableStateFlow(AddHabitUI())
     val habitUiState = _habitUiState.asStateFlow()
 
+    private val _uiEvent = Channel<String>(Channel.BUFFERED)
+    val uiEvent = _uiEvent.receiveAsFlow()
+    private var lastEmitted =""
+    private var clearJob : Job? = null
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     suspend fun addHabit(){
-//        repo.addOrUpdateHabit(
-//            Habit(
-//                title = _habitUiState.value.title,
-//                description = _habitUiState.value.description,
-//                type = _habitUiState.value.type,
-//                goal_id = _habitUiState.value.goal_id,
-//                start_date = _habitUiState.value.start_date,
-//                frequency = _habitUiState.value.frequency,
-//                days_of_week = _habitUiState.value.days_of_week,
-//                daysOfMonth = _habitUiState.value.daysOfMonth,
-//                reminder_time = _habitUiState.value.reminder_time,
-//                is_active = _habitUiState.value.is_active,
-//                color = _habitUiState.value.color,
-//                countParam = _habitUiState.value.countParam,
-//                countTarget = _habitUiState.value.countTarget,
-//                durationParam = _habitUiState.value.durationParam,
-//                duration = _habitUiState.value.duration
-//            )
-//        )
+        if(checkSavability()){
+            repo.addOrUpdateHabit(
+                Habit(
+                    title = _habitUiState.value.title,
+                    description = _habitUiState.value.description,
+                    type = _habitUiState.value.type,
+                    goal_id = _habitUiState.value.goal_id,
+                    start_date = _habitUiState.value.start_date,
+                    frequency = _habitUiState.value.frequency,
+                    days_of_week = WeekDayMapToInt( _habitUiState.value.days_of_week),
+                    daysOfMonth = _habitUiState.value.daysOfMonth,
+                    reminder_time = _habitUiState.value.reminder_time,
+                    is_active = _habitUiState.value.is_active,
+                    color = _habitUiState.value.color,
+                    countParam = _habitUiState.value.countParam,
+                    countTarget = _habitUiState.value.countTarget,
+                    duration = durationFormatter()
+                )
+            )
+            sendEvent("Habit Created Successfully")
+        }
     }
 
     fun setType(type: HabitType){
@@ -149,6 +166,81 @@ class AddViewModel @Inject constructor(
         _habitUiState.value = _habitUiState.value.copy(
             daysOfMonth = currentList
         )
+    }
+
+    private fun checkSavability() :  Boolean{
+        val state = _habitUiState.value
+        if(state.title == ""){
+            sendEvent("Title cannot be empty")
+            return false
+        }
+        when(state.type){
+            HabitType.Count -> {
+                if(state.countTarget == null || state.countTarget < 1){
+                    sendEvent("Target should be greater than 0")
+                    return false
+                }
+            }
+            HabitType.Duration -> {
+                if(state.selectedHour == 0 && state.selectedMinute == 0 && state.selectedSeconds == 0){
+                    sendEvent("Duration cannot be zero")
+                    return false
+                }
+            }
+            HabitType.OneTime -> {}
+            HabitType.Session -> {
+                if(state.countTarget == null || state.countTarget < 1){
+                    sendEvent("Target should be greater than 0")
+                    return false
+                }
+                if(state.selectedHour == 0 && state.selectedMinute == 0 && state.selectedSeconds == 0){
+                    sendEvent("Duration cannot be zero")
+                    return false
+                }
+            }
+        }
+        when(state.frequency){
+            is Frequency.Weekly ->{
+                if(state.days_of_week.values.all { !it }){
+                    sendEvent("Select atleast one day")
+                    return false
+                }
+            }
+            is Frequency.Monthly -> {
+                if(state.daysOfMonth == emptyList<Int>()){
+                    sendEvent("Select atleast one day")
+                    return false
+                }
+            }
+            else -> {}
+        }
+
+        //everything is okay
+        return true
+    }
+
+    private fun sendEvent(message: String) {
+        if(lastEmitted != message){
+            viewModelScope.launch {
+                _uiEvent.send(message)
+            }
+            lastEmitted = message
+
+            clearJob?.cancel()
+            clearJob = viewModelScope.launch {
+                delay(5000)
+                lastEmitted =""
+            }
+        }
+    }
+
+    private fun durationFormatter():String{
+        var ans = ""
+        ans += habitUiState.value.selectedHour.toString() + ":" +
+                habitUiState.value.selectedMinute.toString() + ":" +
+                habitUiState.value.selectedSeconds.toString()
+
+        return ans
     }
 
 

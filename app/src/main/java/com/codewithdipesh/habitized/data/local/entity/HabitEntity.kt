@@ -25,6 +25,5 @@ data class HabitEntity(
     val color :Int,
     val countParam : String,
     val countTarget:Int? = null,
-    val durationParam: String? = null,
-    val duration:Float? = null,
+    val duration:String? = null,
 )

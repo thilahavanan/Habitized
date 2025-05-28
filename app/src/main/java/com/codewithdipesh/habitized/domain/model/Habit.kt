@@ -25,6 +25,5 @@ data class Habit(
     @ColorRes val color : Int,
     val countParam : CountParam? = null,
     val countTarget:Int?,
-    val durationParam: String?, // the Minute or Hour or Second
-    val duration:Float?,
+    val duration:String?,
 )

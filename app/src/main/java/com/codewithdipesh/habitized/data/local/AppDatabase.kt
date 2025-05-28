@@ -25,7 +25,7 @@ import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
         HabitProgressEntity::class,
         SubtaskEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -48,7 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habit_tracker_db"
                 )
-                    .fallbackToDestructiveMigration()  // Handles DB version upgrades
+                    .fallbackToDestructiveMigration(false)  // Handles DB version upgrades
                     .build()
                 INSTANCE = instance
                 instance

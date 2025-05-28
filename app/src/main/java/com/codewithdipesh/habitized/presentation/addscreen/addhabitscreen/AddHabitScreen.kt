@@ -1,8 +1,11 @@
 package com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen
 
 import android.R.attr.value
+import android.os.Build
 import android.widget.Space
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,14 +39,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -71,9 +77,11 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddHabitScreen(
@@ -84,8 +92,24 @@ fun AddHabitScreen(
     val state by viewmodel.habitUiState.collectAsState()
     val scrollstate = rememberScrollState()
 
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     BackHandler {
         navController.navigateUp()
+    }
+
+    LaunchedEffect(viewmodel.uiEvent) {
+        viewmodel.uiEvent.collect {
+            scope.launch {
+                if(it == "Habit Created Successfully"){
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    navController.navigateUp()
+                }else{
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -102,7 +126,12 @@ fun AddHabitScreen(
                     .height(56.dp)
                     .padding(start = 30.dp)
                     .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
-                    .clip(RoundedCornerShape(20.dp)),
+                    .clip(RoundedCornerShape(20.dp))
+                    .clickable{
+                        scope.launch {
+                            viewmodel.addHabit()
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ){
                 Text(

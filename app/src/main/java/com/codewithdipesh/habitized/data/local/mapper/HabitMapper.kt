@@ -24,7 +24,6 @@ fun Habit.toEntity(): HabitEntity {
         color = color,
         countParam = countParam.toString(),
         countTarget = countTarget,
-        durationParam = durationParam,
         duration = duration
     )
 }
@@ -39,13 +38,12 @@ fun HabitEntity.toHabit() : Habit {
         start_date = start_date,
         frequency = Frequency.fromString(frequency),
         days_of_week = days_of_week.split(",").map { it.toInt() },
-        daysOfMonth = daysOfMonth?.split(",")?.map{it.toInt()},
+        daysOfMonth = if(daysOfMonth != "") daysOfMonth?.split(",")?.map{it.toInt()} else null,
         reminder_time = reminder_time,
         is_active = is_active,
         color = color,
         countParam = CountParam.fromString(countParam),
         countTarget = countTarget,
-        durationParam = durationParam,
         duration = duration
     )
 }
