@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
@@ -51,6 +53,7 @@ fun HomeScreen(
     navController: NavController,
     viewmodel: HomeViewModel
 ) {
+    val scrollState = rememberScrollState()
 
     val state by viewmodel.uiState.collectAsState()
     var showOptions by remember { mutableStateOf(false) }
@@ -70,10 +73,10 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionOptions(
+            FloatingActionOptions( 
                 showOptions = showOptions,
                 onAddHabitClicked = {
-                    navController.navigate(Screen.AddHabit.route)
+                    navController.navigate(Screen.AddHabit.createRoute(state.selectedDate))
                 },
                 onAddGoalClicked = {
                     navController.navigate(Screen.AddGoal.route)
@@ -91,6 +94,7 @@ fun HomeScreen(
                  else Modifier
             )
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .verticalScroll(scrollState)
         ){
             DatePicker(
                 currentDate = state.selectedDate,

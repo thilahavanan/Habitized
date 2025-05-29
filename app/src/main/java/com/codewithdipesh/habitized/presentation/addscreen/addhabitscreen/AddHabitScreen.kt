@@ -79,6 +79,7 @@ import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
@@ -88,7 +89,8 @@ import java.util.Calendar
 fun AddHabitScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewmodel: AddViewModel
+    viewmodel: AddViewModel,
+    date : LocalDate
 ) {
     val state by viewmodel.habitUiState.collectAsState()
     val scrollstate = rememberScrollState()
@@ -98,6 +100,7 @@ fun AddHabitScreen(
 
     BackHandler {
         navController.navigateUp()
+        viewmodel.clearHabitUI()
     }
 
     LaunchedEffect(viewmodel.uiEvent) {
@@ -106,6 +109,7 @@ fun AddHabitScreen(
                 if(it == "Habit Created Successfully"){
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     navController.navigateUp()
+                    viewmodel.clearHabitUI()
                 }else{
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
@@ -130,7 +134,7 @@ fun AddHabitScreen(
                     .clip(RoundedCornerShape(20.dp))
                     .clickable{
                         scope.launch {
-                            viewmodel.addHabit()
+                            viewmodel.addHabit(date)
                         }
                     },
                 contentAlignment = Alignment.Center

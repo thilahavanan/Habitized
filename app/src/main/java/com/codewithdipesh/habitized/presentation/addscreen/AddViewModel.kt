@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 
 @HiltViewModel
@@ -38,7 +39,7 @@ class AddViewModel @Inject constructor(
     private var clearJob : Job? = null
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    suspend fun addHabit(){
+    suspend fun addHabit(date : LocalDate){
         if(checkSavability()){
             repo.addOrUpdateHabit(
                 Habit(
@@ -46,11 +47,11 @@ class AddViewModel @Inject constructor(
                     description = _habitUiState.value.description,
                     type = _habitUiState.value.type,
                     goal_id = _habitUiState.value.goal_id,
-                    start_date = _habitUiState.value.start_date,
+                    start_date = date,
                     frequency = _habitUiState.value.frequency,
                     days_of_week = WeekDayMapToInt( _habitUiState.value.days_of_week),
                     daysOfMonth = _habitUiState.value.daysOfMonth,
-                    reminder_time = _habitUiState.value.reminder_time,
+                    reminder_time = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminder_time else null,
                     is_active = _habitUiState.value.is_active,
                     color = _habitUiState.value.color,
                     countParam = _habitUiState.value.countParam,
@@ -241,6 +242,10 @@ class AddViewModel @Inject constructor(
                 habitUiState.value.selectedSeconds.toString()
 
         return ans
+    }
+
+    fun clearHabitUI(){
+        _habitUiState.value = AddHabitUI()
     }
 
 
