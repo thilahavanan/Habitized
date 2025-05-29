@@ -82,7 +82,7 @@ fun OneTimeHabit(
             Text(
                 text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.surfaceDim,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
@@ -134,7 +134,7 @@ fun CountHabit(
                         text = "${habitWithProgress.progress.currentCount}/"+
                                 "${habitWithProgress.progress.targetCount}",
                         style = TextStyle(
-                            color = colorResource(R.color.white),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 16.sp
@@ -144,7 +144,7 @@ fun CountHabit(
                     Text(
                         text = habitWithProgress.progress.countParam.displayName,
                         style = TextStyle(
-                            color = colorResource(R.color.white),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Light,
                             fontSize = 12.sp

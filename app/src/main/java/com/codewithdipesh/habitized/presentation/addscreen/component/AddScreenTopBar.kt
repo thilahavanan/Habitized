@@ -24,7 +24,8 @@ import com.codewithdipesh.habitized.ui.theme.ndot
 @Composable
 fun AddScreenTopBar(
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    icon : @Composable () -> Unit
 ){
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -36,11 +37,7 @@ fun AddScreenTopBar(
             modifier = Modifier.align(Alignment.CenterStart)
                 .padding(top = 30.dp)
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "back",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+            icon()
         }
     }
 }

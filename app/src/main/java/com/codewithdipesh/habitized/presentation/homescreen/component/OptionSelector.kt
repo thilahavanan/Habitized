@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -52,8 +53,8 @@ fun OptionSelector(
                 .height(40.dp)
                 .clip(RoundedCornerShape(50.dp))
                 .background(color =
-                    if (selectedOption == HomeScreenOption.TODOS) Color.White
-                    else colorResource(R.color.secondary_gray),
+                    if (selectedOption == HomeScreenOption.TODOS) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50.dp)
                 )
                 .clickable{
@@ -64,8 +65,8 @@ fun OptionSelector(
             Text(
                 text = "Todos",
                 style = TextStyle(
-                    color = if (selectedOption == HomeScreenOption.TODOS) colorResource(R.color.black)
-                            else colorResource(R.color.white),
+                    color = if (selectedOption == HomeScreenOption.TODOS) MaterialTheme.colorScheme.inverseOnSurface
+                            else MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
                     fontFamily = ndot
                 )
@@ -81,8 +82,8 @@ fun OptionSelector(
                 .height(40.dp)
                 .clip(RoundedCornerShape(50.dp))
                 .background(color =
-                    if (selectedOption == HomeScreenOption.REMINDER) Color.White
-                    else colorResource(R.color.secondary_gray),
+                    if (selectedOption == HomeScreenOption.REMINDER) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50.dp)
                 )
                 .clickable{
@@ -93,8 +94,8 @@ fun OptionSelector(
             Text(
                 text = "Reminder",
                 style = TextStyle(
-                    color = if (selectedOption == HomeScreenOption.REMINDER) colorResource(R.color.black)
-                    else colorResource(R.color.white),
+                    color = if (selectedOption == HomeScreenOption.REMINDER) MaterialTheme.colorScheme.inverseOnSurface
+                    else MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
                     fontFamily = ndot
                 )

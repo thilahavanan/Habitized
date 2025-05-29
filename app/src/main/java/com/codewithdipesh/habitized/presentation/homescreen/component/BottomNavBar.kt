@@ -29,6 +29,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -113,10 +114,7 @@ fun BottomNavBar(
             modifier = Modifier
                 .size(70.dp)
                 .clip(RoundedCornerShape(50.dp))
-                .background(
-                    if(isShowingAddOption) colorResource(R.color.primary)
-                    else Color.White
-                )
+                .background(MaterialTheme.colorScheme.primary)
                 .align(Alignment.TopCenter)
                 .clickable {
                     onAddClick()
@@ -132,7 +130,7 @@ fun BottomNavBar(
             Icon(
                 painter = painterResource(R.drawable.add_big), // keep just one icon
                 contentDescription = "add",
-                tint = if (isShowingAddOption) colorResource(R.color.white) else colorResource(R.color.primary),
+                tint = MaterialTheme.colorScheme.inverseOnSurface,
                 modifier = Modifier.graphicsLayer {
                     rotationZ = rotation
                 }

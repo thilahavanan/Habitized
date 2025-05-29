@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,8 +22,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -36,7 +41,10 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddOptionButton
@@ -46,6 +54,10 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.FloatingAc
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
 import com.codewithdipesh.habitized.presentation.navigation.Screen
+import com.codewithdipesh.habitized.ui.theme.ndot
+import com.codewithdipesh.habitized.ui.theme.regular
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeScreen(
@@ -63,7 +75,27 @@ fun HomeScreen(
     }
 
     Scaffold(
-        containerColor = colorResource(R.color.background_black),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .height(80.dp),
+                contentAlignment = Alignment.Center
+            ){
+                IconButton(
+                    onClick = {//todo
+                    },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                        .padding(top = 30.dp,start = 16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.three_dots),
+                        contentDescription = "menu",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        },
         bottomBar = {
             BottomNavBar(
                 selectedScreen = Screen.Home,
@@ -73,7 +105,7 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionOptions( 
+            FloatingActionOptions(
                 showOptions = showOptions,
                 onAddHabitClicked = {
                     navController.navigate(Screen.AddHabit.createRoute(state.selectedDate))
@@ -93,16 +125,49 @@ fun HomeScreen(
                 if(showOptions) Modifier.blur(16.dp)
                  else Modifier
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 80.dp)
             .verticalScroll(scrollState)
         ){
-            DatePicker(
-                currentDate = state.selectedDate,
-                onChange = {
-                    viewmodel.onDateSelected(it)
-                }
+            val date = state.selectedDate.format(
+                DateTimeFormatter.ofPattern("dd MMM")
             )
-            Spacer(Modifier.height(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ){
+                Text(
+                    text = if(state.selectedDate == LocalDate.now()) "Today,$date" else "$date",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = ndot,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 24.sp
+                    ),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                )
+                IconButton(
+                    onClick = {
+                        //date picker
+                        viewmodel.toggleDatePicker()
+                    }
+                ) {
+                   Icon(
+                       painter = painterResource(R.drawable.toggle),
+                       contentDescription = "select date",
+                       tint = MaterialTheme.colorScheme.onPrimary
+                   )
+                }
+            }
+            if(state.isShowingDatePicker){
+                DatePicker(
+                    currentDate = state.selectedDate,
+                    onChange = {
+                        viewmodel.onDateSelected(it)
+                    }
+                )
+                Spacer(Modifier.height(16.dp))
+            }
             OptionSelector(
                 selectedOption = state.selectedOption,
                 onOptionSelected = {viewmodel.onOptionSelected(it)}

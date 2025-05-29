@@ -54,5 +54,11 @@ class HomeViewModel @Inject constructor(
         loadHomePage(date)
     }
 
+    fun toggleDatePicker(){
+        _uiState.value = _uiState.value.copy(
+            isShowingDatePicker = !_uiState.value.isShowingDatePicker
+        )
+    }
+
 
 }

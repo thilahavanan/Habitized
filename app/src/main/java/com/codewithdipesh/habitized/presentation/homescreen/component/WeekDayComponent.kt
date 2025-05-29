@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePickerDefaults.dateFormatter
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +43,7 @@ fun WeekDayComponent(
             .width(screenWidth / 7)
             .padding(4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(if (selected) colorResource(R.color.primary) else colorResource(R.color.secondary_gray))
+            .background(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
             .clickable { onClick(day.date) },
         contentAlignment = Alignment.Center,
     ) {
@@ -54,7 +55,7 @@ fun WeekDayComponent(
             Text(
                 text = day.date.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT,Locale.getDefault()),
                 style = TextStyle(
-                    color = colorResource(R.color.white),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light
@@ -63,7 +64,7 @@ fun WeekDayComponent(
             Text(
                 text = day.date.dayOfMonth.toString(),
                 style = TextStyle(
-                    color = colorResource(R.color.white),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = ndot,
                     fontSize = 26.sp
                 )

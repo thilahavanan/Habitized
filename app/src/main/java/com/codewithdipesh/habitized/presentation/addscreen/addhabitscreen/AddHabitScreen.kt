@@ -27,6 +27,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -121,7 +123,14 @@ fun AddHabitScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AddScreenTopBar(
-                onBackClick = {navController.navigateUp()}
+                onBackClick = {navController.navigateUp()},
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = "back",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             )
         },
         floatingActionButton = {
