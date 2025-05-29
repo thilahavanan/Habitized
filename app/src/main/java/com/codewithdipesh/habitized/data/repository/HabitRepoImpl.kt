@@ -5,6 +5,7 @@ import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
+import com.codewithdipesh.habitized.data.local.entity.HabitProgressEntity
 import com.codewithdipesh.habitized.data.local.mapper.toEntity
 import com.codewithdipesh.habitized.data.local.mapper.toHabit
 import com.codewithdipesh.habitized.data.local.mapper.toHabitProgress
@@ -13,8 +14,10 @@ import com.codewithdipesh.habitized.data.local.mapper.toSubTask
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
+import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.OneTimeTask
+import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import kotlinx.coroutines.flow.Flow
@@ -79,8 +82,26 @@ class HabitRepoImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getTodayHabitProgresses(date: LocalDate): List<HabitProgress>? {
-        TODO("Not yet implemented")
+    override suspend fun addTodayHabitProgresses(date: LocalDate) {
+        val habits = habitDao.getHabitsForTheDay(date)
+        habits.forEach { habit->
+            habitProgressDao.insertProgress(
+                HabitProgressEntity(
+                     habitId = habit.habit_id,
+                     date = date,
+                     type = habit.type,
+                     countParam = habit.countParam,
+                     currentCount = 0,
+                     targetCount = habit.countTarget,
+                     targetDurationValue = habit.duration,
+                     currentSessionNumber = if(habit.type == HabitType.Session.toString()) 0 else null,
+                     targetSessionNumber = if(habit.type == HabitType.Session.toString()) habit.countTarget else null,
+                     status  = Status.NotStarted.toString(),
+                     notes = null,
+                     excuse = null
+                )
+            )
+        }
     }
 
 
@@ -133,6 +154,7 @@ class HabitRepoImpl(
     override suspend fun getHabitsForDay(date: LocalDate): List<HabitWithProgress> {
         val habits = habitDao.getHabitsForTheDay(date)
         return habits.map { habit ->
+            addTodayHabitProgresses(date)//create all the progress
             val progress = habitProgressDao.getHabitProgressOfTheDay(habit.habit_id, date)
             val subtasks = if (progress != null) {
                 subtaskDao.getSubtasksByHabitProgressId(progress.progressId)?.map { it.toSubTask() } ?: emptyList()
@@ -143,7 +165,7 @@ class HabitRepoImpl(
             HabitWithProgress(
                 habit = habit.toHabit(),
                 date = date,
-                progress = progress?.toHabitProgress(),
+                progress = progress.toHabitProgress(),
                 subtasks = subtasks
             )
         }

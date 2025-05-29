@@ -23,7 +23,7 @@ interface HabitDao {
     @Query("DELETE FROM habits WHERE habit_id = :habitId")
     suspend fun deleteHabit(habitId: UUID)
 
-    @Query("SELECT * FROM habits WHERE start_date >= :date")
+    @Query("SELECT * FROM habits WHERE start_date <= :date")
     suspend fun getHabitsForTheDay(date: LocalDate) : List<HabitEntity>
 
     @Query("""

@@ -264,7 +264,7 @@ fun AddHabitScreen(
                             fontSize = 16.sp
                         ),
                         singleLine = false,
-                        maxLines = 5,
+                        maxLines = 5 ,
                         cursorBrush = SolidColor(colorResource(R.color.primary)),
                         modifier = Modifier.fillMaxWidth()
                     )

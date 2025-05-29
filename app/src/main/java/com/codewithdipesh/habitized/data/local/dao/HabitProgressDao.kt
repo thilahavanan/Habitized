@@ -18,7 +18,7 @@ interface HabitProgressDao {
     fun getHabitProgress(habitId: UUID): Flow<List<HabitProgressEntity>>
 
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId AND date = :date")
-    suspend fun getHabitProgressOfTheDay(habitId: UUID, date: LocalDate): HabitProgressEntity?
+    suspend fun getHabitProgressOfTheDay(habitId: UUID, date: LocalDate): HabitProgressEntity
 
     @Query("DELETE FROM habit_progress WHERE progressId = :progressId")
     suspend fun deleteProgress(progressId: UUID)
