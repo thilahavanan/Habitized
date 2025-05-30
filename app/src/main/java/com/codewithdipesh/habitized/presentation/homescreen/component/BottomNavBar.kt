@@ -21,15 +21,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -46,6 +52,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,120 +64,86 @@ import org.w3c.dom.Text
 
 @Composable
 fun BottomNavBar(
-    modifier: Modifier = Modifier,
     selectedScreen: Screen,
-    isShowingAddOption : Boolean,
-    onAddClick: () -> Unit = {}
-){
-    Box(
-        modifier = Modifier
-            .wrapContentHeight()
+    isShowingAddOption: Boolean,
+    onAddClick: () -> Unit = {},
+    onNavigate: (Screen) -> Unit = {},
+    modifier : Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
             .fillMaxWidth()
-            .height(120.dp),
-        contentAlignment = Alignment.Center
-    ){
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .then(
-                    if(isShowingAddOption) Modifier.blur(16.dp)
-                    else Modifier
-                )
-        ){
-            HorizontalDivider(
-                thickness = 2.dp,
-                color = colorResource(R.color.secondary_gray)
+            .height(87.dp)
+            .then(if (isShowingAddOption) Modifier.blur(16.dp) else Modifier)
+    ) {
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.background,
+            tonalElevation = 0.dp
+        ) {
+            NavigationBarItem(
+                selected = selectedScreen == Screen.Home,
+                onClick = { onNavigate(Screen.Home) },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.home),
+                        contentDescription = "Home",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                label = {
+                    Text(
+                        text = "Home",
+                        style = TextStyle(
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
             )
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .height(85.dp)
-                    .fillMaxWidth()
-            ) {
-                NavItem(
-                    text = "Home",
-                    icon = painterResource(R.drawable.home),
-                    isSelected = selectedScreen == Screen.Home,
-                    onClick = {
-                        //todo nav to home screen
-                    }
-                )
 
-                NavItem(
-                    text = "Habits",
-                    icon = painterResource(R.drawable.habits),
-                    isSelected = selectedScreen == Screen.Habits,
-                    onClick = {
-                        //todo nav to habit screen
-                    }
+            // Spacer for central Add button
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Custom Add button (centered manually)
+            Box(modifier = Modifier
+                    .size(48.dp)
+                    .offset(y = (-8).dp) // push upward
+                    .clip(shape = CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable { onAddClick() }, contentAlignment = Alignment.Center) {
+                Icon(
+                    painter = painterResource(R.drawable.add_big),
+                    contentDescription = "Add",
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
-        }
-        //add button
-        Box(
-            modifier = Modifier
-                .size(70.dp)
-                .clip(RoundedCornerShape(50.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .align(Alignment.TopCenter)
-                .clickable {
-                    onAddClick()
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            val rotation by animateFloatAsState(
-                targetValue = if (isShowingAddOption) 45f else 0f,
-                animationSpec = tween(durationMillis = 300),
-                label = "rotation"
-            )
 
-            Icon(
-                painter = painterResource(R.drawable.add_big), // keep just one icon
-                contentDescription = "add",
-                tint = MaterialTheme.colorScheme.inverseOnSurface,
-                modifier = Modifier.graphicsLayer {
-                    rotationZ = rotation
+            Spacer(modifier = Modifier.width(16.dp))
+
+            NavigationBarItem(
+                selected = selectedScreen == Screen.Habits,
+                onClick = { onNavigate(Screen.Habits) },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.habits),
+                        contentDescription = "Habits",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                label = {
+                    Text(
+                        text = "Habits",
+                        style = TextStyle(
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
                 }
             )
         }
     }
 }
-
-
-@Composable
-fun NavItem(
-    text: String,
-    icon : Painter,
-    isSelected : Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val color = if (isSelected) Color.White else colorResource(R.color.light_gray)
-    Column(
-        modifier = Modifier
-            .clickable{
-              onClick()
-            },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-        Icon(
-            painter = icon,
-            contentDescription = text,
-            tint = color
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = text,
-            style = TextStyle(
-                color = color,
-                fontFamily = regular,
-                fontWeight = FontWeight.Normal
-            )
-        )
-    }
-}
-
