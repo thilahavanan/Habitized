@@ -1,7 +1,9 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
 import android.R.attr.firstDayOfWeek
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +43,9 @@ fun DatePicker(
                 selectedDay = it
                 onChange(it)
             }
-        }
+        },
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
     )
 
 }
