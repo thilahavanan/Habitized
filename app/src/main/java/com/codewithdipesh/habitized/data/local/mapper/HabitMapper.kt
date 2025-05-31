@@ -5,6 +5,9 @@ import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.presentation.util.SingleString
+import com.codewithdipesh.habitized.presentation.util.toLocalTime
+import com.codewithdipesh.habitized.presentation.util.toWord
 import java.util.UUID
 
 fun Habit.toEntity(): HabitEntity {
@@ -24,7 +27,7 @@ fun Habit.toEntity(): HabitEntity {
         color = color,
         countParam = countParam.toString(),
         countTarget = countTarget,
-        duration = duration
+        duration = duration?.SingleString()
     )
 }
 
@@ -44,6 +47,6 @@ fun HabitEntity.toHabit() : Habit {
         color = color,
         countParam = CountParam.fromString(countParam),
         countTarget = countTarget,
-        duration = duration
+        duration = duration?.toLocalTime()
     )
 }

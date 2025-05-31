@@ -50,7 +50,7 @@ fun InputElement(
                        color = MaterialTheme.colorScheme.onPrimary,
                        fontFamily = regular,
                        fontSize = 16.sp,
-                       fontWeight = FontWeight.Normal
+                       fontWeight = FontWeight.Bold
                    )
                )
            }

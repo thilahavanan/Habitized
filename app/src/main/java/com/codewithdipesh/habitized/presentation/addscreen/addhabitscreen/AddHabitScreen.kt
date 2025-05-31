@@ -105,6 +105,11 @@ fun AddHabitScreen(
         viewmodel.clearHabitUI()
     }
 
+    LaunchedEffect(Unit) {
+        val size = state.colorOptions.size
+        viewmodel.setColor(state.colorOptions[(0..(size-1)).random()])
+    }
+
     LaunchedEffect(viewmodel.uiEvent) {
         viewmodel.uiEvent.collect {
             scope.launch {
@@ -201,13 +206,13 @@ fun AddHabitScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ){
             //heading
-            Row{
+            Row(verticalAlignment = Alignment.CenterVertically){
                 Text(
                     text = "Create",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
                     )
                 )
@@ -237,7 +242,7 @@ fun AddHabitScreen(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
+                            fontSize = 20.sp
                         ),
                         singleLine = false,
                         maxLines = 1,
@@ -253,7 +258,7 @@ fun AddHabitScreen(
                                 color = colorResource(R.color.light_gray), // make it look like a placeholder
                                 fontFamily = regular,
                                 fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
+                                fontSize = 20.sp
                             )
                         )
                     }
@@ -274,7 +279,7 @@ fun AddHabitScreen(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
+                            fontSize = 20.sp
                         ),
                         singleLine = false,
                         maxLines = 5 ,
@@ -290,7 +295,7 @@ fun AddHabitScreen(
                                 color = colorResource(R.color.light_gray), // make it look like a placeholder
                                 fontFamily = regular,
                                 fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
+                                fontSize = 20.sp
                             )
                         )
                     }
@@ -309,7 +314,7 @@ fun AddHabitScreen(
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
+                            fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                     )
@@ -578,7 +583,7 @@ fun AddHabitScreen(
                             style = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
                         )

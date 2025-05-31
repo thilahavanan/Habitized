@@ -11,7 +11,8 @@ import androidx.compose.ui.unit.sp
 // Set of Material typography styles to start with
 val regular = FontFamily(
     Font(R.font.regular_mono, FontWeight.Normal),
-    Font(R.font.light_mono,FontWeight.Light)
+    Font(R.font.light_mono,FontWeight.Light),
+    Font(R.font.bold_mono,FontWeight.Bold)
 )
 
 val ndot = FontFamily(

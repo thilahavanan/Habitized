@@ -56,7 +56,12 @@ class AddViewModel @Inject constructor(
                     color = _habitUiState.value.color,
                     countParam = _habitUiState.value.countParam,
                     countTarget = _habitUiState.value.countTarget,
-                    duration = durationFormatter()
+                    duration = LocalTime.of(
+                        _habitUiState.value.selectedHour,
+                        _habitUiState.value.selectedMinute,
+                        _habitUiState.value.selectedSeconds,
+
+                    )
                 )
             )
             sendEvent("Habit Created Successfully")
@@ -233,15 +238,6 @@ class AddViewModel @Inject constructor(
                 lastEmitted =""
             }
         }
-    }
-
-    private fun durationFormatter():String{
-        var ans = ""
-        ans += habitUiState.value.selectedHour.toString() + ":" +
-                habitUiState.value.selectedMinute.toString() + ":" +
-                habitUiState.value.selectedSeconds.toString()
-
-        return ans
     }
 
     fun clearHabitUI(){

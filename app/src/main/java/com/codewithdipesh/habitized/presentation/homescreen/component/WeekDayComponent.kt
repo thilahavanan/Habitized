@@ -55,7 +55,8 @@ fun WeekDayComponent(
             Text(
                 text = day.date.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT,Locale.getDefault()),
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = if(selected) MaterialTheme.colorScheme.outlineVariant
+                            else MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light
@@ -64,7 +65,8 @@ fun WeekDayComponent(
             Text(
                 text = day.date.dayOfMonth.toString(),
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = if(selected) MaterialTheme.colorScheme.outlineVariant
+                    else MaterialTheme.colorScheme.onPrimary,
                     fontFamily = ndot,
                     fontSize = 26.sp
                 )

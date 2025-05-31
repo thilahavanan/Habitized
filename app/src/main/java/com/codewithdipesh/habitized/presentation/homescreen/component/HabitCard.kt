@@ -2,10 +2,13 @@ package com.codewithdipesh.habitized.presentation.homescreen.component
 
 import com.codewithdipesh.habitized.R
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +42,7 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 import java.time.LocalDate
@@ -56,7 +61,9 @@ fun HabitCard(
         HabitType.Count -> {
             CountHabit(habitWithProgress = habitWithProgress)
         }
-        HabitType.Duration -> TODO()
+        HabitType.Duration -> {
+            DurationHabit(habitWithProgress = habitWithProgress)
+        }
         HabitType.OneTime ->{
             OneTimeHabit(habitWithProgress = habitWithProgress)
         }
@@ -84,7 +91,7 @@ fun OneTimeHabit(
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
             )
@@ -112,7 +119,7 @@ fun CountHabit(
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
-                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 ),
                 modifier = Modifier
@@ -136,7 +143,7 @@ fun CountHabit(
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
+                            fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                     )
@@ -146,7 +153,7 @@ fun CountHabit(
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
-                            fontWeight = FontWeight.Light,
+                            fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
                         )
                     )
@@ -178,3 +185,75 @@ fun CountHabit(
     }
 }
 
+@Composable
+fun DurationHabit(
+    modifier: Modifier = Modifier,
+    habitWithProgress: HabitWithProgress
+) {
+    HabitElement(
+        color = colorResource(habitWithProgress.habit.color),
+        reminder = habitWithProgress.habit.reminder_time
+    ){
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ){
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                //start button
+                Box(
+                   modifier = Modifier.size(80.dp,20.dp)
+                       .clip(RoundedCornerShape(10.dp))
+                       .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
+                       .clickable{
+                          //todo
+                       },
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = "Start",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = ndot,
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+
+                VerticalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.height(18.dp)
+                )
+
+                //time
+                habitWithProgress.habit.duration?.let {
+                    Text(
+                        text = habitWithProgress.habit.duration.toWord(),
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            //title
+            Text(
+                text = habitWithProgress.habit.title,
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            )
+        }
+    }
+}

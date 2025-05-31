@@ -81,7 +81,7 @@ fun HomeScreen(
         showingDateTitle = currentOffset <= 10
 
         if(showingDateTitle){
-            showingOptionSelector
+            showingOptionSelector = true
         }else{
             if( currentOffset > previousScrollOffset || currentOffset == scrollState.maxValue){
                 showingOptionSelector = false

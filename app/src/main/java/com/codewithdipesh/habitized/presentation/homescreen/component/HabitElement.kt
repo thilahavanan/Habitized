@@ -63,7 +63,7 @@ fun HabitElement(
                         DateTimeFormatter.ofPattern("hh:mm a")
                     ),
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.surfaceDim,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontFamily = ndot,
                         fontSize = 12.sp
                     )

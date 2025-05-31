@@ -25,5 +25,5 @@ data class Habit(
     @ColorRes val color : Int,
     val countParam : CountParam? = null,
     val countTarget:Int?,
-    val duration:String?,
+    val duration: LocalTime?,
 )

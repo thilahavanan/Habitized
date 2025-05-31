@@ -29,6 +29,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
@@ -36,6 +38,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -73,7 +77,7 @@ fun BottomNavBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(87.dp)
+            .height(90.dp)
             .then(if (isShowingAddOption) Modifier.blur(16.dp) else Modifier)
     ) {
         NavigationBar(
@@ -87,20 +91,14 @@ fun BottomNavBar(
                     Icon(
                         painter = painterResource(R.drawable.home),
                         contentDescription = "Home",
-                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 },
-                label = {
-                    Text(
-                        text = "Home",
-                        style = TextStyle(
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    )
-                }
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurface
+                )
+
             )
 
             // Spacer for central Add button
@@ -114,9 +112,9 @@ fun BottomNavBar(
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable { onAddClick() }, contentAlignment = Alignment.Center) {
                 Icon(
-                    painter = painterResource(R.drawable.add_big),
+                    imageVector = Icons.Filled.Add,
                     contentDescription = "Add",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.inverseOnSurface
                 )
             }
 
@@ -128,21 +126,14 @@ fun BottomNavBar(
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.habits),
-                        contentDescription = "Habits",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        contentDescription = "Habits"
                     )
                 },
-                label = {
-                    Text(
-                        text = "Habits",
-                        style = TextStyle(
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    )
-                }
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurface
+                )
             )
         }
     }
