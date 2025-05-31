@@ -138,16 +138,23 @@ class HabitRepoImpl(
 
 
     override suspend fun insertSubtask(subtask: SubTask) {
-        TODO("Not yet implemented")
+        subtaskDao.insertSubtask(subtask.toEntity())
     }
+
+    override suspend fun getSubtasks(habitProgerssId: UUID): List<SubTask> {
+        val result =  subtaskDao.getSubtasksByHabitProgressId(habitProgerssId)
+
+        return result?.map { it.toSubTask() } ?: emptyList()
+    }
+
     override suspend fun updateSubtask(subtask: SubTask) {
         TODO("Not yet implemented")
     }
     override suspend fun deleteSubtask(subtaskId: UUID) {
-        TODO("Not yet implemented")
+        subtaskDao.deleteSubtask(subtaskId)
     }
-    override suspend fun markSubTask(subtaskId: UUID, status: Boolean) {
-        TODO("Not yet implemented")
+    override suspend fun toggleSubTask(subtaskId: UUID) {
+        subtaskDao.updateSubtaskCompletion(subtaskId)
     }
 
 

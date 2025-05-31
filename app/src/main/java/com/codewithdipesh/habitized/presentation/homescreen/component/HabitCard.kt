@@ -42,6 +42,7 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
@@ -53,9 +54,11 @@ import java.util.UUID
 //count based
 @Composable
 fun HabitCard(
-    habitWithProgress: HabitWithProgress ,
+    habitWithProgress: HabitWithProgress,
     onAddButton : () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSubTaskAdding : (HabitWithProgress)->Unit,
+    onToggle : (SubTask)-> Unit
 ){
     when(habitWithProgress.habit.type){
         HabitType.Count -> {
@@ -67,7 +70,16 @@ fun HabitCard(
         HabitType.OneTime ->{
             OneTimeHabit(habitWithProgress = habitWithProgress)
         }
-        HabitType.Session -> TODO()
+        HabitType.Session -> {
+            SessionHabit(
+                habitWithProgress = habitWithProgress,
+                onAddSubTask = {
+                    onSubTaskAdding(habitWithProgress)
+                },
+                onToggle = {onToggle(it)}
+
+            )
+        }
     }
 }
 
@@ -257,3 +269,119 @@ fun DurationHabit(
         }
     }
 }
+
+@Composable
+fun SessionHabit(
+    modifier: Modifier = Modifier,
+    habitWithProgress: HabitWithProgress,
+    onAddSubTask : () -> Unit = {},
+    onToggle : (SubTask)->Unit = {},
+) {
+    HabitElement(
+        color = colorResource(habitWithProgress.habit.color),
+        reminder = habitWithProgress.habit.reminder_time
+    ){
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ){
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                //start button
+                Box(
+                    modifier = Modifier.size(80.dp,20.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
+                        .clickable{
+                            //todo
+                        },
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = "Start",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = ndot,
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+
+                VerticalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.height(18.dp)
+                )
+
+                //target
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = "${habitWithProgress.progress.currentCount}/"+
+                                "${habitWithProgress.progress.targetCount}",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    )
+                    //param ex:- session
+                    Text(
+                        text = habitWithProgress.progress.countParam.displayName,
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            //title
+            Text(
+                text = habitWithProgress.habit.title,
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            )
+            Spacer(Modifier.height(6.dp))
+            //subTask
+            habitWithProgress.subtasks.forEach {subtask->
+                SubTaskEditor(
+                    subTask = subtask,
+                    textSize = 12,
+                    enabled = false,
+                    onToggleSubtask = {onToggle(subtask)},
+                    modifier = modifier
+                )
+                Spacer(Modifier.height(6.dp))
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "+ Add Task",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 12.sp
+                ),
+                modifier = Modifier.clickable{
+                    onAddSubTask()
+                }
+            )
+
+        }
+    }
+}
+

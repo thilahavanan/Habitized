@@ -5,6 +5,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
@@ -27,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.domain.model.Habit
+import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
 import com.codewithdipesh.habitized.presentation.homescreen.component.FloatingActionOptions
@@ -46,6 +54,8 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.ndot
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -56,17 +66,18 @@ fun HomeScreen(
     viewmodel: HomeViewModel
 ) {
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
     var previousScrollOffset by remember { mutableStateOf(0) }
 
     val state by viewmodel.uiState.collectAsState()
     var showAddingOptions by remember { mutableStateOf(false) }
 
-    var showingOptionSelector by remember {
-        mutableStateOf(true)
-    }
-    var showingDateTitle by remember {
-        mutableStateOf(true)
-    }
+    var showingOptionSelector by remember { mutableStateOf(true) }
+    var showingDateTitle by remember { mutableStateOf(true) }
+
+    var showingSubtaskAdding by remember { mutableStateOf(false) }
+    var habitForSubTaskAdding by remember { mutableStateOf<HabitWithProgress?>(null) }
+
 
     LaunchedEffect(state.selectedDate) {
         viewmodel.loadHomePage(state.selectedDate)
@@ -129,6 +140,21 @@ fun HomeScreen(
         floatingActionButtonPosition = FabPosition.Center
     ){innerPadding->
 
+        //session habit
+        if(showingSubtaskAdding && habitForSubTaskAdding != null){
+            AddSubTask(
+                habitWithProgress = habitForSubTaskAdding!!,
+                onUpdateSubTask = {
+                    //todo change in room
+                    scope.launch{
+                        viewmodel.addUpdateSubTasks(it,habitForSubTaskAdding!!.progress.progressId)
+                        showingSubtaskAdding = false
+                    }
+
+                }
+            )
+        }
+
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
@@ -189,10 +215,22 @@ fun HomeScreen(
             }
             Spacer(Modifier.height(16.dp))
             //habits
-            Column(modifier = Modifier.verticalScroll(scrollState)){
-                state.habitWithProgressList.forEach { habit->
+
+            Column(modifier = Modifier.verticalScroll(
+                scrollState,
+                flingBehavior = ScrollableDefaults.flingBehavior()
+            )
+            ) {
+                state.habitWithProgressList.forEach{habit->
                     HabitCard(
-                        habitWithProgress = habit
+                        habitWithProgress = habit,
+                        onSubTaskAdding = {
+                            showingSubtaskAdding = true
+                            habitForSubTaskAdding = it
+                        },
+                        onToggle = {
+                            viewmodel.toggleSubtask(it)
+                        }
                     )
                     Spacer(Modifier.height(16.dp))
                 }

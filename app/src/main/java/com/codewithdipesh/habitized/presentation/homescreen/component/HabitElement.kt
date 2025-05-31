@@ -76,7 +76,7 @@ fun HabitElement(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .clip(shape = RoundedCornerShape(15.dp))
-                .background(color)
+                .background(color.copy(alpha = 0.65f))
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ){

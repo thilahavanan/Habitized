@@ -38,9 +38,10 @@ interface HabitRepository {
 
     // Subtasks
     suspend fun insertSubtask(subtask: SubTask)
+    suspend fun getSubtasks(habitProgerssId: UUID) : List<SubTask>
     suspend fun updateSubtask(subtask: SubTask)
     suspend fun deleteSubtask(subtaskId: UUID)
-    suspend fun markSubTask(subtaskId: UUID,status:Boolean)
+    suspend fun toggleSubTask(subtaskId: UUID)
 
     suspend fun getHabitsForDay(date: LocalDate): List<HabitWithProgress>
     suspend fun getTasksForDay(date: LocalDate): List<OneTimeTask>

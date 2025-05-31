@@ -22,6 +22,6 @@ interface SubTaskDao {
     @Query("DELETE FROM sub_tasks WHERE habitProgressId = :habitProgressId")
     suspend fun deleteSubtaskByHabitId(habitProgressId: UUID)
 
-    @Query("UPDATE sub_tasks SET isCompleted = :isCompleted WHERE subtaskId = :subtaskId")
-    suspend fun updateSubtaskCompletion(subtaskId: UUID, isCompleted: Boolean)
+    @Query("UPDATE sub_tasks SET isCompleted = not isCompleted WHERE subtaskId = :subtaskId")
+    suspend fun updateSubtaskCompletion(subtaskId: UUID)
 }
