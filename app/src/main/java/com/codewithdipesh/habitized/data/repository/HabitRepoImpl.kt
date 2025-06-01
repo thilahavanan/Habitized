@@ -104,7 +104,19 @@ class HabitRepoImpl(
         }
     }
 
+    override suspend fun onDoneHabitProgress(progressId: UUID) {
+        habitProgressDao.onUpdateStatus(
+            status = Status.Done.toString(),
+            progressId = progressId
+        )
+    }
 
+    override suspend fun onSkipHabitProgress(progressId: UUID) {
+        habitProgressDao.onUpdateStatus(
+            status = Status.Cancelled.toString(),
+            progressId = progressId
+        )
+    }
 
 
     override suspend fun addGoal(goal: Goal) {

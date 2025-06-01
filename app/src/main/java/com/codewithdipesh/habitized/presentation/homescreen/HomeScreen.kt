@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
@@ -221,7 +222,7 @@ fun HomeScreen(
                 flingBehavior = ScrollableDefaults.flingBehavior()
             )
             ) {
-                state.habitWithProgressList.forEach{habit->
+                state.habitWithProgressList.filter { it.progress.status == Status.NotStarted }.forEach{ habit->
                     HabitCard(
                         habitWithProgress = habit,
                         onSubTaskAdding = {
@@ -230,6 +231,12 @@ fun HomeScreen(
                         },
                         onToggle = {
                             viewmodel.toggleSubtask(it)
+                        },
+                        onSkip = {
+                            viewmodel.onSkipHabit(it.progress)
+                        },
+                        onDone = {
+                            viewmodel.onDoneHabit(it.progress)
                         }
                     )
                     Spacer(Modifier.height(16.dp))

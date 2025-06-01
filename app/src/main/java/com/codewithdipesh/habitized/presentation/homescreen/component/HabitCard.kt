@@ -57,6 +57,8 @@ fun HabitCard(
     habitWithProgress: HabitWithProgress,
     onAddButton : () -> Unit = {},
     modifier: Modifier = Modifier,
+    onDone : (HabitWithProgress) -> Unit = {},
+    onSkip : (HabitWithProgress) -> Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
     onToggle : (SubTask)-> Unit
 ){
@@ -68,7 +70,14 @@ fun HabitCard(
             DurationHabit(habitWithProgress = habitWithProgress)
         }
         HabitType.OneTime ->{
-            OneTimeHabit(habitWithProgress = habitWithProgress)
+            SwipeContainer(
+                item = habitWithProgress,
+                onDone = { onDone(it)},
+                onSkip = { onSkip(it)},
+                content = {
+                    OneTimeHabit(habitWithProgress = habitWithProgress)
+                }
+            )
         }
         HabitType.Session -> {
             SessionHabit(

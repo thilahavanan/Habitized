@@ -22,6 +22,8 @@ interface HabitRepository {
     suspend fun getHabitProgress(habitId: UUID, date: String): HabitProgress?
     suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>?
     suspend fun addTodayHabitProgresses(date: LocalDate)
+    suspend fun onDoneHabitProgress(progressId: UUID)
+    suspend fun onSkipHabitProgress(progressId: UUID)
 
     // Goals
     suspend fun addGoal(goal: Goal)

@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codewithdipesh.habitized.domain.model.Habit
+import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.SubTask
@@ -118,6 +120,17 @@ class HomeViewModel @Inject constructor(
         )
         viewModelScope.launch(Dispatchers.IO) {
             repo.toggleSubTask(subtask.subtaskId)
+        }
+    }
+
+    fun onSkipHabit(habitProgress : HabitProgress){
+        viewModelScope.launch(Dispatchers.IO){
+            repo.onSkipHabitProgress(progressId = habitProgress.progressId)
+        }
+    }
+    fun onDoneHabit(habitProgress : HabitProgress){
+        viewModelScope.launch(Dispatchers.IO){
+            repo.onDoneHabitProgress(progressId = habitProgress.progressId)
         }
     }
 }

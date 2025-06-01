@@ -29,5 +29,8 @@ interface HabitProgressDao {
     @Query("SELECT * FROM habit_progress WHERE date = :date ")
     fun getAllProgress(date: LocalDate): Flow<List<HabitProgressEntity>>
 
+    @Query("UPDATE habit_progress SET status = :status WHERE progressId = :progressId")
+    suspend fun onUpdateStatus(status : String,progressId: UUID)
+
 
 }
