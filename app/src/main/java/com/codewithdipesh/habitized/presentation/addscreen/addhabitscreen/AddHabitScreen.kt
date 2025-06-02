@@ -106,8 +106,9 @@ fun AddHabitScreen(
     }
 
     LaunchedEffect(Unit) {
-        val size = state.colorOptions.size
-        viewmodel.setColor(state.colorOptions[(0..(size-1)).random()])
+        val keys = state.colorOptions.keys.toList()
+        val color = keys.random()
+        viewmodel.setColor(state.colorOptions.get(color)!!)
     }
 
     LaunchedEffect(viewmodel.uiEvent) {
@@ -177,7 +178,7 @@ fun AddHabitScreen(
                     viewmodel.toggleColorOption()
                 },
                 sheetState = sheetstate,
-                selectedColor = state.color,
+                selectedColor = state.colorKey,
                 colors = state.colorOptions,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -323,7 +324,9 @@ fun AddHabitScreen(
                         modifier = modifier
                             .size(30.dp)
                             .clip(CircleShape)
-                            .background(colorResource(id = state.color))
+                            .background(
+                                colorResource(state.colorOptions.entries.first { it.value == state.colorKey }.key)
+                            )
                             .clickable{
                                 viewmodel.toggleColorOption()
                             }

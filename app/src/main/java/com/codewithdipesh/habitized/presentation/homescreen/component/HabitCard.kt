@@ -43,6 +43,7 @@ import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.SubTask
+import com.codewithdipesh.habitized.presentation.util.getColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
@@ -76,7 +77,9 @@ fun HabitCard(
                 onSkip = { onSkip(it)},
                 content = {
                     OneTimeHabit(habitWithProgress = habitWithProgress)
-                }
+                },
+                isReminder = habitWithProgress.habit.reminder_time != null,
+                height = 60
             )
         }
         HabitType.Session -> {
@@ -98,7 +101,7 @@ fun OneTimeHabit(
     habitWithProgress: HabitWithProgress
 ) {
     HabitElement(
-        color = colorResource(habitWithProgress.habit.color),
+        color = getColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time
     ){
         Row(
@@ -126,7 +129,7 @@ fun CountHabit(
     habitWithProgress: HabitWithProgress
 ) {
     HabitElement(
-        color = colorResource(habitWithProgress.habit.color),
+        color = getColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time
     ){
         Row(modifier = Modifier
@@ -212,7 +215,7 @@ fun DurationHabit(
     habitWithProgress: HabitWithProgress
 ) {
     HabitElement(
-        color = colorResource(habitWithProgress.habit.color),
+        color = getColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time
     ){
         Column(
@@ -287,7 +290,7 @@ fun SessionHabit(
     onToggle : (SubTask)->Unit = {},
 ) {
     HabitElement(
-        color = colorResource(habitWithProgress.habit.color),
+        color = getColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time
     ){
         Column(

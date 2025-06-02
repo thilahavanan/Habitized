@@ -22,7 +22,7 @@ data class HabitEntity(
     val daysOfMonth: String?, //"1,15,30"
     val reminder_time: LocalTime?,
     val is_active: Boolean,
-    val color :Int,
+    val colorKey :String,
     val countParam : String,
     val countTarget:Int? = null,
     val duration:String? = null,

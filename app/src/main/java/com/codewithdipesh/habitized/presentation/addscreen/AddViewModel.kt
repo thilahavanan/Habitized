@@ -53,7 +53,7 @@ class AddViewModel @Inject constructor(
                     daysOfMonth = _habitUiState.value.daysOfMonth,
                     reminder_time = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminder_time else null,
                     is_active = _habitUiState.value.is_active,
-                    color = _habitUiState.value.color,
+                    colorKey = _habitUiState.value.colorKey,
                     countParam = _habitUiState.value.countParam,
                     countTarget = _habitUiState.value.countTarget,
                     duration = LocalTime.of(
@@ -103,9 +103,9 @@ class AddViewModel @Inject constructor(
         )
     }
 
-    fun setColor(color: Int){
+    fun setColor(color: String){
         _habitUiState.value = _habitUiState.value.copy(
-            color = color
+            colorKey = color
         )
     }
 

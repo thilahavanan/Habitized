@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ColorChoserItem(
-    color : Int ,
+    color : Int,
     isSelected :  Boolean,
-    onClick : (Int) -> Unit,
+    onClick : () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -32,7 +32,7 @@ fun ColorChoserItem(
                 else Modifier
             )
             .clickable{
-                onClick(color)
+                onClick()
             }
     )
 

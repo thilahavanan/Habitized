@@ -7,8 +7,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -27,16 +31,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 @Composable
 fun <T> SwipeContainer(
     item: T,
+    isReminder : Boolean = false,
     onSkip: (T) -> Unit,
     onDone: (T) -> Unit,
     animationDuration: Int = 500,
-    content: @Composable (T) -> Unit
+    height : Int,
+    content: @Composable (T) -> Unit,
+    modifier : Modifier = Modifier
 ) {
 
     var isDone by remember {
@@ -86,27 +94,53 @@ fun <T> SwipeContainer(
         SwipeToDismissBox(
             state = state,
             backgroundContent = {
+                val color = if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                    Color.Red.copy(alpha = 0.2f)
+                } else if (state.dismissDirection == SwipeToDismissBoxValue.StartToEnd){
+                    Color.Green.copy(alpha = 0.2f)
+                }
+                else Color.Transparent
                 Row(
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
+                        .height(height.dp)
+                        .offset(
+                            y = if(isReminder) (22).dp else 0.dp
+                        )
                         .clip(shape = RoundedCornerShape(15.dp))
-                        .background(MaterialTheme.colorScheme.surface),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .background(color)
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement =
+                        if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                          Arrangement.End
+                        }else {
+                            Arrangement.Start
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector =  Icons.Default.Check,
-                        contentDescription = "Done",
-                        tint = Color.Green.copy(alpha = 0.5f)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Skip",
-                        tint = Color.Red.copy(alpha = 0.5f)
-                    )
+                    if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Skip",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    if (state.dismissDirection == SwipeToDismissBoxValue.StartToEnd){
+                        Icon(
+                            imageVector =  Icons.Default.Check,
+                            contentDescription = "Done",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             },
-            content = { content(item) }
+            content = {
+                Box(
+                    modifier = Modifier.graphicsLayer{alpha = 1f}
+                ){
+                    content(item)
+                }
+            }
         )
     }
 }

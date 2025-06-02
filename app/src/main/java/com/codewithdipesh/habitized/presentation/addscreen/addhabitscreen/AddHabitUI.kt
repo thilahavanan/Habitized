@@ -26,7 +26,7 @@ data class AddHabitUI(
     val daysOfMonth: List<Int> = emptyList(),
     val reminder_time: LocalTime? = LocalTime.now(),
     val is_active: Boolean = false,
-    @ColorRes val color : Int = R.color.primary,
+    val colorKey : String = "red",
     val countParam : CountParam? = CountParam.Glasses,
     val countTarget:Int? = null,
 
@@ -38,13 +38,13 @@ data class AddHabitUI(
     val isShowingParamOptions : Boolean = false,
     val isShowReminderTime : Boolean = false,
 
-    val colorOptions : List<Int> = listOf(
-        R.color.red,
-        R.color.blue,
-        R.color.green,
-        R.color.yellow,
-        R.color.purple,
-        R.color.see_green
+    val colorOptions : Map<Int,String> = mapOf(
+        R.color.red to "red",
+        R.color.blue to "blue",
+        R.color.green to "green",
+        R.color.yellow to "yellow",
+        R.color.purple to "purple",
+        R.color.see_green to "see_green"
     ),
     val colorOptionAvailable : Boolean = false
 )

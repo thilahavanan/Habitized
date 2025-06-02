@@ -6,6 +6,8 @@ import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.util.SingleString
+import com.codewithdipesh.habitized.presentation.util.toColor
+import com.codewithdipesh.habitized.presentation.util.toInt
 import com.codewithdipesh.habitized.presentation.util.toLocalTime
 import com.codewithdipesh.habitized.presentation.util.toWord
 import java.util.UUID
@@ -24,7 +26,7 @@ fun Habit.toEntity(): HabitEntity {
         daysOfMonth = days_of_Month,
         reminder_time = reminder_time,
         is_active = is_active,
-        color = color,
+        colorKey = colorKey,
         countParam = countParam.toString(),
         countTarget = countTarget,
         duration = duration?.SingleString()
@@ -44,7 +46,7 @@ fun HabitEntity.toHabit() : Habit {
         daysOfMonth = if(daysOfMonth != "") daysOfMonth?.split(",")?.map{it.toInt()} else null,
         reminder_time = reminder_time,
         is_active = is_active,
-        color = color,
+        colorKey = colorKey,
         countParam = CountParam.fromString(countParam),
         countTarget = countTarget,
         duration = duration?.toLocalTime()

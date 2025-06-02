@@ -22,7 +22,7 @@ data class Habit(
     val daysOfMonth: List<Int>? = null, //"1,15,30"
     val reminder_time: LocalTime?,
     val is_active: Boolean,
-    @ColorRes val color : Int,
+    val colorKey : String,
     val countParam : CountParam? = null,
     val countTarget:Int?,
     val duration: LocalTime?,

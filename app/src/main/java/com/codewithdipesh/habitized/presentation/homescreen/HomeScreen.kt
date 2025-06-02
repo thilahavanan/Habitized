@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -218,28 +219,34 @@ fun HomeScreen(
             //habits
 
             Column(modifier = Modifier.verticalScroll(
-                scrollState,
+                scrollState, 
                 flingBehavior = ScrollableDefaults.flingBehavior()
             )
             ) {
-                state.habitWithProgressList.filter { it.progress.status == Status.NotStarted }.forEach{ habit->
-                    HabitCard(
-                        habitWithProgress = habit,
-                        onSubTaskAdding = {
-                            showingSubtaskAdding = true
-                            habitForSubTaskAdding = it
-                        },
-                        onToggle = {
-                            viewmodel.toggleSubtask(it)
-                        },
-                        onSkip = {
-                            viewmodel.onSkipHabit(it.progress)
-                        },
-                        onDone = {
-                            viewmodel.onDoneHabit(it.progress)
-                        }
-                    )
-                    Spacer(Modifier.height(16.dp))
+                state.habitWithProgressList
+                    .filter { it.progress.status == Status.NotStarted }
+                    .forEach{ habit->
+                         key(habit.habit.habit_id){
+                             HabitCard(
+                                 habitWithProgress = habit,
+                                 onSubTaskAdding = {
+                                     showingSubtaskAdding = true
+                                     habitForSubTaskAdding = it
+                                 },
+                                 onToggle = {
+                                     viewmodel.toggleSubtask(it)
+                                 },
+                                 onSkip = {
+                                     viewmodel.onSkipHabit(it.progress)
+                                     viewmodel.loadHomePage(state.selectedDate)
+                                 },
+                                 onDone = {
+                                     viewmodel.onDoneHabit(it.progress)
+                                     viewmodel.loadHomePage(state.selectedDate)
+                                 }
+                             )
+                             Spacer(Modifier.height(16.dp))
+                         }
                 }
             }
 

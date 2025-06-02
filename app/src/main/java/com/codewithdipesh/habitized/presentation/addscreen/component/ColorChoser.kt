@@ -30,11 +30,11 @@ import com.codewithdipesh.habitized.ui.theme.regular
 @Composable
 fun ColorChoser(
     modifier: Modifier = Modifier,
-    onColorSelected: (Int) -> Unit,
+    onColorSelected: (String) -> Unit,
     onDismiss : ()->Unit,
     sheetState: SheetState,
-    selectedColor: Int,
-    colors: List<Int>
+    selectedColor: String,
+    colors: Map<Int,String>
 ){
 
     var choosedColor by remember {
@@ -65,10 +65,10 @@ fun ColorChoser(
             ) {
                 colors.forEach { color ->
                     ColorChoserItem(
-                        color = color,
-                        isSelected = color == choosedColor,
+                        color = color.key,
+                        isSelected = color.value == choosedColor,
                         onClick = {
-                            choosedColor = it
+                            choosedColor = colors.get(color.key)!!
                         }
                     )
                 }
