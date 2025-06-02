@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -57,7 +58,8 @@ fun HabitizedTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colors = when {
+    val colors = if(darkTheme) DarkCustomColors else LightCustomColors
+    val materialColors = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -67,9 +69,11 @@ fun HabitizedTheme(
         else -> LightColors
     }
 
-    MaterialTheme(
-        colorScheme = colors,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalCustomColors provides colors){
+        MaterialTheme(
+            colorScheme = materialColors,
+            typography = Typography,
+            content = content
+        )
+    }
 }
