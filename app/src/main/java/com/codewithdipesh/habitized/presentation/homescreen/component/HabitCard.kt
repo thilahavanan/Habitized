@@ -58,6 +58,7 @@ fun HabitCard(
     habitWithProgress: HabitWithProgress,
     onAddButton : () -> Unit = {},
     modifier: Modifier = Modifier,
+    onAddCounter : (HabitWithProgress) -> Unit = {},
     onDone : (HabitWithProgress) -> Unit = {},
     onSkip : (HabitWithProgress) -> Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
@@ -65,7 +66,12 @@ fun HabitCard(
 ){
     when(habitWithProgress.habit.type){
         HabitType.Count -> {
-            CountHabit(habitWithProgress = habitWithProgress)
+            CountHabit(
+                habitWithProgress = habitWithProgress,
+                onAddCounter = {
+                    onAddCounter(habitWithProgress)
+                }
+            )
         }
         HabitType.Duration -> {
             DurationHabit(habitWithProgress = habitWithProgress)
@@ -126,7 +132,8 @@ fun OneTimeHabit(
 @Composable
 fun CountHabit(
     modifier: Modifier = Modifier,
-    habitWithProgress: HabitWithProgress
+    habitWithProgress: HabitWithProgress,
+    onAddCounter : ()->Unit,
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
@@ -187,12 +194,13 @@ fun CountHabit(
                 Box(
                     modifier = Modifier
                         .size(30.dp)
+                        .clip(CircleShape)
                         .background(
                             color = MaterialTheme.colorScheme.inverseOnSurface,
                             shape = CircleShape
                         )
                         .clickable {
-                            //todo
+                            onAddCounter()
                         },
                     contentAlignment = Alignment.Center
                 ) {

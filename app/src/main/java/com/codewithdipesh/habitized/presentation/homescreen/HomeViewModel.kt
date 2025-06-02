@@ -133,4 +133,23 @@ class HomeViewModel @Inject constructor(
             repo.onDoneHabitProgress(progressId = habitProgress.progressId)
         }
     }
+
+    fun onUpdateCounter(count : Int,habitProgress: HabitProgress){
+        //local ui
+        val updatedList = _uiState.value.habitWithProgressList.map {habitWithProgress->
+            if(habitWithProgress.progress.progressId == habitProgress.progressId){
+                habitWithProgress.copy(progress = habitProgress.copy(currentCount = count))
+            }else{
+                habitWithProgress
+            }
+        }
+
+        _uiState.value = _uiState.value.copy(
+            habitWithProgressList = updatedList
+        )
+
+        viewModelScope.launch(Dispatchers.IO){
+            repo.onUpdateCounterHabitProgress(count,habitProgress.progressId)
+        }
+    }
 }

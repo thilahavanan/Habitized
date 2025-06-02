@@ -50,6 +50,7 @@ import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
+import com.codewithdipesh.habitized.presentation.homescreen.component.CountUpdater
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
 import com.codewithdipesh.habitized.presentation.homescreen.component.FloatingActionOptions
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
@@ -79,6 +80,9 @@ fun HomeScreen(
 
     var showingSubtaskAdding by remember { mutableStateOf(false) }
     var habitForSubTaskAdding by remember { mutableStateOf<HabitWithProgress?>(null) }
+
+    var showingCounter by remember { mutableStateOf(false) }
+    var habitForCounter by remember { mutableStateOf<HabitWithProgress?>(null) }
 
 
     LaunchedEffect(state.selectedDate) {
@@ -151,6 +155,20 @@ fun HomeScreen(
                     scope.launch{
                         viewmodel.addUpdateSubTasks(it,habitForSubTaskAdding!!.progress.progressId)
                         showingSubtaskAdding = false
+                    }
+
+                }
+            )
+        }
+
+        //counter habit
+        if(showingCounter && habitForCounter != null){
+            CountUpdater(
+                habitWithProgress = habitForCounter!!,
+                onUpdateCounter = {
+                    scope.launch{
+                        viewmodel.onUpdateCounter(it,habitForCounter!!.progress)
+                        showingCounter = false
                     }
 
                 }
@@ -243,6 +261,10 @@ fun HomeScreen(
                                  onDone = {
                                      viewmodel.onDoneHabit(it.progress)
                                      viewmodel.loadHomePage(state.selectedDate)
+                                 },
+                                 onAddCounter = {
+                                     showingCounter = true
+                                     habitForCounter = it
                                  }
                              )
                              Spacer(Modifier.height(16.dp))

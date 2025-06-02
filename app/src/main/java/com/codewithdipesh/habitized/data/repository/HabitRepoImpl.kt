@@ -118,6 +118,10 @@ class HabitRepoImpl(
         )
     }
 
+    override suspend fun onUpdateCounterHabitProgress(count:Int,progressId: UUID) {
+        habitProgressDao.onUpdateCount(count,progressId)
+    }
+
 
     override suspend fun addGoal(goal: Goal) {
         TODO("Not yet implemented")

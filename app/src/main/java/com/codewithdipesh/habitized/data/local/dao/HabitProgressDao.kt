@@ -32,5 +32,8 @@ interface HabitProgressDao {
     @Query("UPDATE habit_progress SET status = :status WHERE progressId = :progressId")
     suspend fun onUpdateStatus(status : String,progressId: UUID)
 
+    @Query("UPDATE habit_progress SET currentCount = :count WHERE progressId = :progressId")
+    suspend fun onUpdateCount(count : Int,progressId: UUID)
+
 
 }
