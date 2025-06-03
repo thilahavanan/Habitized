@@ -1,4 +1,5 @@
 package com.codewithdipesh.habitized.domain.repository
+import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
@@ -21,7 +22,7 @@ interface HabitRepository {
     suspend fun updateHabitProgress(progress: HabitProgress)
     suspend fun getHabitProgress(habitId: UUID, date: String): HabitProgress?
     suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>?
-    suspend fun addTodayHabitProgresses(date: LocalDate)
+    suspend fun addTodayHabitProgresses(habits : List<HabitEntity>,date : LocalDate)
     suspend fun onDoneHabitProgress(progressId: UUID)
     suspend fun onSkipHabitProgress(progressId: UUID)
     suspend fun onUpdateCounterHabitProgress(count :Int,progressId: UUID)

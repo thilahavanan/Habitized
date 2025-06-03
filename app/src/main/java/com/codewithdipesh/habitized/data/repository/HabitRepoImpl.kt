@@ -5,12 +5,14 @@ import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
+import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import com.codewithdipesh.habitized.data.local.entity.HabitProgressEntity
 import com.codewithdipesh.habitized.data.local.mapper.toEntity
 import com.codewithdipesh.habitized.data.local.mapper.toHabit
 import com.codewithdipesh.habitized.data.local.mapper.toHabitProgress
 import com.codewithdipesh.habitized.data.local.mapper.toOneTimeTask
 import com.codewithdipesh.habitized.data.local.mapper.toSubTask
+import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
@@ -20,6 +22,8 @@ import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
+import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
+import com.codewithdipesh.habitized.presentation.util.getWeekDayIndex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -82,8 +86,7 @@ class HabitRepoImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addTodayHabitProgresses(date: LocalDate) {
-        val habits = habitDao.getHabitsForTheDay(date)
+    override suspend fun addTodayHabitProgresses(habits : List<HabitEntity>,date: LocalDate) {
         habits.forEach { habit->
             habitProgressDao.insertProgress(
                 HabitProgressEntity(
@@ -175,9 +178,18 @@ class HabitRepoImpl(
 
 
     override suspend fun getHabitsForDay(date: LocalDate): List<HabitWithProgress> {
-        val habits = habitDao.getHabitsForTheDay(date)
+        var habits = habitDao.getHabitsForTheDay(date)
+        //filtering all habits for weekday wise and then monthday wise
+        habits = habits
+            .filter{ _habit ->
+                _habit.toHabit().daysOfMonth?.contains(date.dayOfMonth) == true || //for days of month
+                _habit.toHabit().days_of_week.get(getWeekDayIndex(date.dayOfWeek)) == 1 || //for weekdays( e.g :- only sunday,wed)
+                _habit.frequency == Frequency.Daily.toString() //all others havig daily frequency
+            }
+        //create all the progress
+        addTodayHabitProgresses(habits,date)
+
         return habits.map { habit ->
-            addTodayHabitProgresses(date)//create all the progress
             val progress = habitProgressDao.getHabitProgressOfTheDay(habit.habit_id, date)
             val subtasks = if (progress != null) {
                 subtaskDao.getSubtasksByHabitProgressId(progress.progressId)?.map { it.toSubTask() } ?: emptyList()

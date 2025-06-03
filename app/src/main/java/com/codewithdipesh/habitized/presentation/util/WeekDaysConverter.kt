@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.text.util.LocalePreferences
 import com.codewithdipesh.habitized.domain.model.Frequency
+import java.time.DayOfWeek
 
 
 fun IntToWeekDayMap(days: List<Int>): Map<Days, Boolean> {
@@ -23,6 +24,18 @@ fun WeekDayMapToInt(days: Map<Days, Boolean>): List<Int> {
         ans.add(if (days[day] == true) 1 else 0)
     }
     return ans
+}
+
+fun getWeekDayIndex(dayOfWeek: DayOfWeek) : Int{
+    return when(dayOfWeek){
+        DayOfWeek.MONDAY -> 0
+        DayOfWeek.TUESDAY -> 1
+        DayOfWeek.WEDNESDAY -> 2
+        DayOfWeek.THURSDAY -> 3
+        DayOfWeek.FRIDAY -> 4
+        DayOfWeek.SATURDAY -> 5
+        DayOfWeek.SUNDAY -> 6
+    }
 }
 
 enum class Days {
