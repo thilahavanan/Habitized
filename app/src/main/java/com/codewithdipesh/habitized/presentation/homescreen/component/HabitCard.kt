@@ -42,7 +42,6 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
-import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.util.getColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
@@ -62,7 +61,6 @@ fun HabitCard(
     onAddCounter : (HabitWithProgress) -> Unit = {},
     onDone : (HabitWithProgress) -> Unit = {},
     onSkip : (HabitWithProgress) -> Unit = {},
-    onUnSkip : (HabitWithProgress) -> Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
     onToggle : (SubTask)-> Unit
 ){
@@ -83,7 +81,6 @@ fun HabitCard(
                 item = habitWithProgress,
                 onDone = { onDone(it)},
                 onSkip = { onSkip(it)},
-                onUnSkipDone = {onUnSkip(it)},
                 content = {
                     OneTimeHabit(habitWithProgress = habitWithProgress)
                 },
@@ -111,8 +108,7 @@ fun OneTimeHabit(
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        reminder = habitWithProgress.habit.reminder_time
     ){
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -123,8 +119,7 @@ fun OneTimeHabit(
             Text(
                 text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.scrim,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -142,8 +137,7 @@ fun CountHabit(
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        reminder = habitWithProgress.habit.reminder_time
     ){
         Row(modifier = Modifier
             .fillMaxWidth(),
@@ -154,8 +148,7 @@ fun CountHabit(
             Text(
                 text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.scrim,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -179,8 +172,7 @@ fun CountHabit(
                         text = "${habitWithProgress.progress.currentCount}/"+
                                 "${habitWithProgress.progress.targetCount}",
                         style = TextStyle(
-                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.scrim,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
@@ -190,8 +182,7 @@ fun CountHabit(
                     Text(
                         text = habitWithProgress.progress.countParam.displayName,
                         style = TextStyle(
-                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.scrim,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -205,8 +196,7 @@ fun CountHabit(
                         .size(30.dp)
                         .clip(CircleShape)
                         .background(
-                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.inverseOnSurface
-                            else MaterialTheme.colorScheme.scrim,
+                            color = MaterialTheme.colorScheme.inverseOnSurface,
                             shape = CircleShape
                         )
                         .clickable {
@@ -215,8 +205,7 @@ fun CountHabit(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = if(habitWithProgress.progress.status == Status.NotStarted) painterResource(R.drawable.add)
-                        else painterResource(R.drawable.tick_small),
+                        painter = painterResource(R.drawable.add),
                         contentDescription = "add ${habitWithProgress.habit.title}",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
@@ -235,8 +224,7 @@ fun DurationHabit(
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        reminder = habitWithProgress.habit.reminder_time
     ){
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -259,11 +247,9 @@ fun DurationHabit(
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = if(habitWithProgress.progress.status != Status.NotStarted) "Start"
-                        else "Finished",
+                        text = "Start",
                         style = TextStyle(
-                            color = if(habitWithProgress.progress.status != Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.scrim,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = ndot,
                             fontSize = 12.sp
                         )
@@ -272,8 +258,7 @@ fun DurationHabit(
 
                 VerticalDivider(
                     thickness = 1.dp,
-                    color = if(habitWithProgress.progress.status != Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.scrim,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.height(18.dp)
                 )
 
@@ -314,8 +299,7 @@ fun SessionHabit(
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        reminder = habitWithProgress.habit.reminder_time
     ){
         Column(
             modifier = Modifier.fillMaxWidth(),

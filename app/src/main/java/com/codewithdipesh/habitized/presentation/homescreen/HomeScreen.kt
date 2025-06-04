@@ -55,7 +55,6 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
 import com.codewithdipesh.habitized.presentation.homescreen.component.FloatingActionOptions
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
-import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertDialog
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.ndot
 import kotlinx.coroutines.delay
@@ -84,9 +83,6 @@ fun HomeScreen(
 
     var showingCounter by remember { mutableStateOf(false) }
     var habitForCounter by remember { mutableStateOf<HabitWithProgress?>(null) }
-
-    var showingSkipAlert by remember { mutableStateOf(false) }
-    var habitForShowingAlert by remember { mutableStateOf<HabitWithProgress?>(null) }
 
 
     LaunchedEffect(state.selectedDate) {
@@ -155,6 +151,7 @@ fun HomeScreen(
             AddSubTask(
                 habitWithProgress = habitForSubTaskAdding!!,
                 onUpdateSubTask = {
+                    //todo change in room
                     scope.launch{
                         viewmodel.addUpdateSubTasks(it,habitForSubTaskAdding!!.progress.progressId)
                         showingSubtaskAdding = false
@@ -174,19 +171,6 @@ fun HomeScreen(
                         showingCounter = false
                     }
 
-                }
-            )
-        }
-        //for skipping alert of one time ha it
-        if(showingSkipAlert && habitForShowingAlert != null){
-            SkipAlertDialog(
-                habitWithProgress = habitForShowingAlert!!,
-                onDismiss = {
-                    showingSkipAlert = false
-                },
-                onConfirm = {
-                    viewmodel.onSkipHabit(it.progress)
-                    viewmodel.loadHomePage(state.selectedDate)
                 }
             )
         }
@@ -257,7 +241,6 @@ fun HomeScreen(
                 flingBehavior = ScrollableDefaults.flingBehavior()
             )
             ) {
-                //no started / ongoing
                 state.habitWithProgressList
                     .filter { it.progress.status == Status.NotStarted }
                     .forEach{ habit->
@@ -272,8 +255,8 @@ fun HomeScreen(
                                      viewmodel.toggleSubtask(it)
                                  },
                                  onSkip = {
-                                     showingSkipAlert = true
-                                     habitForShowingAlert = it
+                                     viewmodel.onSkipHabit(it.progress)
+                                     viewmodel.loadHomePage(state.selectedDate)
                                  },
                                  onDone = {
                                      viewmodel.onDoneHabit(it.progress)
@@ -287,32 +270,6 @@ fun HomeScreen(
                              Spacer(Modifier.height(16.dp))
                          }
                 }
-                //finished or skipped //todo
-                state.habitWithProgressList
-                    .filter { it.progress.status != Status.NotStarted }
-                    .forEach{ habit->
-                        key(habit.habit.habit_id){
-                            HabitCard(
-                                habitWithProgress = habit,
-                                onSubTaskAdding = {
-                                    showingSubtaskAdding = true
-                                    habitForSubTaskAdding = it
-                                },
-                                onToggle = {
-                                    viewmodel.toggleSubtask(it)
-                                },
-                                onUnSkip = {
-                                    viewmodel.onUnSkipDoneHabit(it.progress)
-                                    viewmodel.loadHomePage(state.selectedDate)
-                                },
-                                onAddCounter = {
-                                    showingCounter = true
-                                    habitForCounter = it
-                                }
-                            )
-                            Spacer(Modifier.height(16.dp))
-                        }
-                    }
             }
 
         }

@@ -121,13 +121,6 @@ class HabitRepoImpl(
         )
     }
 
-    override suspend fun onNotStartedHabitProgress(progressId: UUID) {
-        habitProgressDao.onUpdateStatus(
-            status = Status.NotStarted.toString(),
-            progressId = progressId
-        )
-    }
-
     override suspend fun onUpdateCounterHabitProgress(count:Int,progressId: UUID) {
         habitProgressDao.onUpdateCount(count,progressId)
     }

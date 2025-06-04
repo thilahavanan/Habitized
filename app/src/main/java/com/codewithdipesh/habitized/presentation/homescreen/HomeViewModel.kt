@@ -8,7 +8,6 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
-import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -134,25 +133,12 @@ class HomeViewModel @Inject constructor(
             repo.onDoneHabitProgress(progressId = habitProgress.progressId)
         }
     }
-    fun onUnSkipDoneHabit(habitProgress : HabitProgress){
-        viewModelScope.launch(Dispatchers.IO){
-            repo.onNotStartedHabitProgress(progressId = habitProgress.progressId)
-        }
-    }
 
     fun onUpdateCounter(count : Int,habitProgress: HabitProgress){
         //local ui
-        val ifDone = count >= (habitProgress.targetCount ?: 0)
-        val prevStatus = habitProgress.status
         val updatedList = _uiState.value.habitWithProgressList.map {habitWithProgress->
             if(habitWithProgress.progress.progressId == habitProgress.progressId){
-                habitWithProgress.copy(
-                    progress = habitProgress.copy(
-                        currentCount = count,
-                        status = if(ifDone) Status.Done
-                                 else Status.NotStarted
-                    )
-                )
+                habitWithProgress.copy(progress = habitProgress.copy(currentCount = count))
             }else{
                 habitWithProgress
             }
@@ -161,17 +147,9 @@ class HomeViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(
             habitWithProgressList = updatedList
         )
+
         viewModelScope.launch(Dispatchers.IO){
             repo.onUpdateCounterHabitProgress(count,habitProgress.progressId)
         }
-        if(ifDone) {
-            onDoneHabit(habitProgress)
-        }
-        else{//update only if prev was done -> then change to not started
-            if(prevStatus != Status.NotStarted){
-                onUnSkipDoneHabit(habitProgress)
-            }
-        }
-
     }
 }
