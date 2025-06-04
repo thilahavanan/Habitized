@@ -30,7 +30,8 @@ private val DarkColors = darkColorScheme(
     inverseOnSurface = Color.Black,
     surfaceContainerHigh = Color(0xFF4E4E4E),
     surfaceDim = Color.White,
-    outlineVariant = Color.Black
+    outlineVariant = Color.Black,
+    scrim = Color(0XFF7C7878)
 )
 
 private val LightColors = lightColorScheme(
@@ -48,7 +49,8 @@ private val LightColors = lightColorScheme(
     inverseOnSurface = Color.White,
     surfaceContainerHigh = Color(0xFFC7C7C7),
     surfaceDim = Color(0xFF7C7878),
-    outlineVariant = Color.Black
+    outlineVariant = Color.Black,
+    scrim = Color(0XFF969696)
 )
 
 @Composable
