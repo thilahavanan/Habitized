@@ -36,6 +36,7 @@ fun HabitElement(
     modifier: Modifier = Modifier,
     reminder : LocalTime? = null,
     color : androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondary,
+    isDone : Boolean = false,
     element : @Composable () -> Unit,
 ) {
 
@@ -55,7 +56,8 @@ fun HabitElement(
                 Icon(
                     painter = painterResource(R.drawable.clock),
                     contentDescription = "reminder",
-                    tint = MaterialTheme.colorScheme.surfaceDim
+                    tint = if(!isDone) MaterialTheme.colorScheme.surfaceDim
+                    else MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.4f)
                 )
                 //time
                 Text(
@@ -63,7 +65,8 @@ fun HabitElement(
                         DateTimeFormatter.ofPattern("hh:mm a")
                     ),
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = if(!isDone) MaterialTheme.colorScheme.surfaceDim
+                        else MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.4f),
                         fontFamily = ndot,
                         fontSize = 12.sp
                     )
@@ -77,6 +80,10 @@ fun HabitElement(
                 .wrapContentHeight()
                 .clip(shape = RoundedCornerShape(15.dp))
                 .background(color)
+                .then(
+                    if(isDone) Modifier.background(MaterialTheme.colorScheme.background.copy(0.3f))
+                    else Modifier
+                )
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ){

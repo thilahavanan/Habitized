@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SwipeToDismissBox
@@ -33,25 +34,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.Status
 import kotlinx.coroutines.delay
 
 @Composable
-fun <T> SwipeContainer(
-    item: T,
+fun SwipeContainer(
+    item: HabitWithProgress,
     isReminder : Boolean = false,
-    onSkip: (T) -> Unit,
-    onDone: (T) -> Unit,
+    onSkip: (HabitWithProgress) -> Unit,
+    onDone: (HabitWithProgress) -> Unit,
+    onUnSkipDone: (HabitWithProgress) -> Unit,
     animationDuration: Int = 500,
     height : Int,
-    content: @Composable (T) -> Unit,
+    content: @Composable (HabitWithProgress) -> Unit,
     modifier : Modifier = Modifier
 ) {
 
     var isDone by remember {
         mutableStateOf(false)
     }
-
     var isSkipped by remember {
+        mutableStateOf(false)
+    }
+    var isUnSkipped by remember {
         mutableStateOf(false)
     }
 
@@ -59,10 +65,15 @@ fun <T> SwipeContainer(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
                 isSkipped = true
-                true
+                false
             }else if(value == SwipeToDismissBoxValue.StartToEnd){
-                isDone = true
-                true
+                if(item.progress.status == Status.NotStarted){
+                    isDone = true
+                    true
+                }else{
+                    isUnSkipped = true
+                    true
+                }
             }
             else {
                 false
@@ -78,14 +89,19 @@ fun <T> SwipeContainer(
     }
 
     LaunchedEffect(isSkipped) {
-        if(isSkipped) {
-            delay(animationDuration.toLong())
+        if(isSkipped) { //show the alertbox
             onSkip(item)
+        }
+    }
+    LaunchedEffect(isUnSkipped) {
+        if(isUnSkipped){
+            delay(animationDuration.toLong())
+            onUnSkipDone(item)
         }
     }
 
     AnimatedVisibility(
-        visible = !(isDone || isSkipped),
+        visible = !(isDone || isUnSkipped),
         exit = shrinkVertically(
             animationSpec = tween(durationMillis = animationDuration),
             shrinkTowards = Alignment.Top
@@ -93,6 +109,7 @@ fun <T> SwipeContainer(
     ) {
         SwipeToDismissBox(
             state = state,
+            enableDismissFromEndToStart = (item.progress.status == Status.NotStarted),
             backgroundContent = {
                 val color = if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
                     Color.Red.copy(alpha = 0.2f)
@@ -118,19 +135,44 @@ fun <T> SwipeContainer(
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Skip",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                    if(item.progress.status == Status.NotStarted){ //show only for undone tasks
+                        if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Skip",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
+                    //show for both
                     if (state.dismissDirection == SwipeToDismissBoxValue.StartToEnd){
-                        Icon(
-                            imageVector =  Icons.Default.Check,
-                            contentDescription = "Done",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                        //tick when its not started/undone
+                        //unskip when skipped
+                        //undone when done
+                        when(item.progress.status){
+                            Status.Cancelled -> {
+                                Icon(
+                                    imageVector =  Icons.Default.Refresh,
+                                    contentDescription = "UnSkip",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                            Status.Done -> {
+                                Icon(
+                                    imageVector =  Icons.Default.Refresh,
+                                    contentDescription = "UnDone",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                            Status.NotStarted -> {
+                                Icon(
+                                    imageVector =  Icons.Default.Check,
+                                    contentDescription = "Done",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+
                     }
                 }
             },

@@ -25,6 +25,7 @@ interface HabitRepository {
     suspend fun addTodayHabitProgresses(habits : List<HabitEntity>,date : LocalDate)
     suspend fun onDoneHabitProgress(progressId: UUID)
     suspend fun onSkipHabitProgress(progressId: UUID)
+    suspend fun onNotStartedHabitProgress(progressId: UUID)
     suspend fun onUpdateCounterHabitProgress(count :Int,progressId: UUID)
 
     // Goals
