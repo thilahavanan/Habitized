@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -15,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,7 @@ fun SkipAlertDialog(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 18.sp
                 )
             )
         },
@@ -52,12 +54,9 @@ fun SkipAlertDialog(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    letterSpacing = TextUnit(
-                        value = 0.5f,
-                        type = TextUnitType.Sp
-                    )
-                )
+                    fontSize = 14.sp
+                ),
+                modifier = Modifier.padding(vertical = 16.dp)
             )
         },
         onDismissRequest = {
@@ -77,11 +76,12 @@ fun SkipAlertDialog(
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.inverseOnSurface,
                         fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     ),
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .width(90.dp)
+                        .width(80.dp)
                 )
             }
         },
@@ -97,9 +97,10 @@ fun SkipAlertDialog(
                     style = TextStyle(
                         color = Color.Red,
                         fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     ),
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .width(70.dp)
                 )
