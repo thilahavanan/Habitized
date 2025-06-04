@@ -67,9 +67,8 @@ import com.codewithdipesh.habitized.ui.theme.regular
 import org.w3c.dom.Text
 
 @Composable
-fun BottomNavBar(
+fun  BottomNavBar(
     selectedScreen: Screen,
-    isShowingAddOption: Boolean,
     onAddClick: () -> Unit = {},
     onNavigate: (Screen) -> Unit = {},
     modifier : Modifier = Modifier
@@ -78,7 +77,6 @@ fun BottomNavBar(
         modifier = modifier
             .fillMaxWidth()
             .height(90.dp)
-            .then(if (isShowingAddOption) Modifier.blur(16.dp) else Modifier)
     ) {
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.background,

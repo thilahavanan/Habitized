@@ -49,10 +49,10 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
+import com.codewithdipesh.habitized.presentation.homescreen.component.AddingOption
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
 import com.codewithdipesh.habitized.presentation.homescreen.component.CountUpdater
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
-import com.codewithdipesh.habitized.presentation.homescreen.component.FloatingActionOptions
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
 import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertDialog
@@ -135,10 +135,14 @@ fun HomeScreen(
                     )
                 }
             }
-        },
-        floatingActionButton = {
-            FloatingActionOptions(
-                showOptions = showAddingOptions,
+        }
+    ){innerPadding->
+        //adding option
+        if(showAddingOptions){
+            AddingOption(
+                onDismiss = {
+                    showAddingOptions = false
+                },
                 onAddHabitClicked = {
                     navController.navigate(Screen.AddHabit.createRoute(state.selectedDate))
                 },
@@ -146,10 +150,7 @@ fun HomeScreen(
                     navController.navigate(Screen.AddGoal.route)
                 }
             )
-        },
-        floatingActionButtonPosition = FabPosition.Center
-    ){innerPadding->
-
+        }
         //session habit
         if(showingSubtaskAdding && habitForSubTaskAdding != null){
             AddSubTask(
@@ -194,10 +195,6 @@ fun HomeScreen(
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
-            .then(
-                if(showAddingOptions) Modifier.blur(16.dp)
-                 else Modifier
-            )
             .padding(horizontal = 16.dp)
             .padding(bottom = 80.dp)
         ){
@@ -316,10 +313,10 @@ fun HomeScreen(
             }
 
         }
-        //date picker
+
         Box(modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopStart
-        ){
+        ){  //date picker
             Box(
                modifier =  Modifier.padding(top = 120.dp)
             ){
@@ -345,7 +342,6 @@ fun HomeScreen(
             ){
                 BottomNavBar(
                     selectedScreen = Screen.Home,
-                    isShowingAddOption = showAddingOptions,
                     onAddClick = {showAddingOptions= !showAddingOptions}
                 )
             }
