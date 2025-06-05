@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.addscreen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,7 +50,8 @@ class AddViewModel @Inject constructor(
                     goal_id = _habitUiState.value.goal_id,
                     start_date = date,
                     frequency = _habitUiState.value.frequency,
-                    days_of_week = WeekDayMapToInt( _habitUiState.value.days_of_week),
+                    days_of_week = if( _habitUiState.value.frequency == Frequency.Weekly) WeekDayMapToInt( _habitUiState.value.days_of_week)
+                                   else mutableListOf(0,0,0,0,0,0,0),
                     daysOfMonth = _habitUiState.value.daysOfMonth,
                     reminder_time = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminder_time else null,
                     is_active = _habitUiState.value.is_active,
@@ -168,7 +170,6 @@ class AddViewModel @Inject constructor(
         }else{
             currentList.add(day)
         }
-
         _habitUiState.value = _habitUiState.value.copy(
             daysOfMonth = currentList
         )

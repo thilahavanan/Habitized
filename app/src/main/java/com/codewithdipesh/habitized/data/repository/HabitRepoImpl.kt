@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.data.repository
 
+import android.util.Log
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
 import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
@@ -191,7 +192,7 @@ class HabitRepoImpl(
             .filter{ _habit ->
                 _habit.toHabit().daysOfMonth?.contains(date.dayOfMonth) == true || //for days of month
                 _habit.toHabit().days_of_week.get(getWeekDayIndex(date.dayOfWeek)) == 1 || //for weekdays( e.g :- only sunday,wed)
-                _habit.frequency == Frequency.Daily.toString() //all others havig daily frequency
+                _habit.frequency == Frequency.Daily.toString() //all others habit daily frequency
             }
         //create all the progress
         addTodayHabitProgresses(habits,date)
