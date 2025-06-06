@@ -16,7 +16,7 @@ data class HabitProgress(
     val countParam: CountParam,
     val currentCount: Int? = null, //count
     val targetCount: Int? = null,
-    val targetDurationValue: String? = null,
+    val targetDurationValue: LocalTime? = null,
     val currentSessionNumber: Int? = null,  // For session-based habits like Pomodoro
     val targetSessionNumber: Int? = null,
     //2 session 25 minute -> targetSession = 2, currentSession = 0 ,targetDuration=25 minute

@@ -15,7 +15,7 @@ interface HabitDao {
     suspend fun insertHabit(habit: HabitEntity)
 
     @Query("SELECT * FROM habits WHERE habit_id = :habitId")
-    suspend fun getHabitById(habitId: UUID): HabitEntity?
+    suspend fun getHabitById(habitId: UUID): HabitEntity
 
     @Query("SELECT * FROM habits")
     fun getAllHabits(): Flow<List<HabitEntity>>

@@ -83,6 +83,16 @@ class HabitRepoImpl(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getHabitProgressById(habitProgressId: UUID): HabitWithProgress {
+        val response =  habitProgressDao.getHabitProgressById(habitProgressId)
+        val habit = habitDao.getHabitById(response.habitId)
+        return HabitWithProgress(
+            habit = habit.toHabit(),
+            progress = response.toHabitProgress(),
+            date = response.date
+        )
+    }
+
     override suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>? {
         TODO("Not yet implemented")
     }

@@ -8,6 +8,8 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.Status
+import com.codewithdipesh.habitized.presentation.util.SingleString
+import com.codewithdipesh.habitized.presentation.util.toLocalTime
 
 fun HabitProgress.toEntity(): HabitProgressEntity {
     return HabitProgressEntity(
@@ -18,7 +20,7 @@ fun HabitProgress.toEntity(): HabitProgressEntity {
         countParam = countParam.toString(),
         currentCount = currentCount,
         targetCount = targetCount,
-        targetDurationValue = targetDurationValue,
+        targetDurationValue = targetDurationValue?.SingleString(),
         currentSessionNumber = currentSessionNumber,
         targetSessionNumber = targetSessionNumber,
         status = status.toString(),
@@ -37,7 +39,7 @@ fun HabitProgressEntity.toHabitProgress(): HabitProgress {
         countParam = CountParam.fromString(countParam),
         currentCount = currentCount,
         targetCount = targetCount,
-        targetDurationValue = targetDurationValue,
+        targetDurationValue = targetDurationValue?.toLocalTime(),
         currentSessionNumber = currentSessionNumber,
         targetSessionNumber = targetSessionNumber,
         status = Status.fromString(status),

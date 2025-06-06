@@ -63,6 +63,7 @@ fun HabitCard(
     onDone : (HabitWithProgress) -> Unit = {},
     onSkip : (HabitWithProgress) -> Unit = {},
     onUnSkip : (HabitWithProgress) -> Unit = {},
+    onStartDuration : (HabitWithProgress)-> Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
     onToggle : (SubTask)-> Unit
 ){
@@ -76,7 +77,12 @@ fun HabitCard(
             )
         }
         HabitType.Duration -> {
-            DurationHabit(habitWithProgress = habitWithProgress)
+            DurationHabit(
+                habitWithProgress = habitWithProgress,
+                onStart = {
+                    onStartDuration(it)
+                }
+            )
         }
         HabitType.OneTime ->{
             SwipeContainer(
@@ -231,7 +237,8 @@ fun CountHabit(
 @Composable
 fun DurationHabit(
     modifier: Modifier = Modifier,
-    habitWithProgress: HabitWithProgress
+    habitWithProgress: HabitWithProgress,
+    onStart : (HabitWithProgress) ->Unit,
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
@@ -254,16 +261,16 @@ fun DurationHabit(
                        .clip(RoundedCornerShape(10.dp))
                        .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
                        .clickable{
-                          //todo
+                          onStart(habitWithProgress)
                        },
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = if(habitWithProgress.progress.status != Status.NotStarted) "Start"
+                        text = if(habitWithProgress.progress.status == Status.NotStarted) "Start"
                         else "Finished",
                         style = TextStyle(
                             color = if(habitWithProgress.progress.status != Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.scrim,
+                            else MaterialTheme.colorScheme.onPrimary,
                             fontFamily = ndot,
                             fontSize = 12.sp
                         )
@@ -273,7 +280,7 @@ fun DurationHabit(
                 VerticalDivider(
                     thickness = 1.dp,
                     color = if(habitWithProgress.progress.status != Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.scrim,
+                    else MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.height(18.dp)
                 )
 

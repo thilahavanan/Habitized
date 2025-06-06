@@ -279,6 +279,9 @@ fun HomeScreen(
                                  onAddCounter = {
                                      showingCounter = true
                                      habitForCounter = it
+                                 },
+                                 onStartDuration = {
+                                     navController.navigate(Screen.DurationScreen.createRoute(it))
                                  }
                              )
                              Spacer(Modifier.height(16.dp))
