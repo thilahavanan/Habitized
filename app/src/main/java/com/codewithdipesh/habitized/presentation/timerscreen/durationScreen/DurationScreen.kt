@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,8 +56,15 @@ fun DurationScreen(
     viewmodel: DurationViewModel,
     navController: NavController
 ){
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     val state by viewmodel.state.collectAsState()
-    val height = LocalConfiguration.current.screenHeightDp
+
+    BackHandler {
+        viewmodel.clearUi()
+        navController.navigateUp()
+    }
 
     LaunchedEffect(Unit) {
         viewmodel.init(habitProgressId)
@@ -63,7 +73,10 @@ fun DurationScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AddScreenTopBar(
-                onBackClick = {navController.navigateUp()},
+                onBackClick = {
+                    viewmodel.clearUi()
+                    navController.navigateUp()
+                },
                 icon = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
@@ -98,33 +111,52 @@ fun DurationScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ){
-            if(state.timerState != TimerState.Not_Started){
-                Text(
-                    text = targetDurationValue.toWord(),
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Light,
-                        fontSize = 14.sp
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 48.dp, vertical = 8.dp),
-                    textAlign = TextAlign.Start
-                )
-            }
-            Spacer(Modifier.height((height * 0.3).dp))
-            TimerElement(
-                duration = targetDurationValue,
-                onPause = {
-                    if(state.timerState != TimerState.Resumed){
-                        viewmodel.resumeTimer()
-                    }else{
-                        viewmodel.pauseTimer()
-                    }
+
+            Box(Modifier.fillMaxSize()){
+                //the target
+                Box(
+                    Modifier.align(Alignment.TopStart)
+                ){
+                    if(state.timerState != TimerState.Not_Started){
+                    Text(
+                        text = targetDurationValue.toWord(),
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 48.dp, vertical = 8.dp),
+                        textAlign = TextAlign.Start
+                    )
+                   }
                 }
-            )
-            Spacer(Modifier.weight(0.3f))
+                //timer alignment
+                Box(
+                    Modifier.align(Alignment.Center)
+                ){
+                    TimerElement(
+                        duration = targetDurationValue,
+                        onStart = {
+                            viewmodel.startTimer(
+                                context = context,
+                                totalSeconds = it
+                            )
+                        },
+                        onPause = {
+                            if(state.timerState != TimerState.Resumed){
+                                viewmodel.resumeTimer()
+                            }else{
+                                viewmodel.pauseTimer()
+                            }
+                        }
+                    )
+                }
+            }
+
+
         }
     }
     

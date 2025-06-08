@@ -1,9 +1,15 @@
 package com.codewithdipesh.habitized.presentation.timerscreen.elements
 
-import androidx.compose.animation.AnimatedContent
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
+import android.os.IBinder
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -22,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,69 +36,84 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.data.services.TimerService
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
-import kotlinx.coroutines.delay
 import java.time.LocalTime
-import kotlin.math.tan
 
 @Composable
 fun TimerElement(
     duration : LocalTime,
+    onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
     onFinish : () ->Unit = {},
     modifier: Modifier = Modifier
 ){
-    var second by remember{
-        mutableStateOf(duration.second)
-    }
-    var minute by remember{
-        mutableStateOf(duration.minute)
-    }
-    var hour by remember{
-        mutableStateOf(duration.hour)
-    }
-    //how many time hour will change like if 4 then 4 times
-    val hourTimes = duration.hour
-    val minuteTimes = (hourTimes * 60) + duration.minute
-    val secondTimes = (minuteTimes * 60) + duration.second
+    val context = LocalContext.current
+    var timerService: TimerService? = null
+    var isBound = false
 
-    var count by remember {
-        mutableStateOf(0)
+    var second by remember{ mutableStateOf(duration.second) }
+    var minute by remember{ mutableStateOf(duration.minute) }
+    var hour by remember{ mutableStateOf(duration.hour) }
+
+    var secondTimes by remember(hour,minute,second){
+        mutableStateOf(
+            (hour * 3600) + (minute *60) + second
+        )
     }
 
-    var resumed by remember {
-        mutableStateOf(false)
-    }
-    var start by remember {
-        mutableStateOf(false)
-    }
+    var resumed by remember { mutableStateOf(false) }
+    var start by remember { mutableStateOf(false) }
 
-    LaunchedEffect(resumed) {
-        if(resumed){
-            while (count < secondTimes && resumed){
-                delay(1000)
-                if(second == 0){
-                    second = 59
-                    if(hourTimes > 0 && minute == 0){
-                        minute = 59
-                        hour--
-                    }else{
-                        minute--
+    DisposableEffect(Unit){
+        val connection = object : ServiceConnection {
+            override fun onServiceConnected(className: ComponentName, service: IBinder) {
+                val binder = service as TimerService.TimerBind
+                timerService = binder.getService()
+                isBound = true
+
+                // Set callback
+                timerService?.setTimerCallback(object : TimerService.TimerCallback {
+                    override fun onTimerUpdate(h: Int, m: Int, s: Int) {
+                        // This runs on the service thread, post to main thread
+                        hour = h
+                        minute = m
+                        second = s
                     }
-                }else{
-                    second--
-                }
-                count++
+
+                    override fun onTimerFinished() {
+                        //
+                    }
+                })
+            }
+
+            override fun onServiceDisconnected(arg0: ComponentName) {
+                timerService = null
+                isBound = false
+            }
+        }
+
+        Intent(context, TimerService::class.java).also { intent ->
+            context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+
+        onDispose {
+            if (isBound) {
+                context.unbindService(connection)
+                isBound = false
             }
         }
     }
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -170,7 +191,7 @@ fun TimerElement(
         //progress
         Spacer(Modifier.height(24.dp))
         TimerProgressBar(
-            progress = count.toFloat(),
+            progress = secondTimes.toFloat() - ((hour * 3600) + (minute *60) + second).toFloat(),
             total = secondTimes.toFloat(),
             modifier = Modifier.padding(horizontal = 40.dp)
         )
@@ -182,9 +203,13 @@ fun TimerElement(
                 .clip(RoundedCornerShape(15.dp))
                 .background(MaterialTheme.colorScheme.onPrimary)
                 .clickable{
-                    resumed = !resumed
-                    if(!start) start = true
-                    onPause()
+//                    resumed = !resumed
+//                    if(!start) start = true
+//                    onPause()
+                    if(!start){
+                        onStart(secondTimes)
+                        start = true
+                    }
                 },
             contentAlignment = Alignment.Center
         ){
@@ -224,32 +249,34 @@ fun TimerElement(
         }
         Spacer(Modifier.height(8.dp))
         //retry
-        if(start){Row(
-            modifier = Modifier.clickable{
-                second = duration.second
-                minute = duration.minute
-                hour = duration.hour
-                count = 0
-            },
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            //icon
-            Icon(
-                imageVector = Icons.Filled.Refresh,
-                contentDescription = "retry",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
-            //text
-            Text(
-                text = "Retry",
-                style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = regular,
-                    fontSize = 16.sp
+        AnimatedVisibility(
+            visible = start
+        ) {
+            Row(
+                modifier = Modifier.clickable{
+//                second = duration.second
+//                minute = duration.minute
+//                hour = duration.hour
+//                count = 0
+                },
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                //icon
+                Icon(
+                    imageVector = Icons.Filled.Refresh,
+                    contentDescription = "retry",
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
-            )
-        }
-
+                //text
+                Text(
+                    text = "Retry",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontSize = 16.sp
+                    )
+                )
+            }
         }
     }
 }
