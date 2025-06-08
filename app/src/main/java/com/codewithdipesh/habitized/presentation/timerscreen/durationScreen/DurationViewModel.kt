@@ -44,6 +44,12 @@ class DurationViewModel @Inject constructor(
         )
     }
 
+    fun finishTimer(){
+        _state.value = _state.value.copy(
+            timerState = TimerState.Finished
+        )
+    }
+
     fun clearUi(){
         _state.value = DurationUI()
     }
@@ -57,6 +63,10 @@ class DurationViewModel @Inject constructor(
             putExtra("habit",_state.value.habitWithProgress!!.habit.title)
         }
         context.startForegroundService(intent)
+    }
+
+    suspend fun finishHabit(){
+        repo.onDoneHabitProgress(_state.value.progressId!!)
     }
 
 }

@@ -72,6 +72,11 @@ fun DurationScreen(
     var totalSeconds = 0;
 
     BackHandler {
+        if(state.timerState == TimerState.Finished){
+            scope.launch{
+                viewmodel.finishHabit()
+            }
+        }
         viewmodel.clearUi()
         navController.navigateUp()
     }
@@ -84,8 +89,11 @@ fun DurationScreen(
         topBar = {
             AddScreenTopBar(
                 onBackClick = {
-                    viewmodel.clearUi()
-                    navController.navigateUp()
+                    if(state.timerState == TimerState.Finished){
+                        scope.launch{
+                            viewmodel.finishHabit()
+                        }
+                    }
                 },
                 icon = {
                     Icon(
@@ -165,12 +173,15 @@ fun DurationScreen(
                             totalSeconds = it
                             showStarter = true
                         },
-                        onPause = {
-                            if(state.timerState != TimerState.Resumed){
-                                viewmodel.resumeTimer()
-                            }else{
-                                viewmodel.pauseTimer()
-                            }
+                        onTimerFinished = {
+                            viewmodel.finishTimer()
+                        },
+                        onFinish = {
+                           scope.launch{
+                               viewmodel.finishHabit()
+                               navController.navigateUp()
+                               viewmodel.clearUi()
+                           }
                         }
                     )
                 }

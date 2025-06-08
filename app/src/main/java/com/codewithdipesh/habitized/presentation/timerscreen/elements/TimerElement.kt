@@ -56,6 +56,7 @@ fun TimerElement(
     onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
     onFinish : () ->Unit = {},
+    onTimerFinished : () -> Unit = {},
     modifier: Modifier = Modifier
 ){
     val context = LocalContext.current
@@ -70,6 +71,7 @@ fun TimerElement(
 
     var secondTimes = (duration.hour * 3600) + (duration.minute *60) + duration.second
     var resumed by remember { mutableStateOf(false) }
+    var finished by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit){
         val connection = object : ServiceConnection {
@@ -89,7 +91,12 @@ fun TimerElement(
                     }
 
                     override fun onTimerFinished() {
-                        //
+                        //make sure every element is 0 ( sometimes it doesnt bcz of doze mode)
+                        hour = 0
+                        minute = 0
+                        second = 0
+                        finished = true
+                        onTimerFinished()
                     }
                 })
             }
@@ -189,30 +196,30 @@ fun TimerElement(
         //progress
         Spacer(Modifier.height(24.dp))
         TimerProgressBar(
-            progress = count.toFloat(),
-            total = secondTimes.toFloat(),
+            progress = (hour * 3600) + (minute * 60) + second,
+            total = secondTimes,
             modifier = Modifier.padding(horizontal = 40.dp)
         )
         Spacer(Modifier.height(16.dp))
         //pause retry
         Box(
             modifier = Modifier
-                .size(111.dp,34.dp)
+                .size(126.dp,40.dp)
                 .clip(RoundedCornerShape(15.dp))
                 .background(MaterialTheme.colorScheme.onPrimary)
                 .clickable{
-//                    resumed = !resumed
-//                    if(!start) start = true
-//                    onPause()
-                    if(!start){
+                    if(!start && !finished){
                         onStart(secondTimes)
+                    }
+                    if(finished){
+                        onFinish()
                     }
                 },
             contentAlignment = Alignment.Center
         ){
             Row(verticalAlignment = Alignment.CenterVertically){
                 //icon
-                if(start){
+                if(start && !finished){
                     if(resumed){
                         Icon(
                             painter = painterResource(R.drawable.resumed_icon),
@@ -230,9 +237,10 @@ fun TimerElement(
                 }
                 //text
                 Text(
-                    text = if(!start) "start"
+                    text = if(!start && !finished) "start"
                            else {
                                if(resumed) "pause"
+                               else if(finished) "Finish"
                                else "resume"
                            }
                     ,
@@ -244,17 +252,14 @@ fun TimerElement(
                 )
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         //retry
         AnimatedVisibility(
-            visible = start
+            visible = start && !finished
         ) {
             Row(
                 modifier = Modifier.clickable{
-//                second = duration.second
-//                minute = duration.minute
-//                hour = duration.hour
-//                count = 0
+                    onStart(secondTimes)
                 },
                 verticalAlignment = Alignment.CenterVertically
             ){

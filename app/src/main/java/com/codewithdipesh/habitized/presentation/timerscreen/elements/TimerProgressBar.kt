@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TimerProgressBar(
-    progress: Float,
-    total : Float,
+    progress: Int,
+    total : Int,
     modifier: Modifier = Modifier
 ) {
     val progressFraction by animateFloatAsState(
-        targetValue = (progress / total)
+        targetValue = ( (total - progress)/total ).toFloat()
     )
     Box(
         modifier = modifier

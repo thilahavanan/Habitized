@@ -18,5 +18,6 @@ data class DurationUI(
 enum class TimerState{
     Paused,
     Not_Started,
-    Resumed
+    Resumed,
+    Finished
 }
