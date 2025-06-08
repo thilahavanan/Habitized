@@ -259,7 +259,11 @@ fun DurationHabit(
                 Box(
                    modifier = Modifier.size(80.dp,20.dp)
                        .clip(RoundedCornerShape(10.dp))
-                       .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
+                       .border(
+                           1.dp,
+                           if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
+                           else MaterialTheme.colorScheme.scrim,
+                           RoundedCornerShape(10.dp))
                        .clickable{
                           onStart(habitWithProgress)
                        },
@@ -269,8 +273,8 @@ fun DurationHabit(
                         text = if(habitWithProgress.progress.status == Status.NotStarted) "Start"
                         else "Finished",
                         style = TextStyle(
-                            color = if(habitWithProgress.progress.status != Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.onPrimary,
+                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.scrim,
                             fontFamily = ndot,
                             fontSize = 12.sp
                         )
@@ -279,8 +283,8 @@ fun DurationHabit(
 
                 VerticalDivider(
                     thickness = 1.dp,
-                    color = if(habitWithProgress.progress.status != Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.onPrimary,
+                    color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.scrim,
                     modifier = Modifier.height(18.dp)
                 )
 
@@ -289,7 +293,8 @@ fun DurationHabit(
                     Text(
                         text = habitWithProgress.habit.duration.toWord(),
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.scrim,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -302,7 +307,8 @@ fun DurationHabit(
             Text(
                 text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.scrim,
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
