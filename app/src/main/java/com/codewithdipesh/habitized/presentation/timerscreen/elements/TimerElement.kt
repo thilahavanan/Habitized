@@ -66,12 +66,9 @@ fun TimerElement(
     var minute by remember{ mutableStateOf(duration.minute) }
     var hour by remember{ mutableStateOf(duration.hour) }
 
-    var secondTimes by remember(hour,minute,second){
-        mutableStateOf(
-            (hour * 3600) + (minute *60) + second
-        )
-    }
+    var count by remember { mutableStateOf(0) }
 
+    var secondTimes = (duration.hour * 3600) + (duration.minute *60) + duration.second
     var resumed by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit){
@@ -88,8 +85,7 @@ fun TimerElement(
                         hour = h
                         minute = m
                         second = s
-
-                        secondTimes=(hour * 3600) + (minute *60) + second
+                        count++
                     }
 
                     override fun onTimerFinished() {
@@ -193,7 +189,7 @@ fun TimerElement(
         //progress
         Spacer(Modifier.height(24.dp))
         TimerProgressBar(
-            progress = secondTimes.toFloat() - ((hour * 3600) + (minute *60) + second).toFloat(),
+            progress = count.toFloat(),
             total = secondTimes.toFloat(),
             modifier = Modifier.padding(horizontal = 40.dp)
         )

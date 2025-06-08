@@ -1,5 +1,12 @@
 package com.codewithdipesh.habitized.presentation.timerscreen.elements
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,20 +53,39 @@ fun Starter(
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.surface,
         text = {
-            Text(
-                text = counter.toString(),
-                style = TextStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontFamily = regular,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 40.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(top = 8.dp),
-                textAlign = TextAlign.Center
-            )
+            AnimatedContent(
+                targetState = counter,
+                transitionSpec = {
+                    if (targetState > initialState) {
+                        slideInVertically { height -> height } + fadeIn() togetherWith
+                                slideOutVertically { height -> -height } + fadeOut()
+                    } else {
+                        // If the target number is smaller, it slides down and fades in
+                        // while the initial number slides down and fades out.
+                        slideInVertically { height -> -height } + fadeIn() togetherWith
+                                slideOutVertically { height -> height } + fadeOut()
+                    }.using(
+                        // Disable clipping since the faded slide-in/out should
+                        // be displayed out of bounds.
+                        SizeTransform(clip = false)
+                    )
+                }, label = "animated content"
+            ){targetState->
+                Text(
+                    text = "$targetState",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 40.sp
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .padding(top = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         onDismissRequest = {
             //nothing
