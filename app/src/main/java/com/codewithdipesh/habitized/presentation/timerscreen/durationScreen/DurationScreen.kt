@@ -22,7 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
 import com.codewithdipesh.habitized.presentation.util.getColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
@@ -60,6 +64,12 @@ fun DurationScreen(
     val context = LocalContext.current
 
     val state by viewmodel.state.collectAsState()
+
+    var showStarter by remember {
+        mutableStateOf(false)
+    }
+
+    var totalSeconds = 0;
 
     BackHandler {
         viewmodel.clearUi()
@@ -88,6 +98,17 @@ fun DurationScreen(
             )
         }
     ) { innerPadding ->
+
+        //start counter
+        if(showStarter){
+            Starter {
+                showStarter = false
+                viewmodel.startTimer(
+                    context = context,
+                    totalSeconds = totalSeconds
+                )
+            }
+        }
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -139,11 +160,10 @@ fun DurationScreen(
                 ){
                     TimerElement(
                         duration = targetDurationValue,
+                        start = state.timerState == TimerState.Resumed,
                         onStart = {
-                            viewmodel.startTimer(
-                                context = context,
-                                totalSeconds = it
-                            )
+                            totalSeconds = it
+                            showStarter = true
                         },
                         onPause = {
                             if(state.timerState != TimerState.Resumed){

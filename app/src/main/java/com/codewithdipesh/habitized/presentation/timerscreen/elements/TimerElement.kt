@@ -52,6 +52,7 @@ import java.time.LocalTime
 @Composable
 fun TimerElement(
     duration : LocalTime,
+    start : Boolean = false,
     onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
     onFinish : () ->Unit = {},
@@ -72,7 +73,6 @@ fun TimerElement(
     }
 
     var resumed by remember { mutableStateOf(false) }
-    var start by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit){
         val connection = object : ServiceConnection {
@@ -88,6 +88,8 @@ fun TimerElement(
                         hour = h
                         minute = m
                         second = s
+
+                        secondTimes=(hour * 3600) + (minute *60) + second
                     }
 
                     override fun onTimerFinished() {
@@ -208,7 +210,6 @@ fun TimerElement(
 //                    onPause()
                     if(!start){
                         onStart(secondTimes)
-                        start = true
                     }
                 },
             contentAlignment = Alignment.Center
