@@ -171,6 +171,13 @@ fun SwipeContainer(
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
+                            Status.Ongoing -> {
+                                Icon(
+                                    imageVector =  Icons.Default.Check,
+                                    contentDescription = "Done",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
 
                     }
