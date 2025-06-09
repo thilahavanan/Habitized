@@ -51,7 +51,7 @@ fun Starter(
     }
 
     AlertDialog(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = Color.Transparent,
         text = {
             AnimatedContent(
                 targetState = counter,
