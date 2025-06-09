@@ -53,6 +53,7 @@ import java.time.LocalTime
 fun TimerElement(
     duration : LocalTime,
     start : Boolean = false,
+    finished : Boolean = false,
     onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
     onFinish : () ->Unit = {},
@@ -71,7 +72,6 @@ fun TimerElement(
 
     var secondTimes = (duration.hour * 3600) + (duration.minute *60) + duration.second
     var resumed by remember { mutableStateOf(false) }
-    var finished by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit){
         val connection = object : ServiceConnection {
@@ -95,7 +95,6 @@ fun TimerElement(
                         hour = 0
                         minute = 0
                         second = 0
-                        finished = true
                         onTimerFinished()
                     }
                 })

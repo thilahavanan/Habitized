@@ -27,6 +27,7 @@ interface HabitRepository {
     suspend fun onDoneHabitProgress(progressId: UUID)
     suspend fun onSkipHabitProgress(progressId: UUID)
     suspend fun onNotStartedHabitProgress(progressId: UUID)
+    suspend fun onStartedHabitProgress(progressId: UUID)
     suspend fun onUpdateCounterHabitProgress(count :Int,progressId: UUID)
 
     // Goals

@@ -72,12 +72,15 @@ fun DurationScreen(
     var totalSeconds = 0;
 
     BackHandler {
-        if(state.timerState == TimerState.Finished){
-            scope.launch{
-                viewmodel.finishHabit()
+        when(state.timerState){
+            TimerState.Finished -> {
+               viewmodel.clearUi()
             }
+            TimerState.Not_Started -> {
+                viewmodel.clearUi()
+            }
+            else -> {}
         }
-        viewmodel.clearUi()
         navController.navigateUp()
     }
 
@@ -89,11 +92,10 @@ fun DurationScreen(
         topBar = {
             AddScreenTopBar(
                 onBackClick = {
-                    if(state.timerState == TimerState.Finished){
-                        scope.launch{
-                            viewmodel.finishHabit()
-                        }
+                    if(state.timerState == TimerState.Finished || state.timerState == TimerState.Not_Started){
+                        viewmodel.clearUi()
                     }
+                    navController.navigateUp()
                 },
                 icon = {
                     Icon(
@@ -111,10 +113,12 @@ fun DurationScreen(
         if(showStarter){
             Starter {
                 showStarter = false
-                viewmodel.startTimer(
-                    context = context,
-                    totalSeconds = totalSeconds
-                )
+                scope.launch {
+                    viewmodel.startTimer(
+                        context = context,
+                        totalSeconds = totalSeconds
+                    )
+                }
             }
         }
 
@@ -169,16 +173,19 @@ fun DurationScreen(
                     TimerElement(
                         duration = targetDurationValue,
                         start = state.timerState == TimerState.Resumed,
+                        finished = state.timerState == TimerState.Finished,
                         onStart = {
                             totalSeconds = it
                             showStarter = true
                         },
                         onTimerFinished = {
                             viewmodel.finishTimer()
+                            scope.launch {
+                                viewmodel.finishHabit()
+                            }
                         },
                         onFinish = {
                            scope.launch{
-                               viewmodel.finishHabit()
                                navController.navigateUp()
                                viewmodel.clearUi()
                            }
