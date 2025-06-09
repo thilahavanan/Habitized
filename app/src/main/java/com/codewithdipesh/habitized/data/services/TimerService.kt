@@ -2,21 +2,23 @@ package com.codewithdipesh.habitized.data.services
 
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.Lifecycle
+import androidx.core.app.TaskStackBuilder
+import com.codewithdipesh.habitized.MainActivity
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.presentation.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.concurrent.timer
+import androidx.core.net.toUri
 
 class TimerService : Service() {
 
@@ -45,17 +47,31 @@ class TimerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val totalSeconds = intent?.getIntExtra("duration_seconds", 0) ?: 0
+        val id = intent?.getStringExtra("id") ?: ""
         val title = intent?.getStringExtra("habit") ?: "Habit Timer"
-        startForegroundService(durationSeconds = totalSeconds,title = title)
+        val color = intent?.getStringExtra("color") ?: "yellow"
+        startForegroundService(durationSeconds = totalSeconds,title = title,id = id, color = color)
         return START_STICKY
     }
 
-    private fun startForegroundService(durationSeconds :Int,title : String){
+    private fun startForegroundService(id:String,title:String,durationSeconds:Int,color:String){
 
         startTime = System.currentTimeMillis()
         totalDurationMs = durationSeconds * 1000L
 
-        startForeground(1,createNotification("Starting...",title,durationSeconds,0))
+        //intent for deeplinking
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            "com.codewithdipesh.habitized://duration/$id/$title/$durationSeconds/$color".toUri()
+        )
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        startForeground(1,createNotification("Starting...",title,durationSeconds,0,pendingIntent))
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
@@ -69,10 +85,7 @@ class TimerService : Service() {
                 if(remainingMs <= 0){
                     //timer finished
                     timerCallback?.onTimerFinished()
-
-                    val notification = createNotification("Timer Finished! ⏰",title,durationSeconds,null)
-                    notificationManager.notify(1,notification)
-
+                    showAlarmNotification(pendingIntent)
                     stopSelf()
                     break
                 }
@@ -89,7 +102,8 @@ class TimerService : Service() {
                     "Time Left : $timerString",
                     title,
                     durationSeconds,
-                    (elapsedMs/1000).toInt()
+                    (elapsedMs/1000).toInt(),
+                    pendingIntent
                 )
                 //call callback
                 timerCallback?.onTimerUpdate(hour,minute,second)
@@ -109,11 +123,12 @@ class TimerService : Service() {
         }
     }
 
-    private fun createNotification(content : String,title : String,maxProgress:Int,currentProgress:Int?) : Notification {
+    private fun createNotification(content : String,title : String,maxProgress:Int,currentProgress:Int?,pendingIntent : PendingIntent) : Notification {
         val notification =  NotificationCompat.Builder(this,"TIMER_CHANNEL")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(content)
+            .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(true)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
@@ -136,6 +151,33 @@ class TimerService : Service() {
         this.timerCallback = callback
         Log.d("TimerService", "Timer callback set: ${callback != null}")
     }
+
+    private fun showAlarmNotification(pendingIntent: PendingIntent) {
+
+        val intent = Intent(
+            applicationContext,
+            MainActivity::class.java
+        )
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val notification = NotificationCompat.Builder(this, "TIMER_CHANNEL")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("⏰ Time's Up!")
+            .setContentText("Your timer finished.")
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setFullScreenIntent(pendingIntent, true)
+            .setAutoCancel(true)
+            .build()
+
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(1, notification)
+    }
+
 
 
 }

@@ -1,6 +1,8 @@
 package com.codewithdipesh.habitized.presentation.navigation
 
+import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -12,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalScreen
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
@@ -62,6 +65,12 @@ fun HabitizedNavHost(
         }
         composable(
             Screen.DurationScreen.route,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "com.codewithdipesh.habitized://duration/{id}/{title}/{target}/{color}"
+                    action = Intent.ACTION_VIEW
+                }
+            ),
             arguments = listOf(
                 navArgument("id"){
                     type = NavType.StringType
@@ -78,10 +87,20 @@ fun HabitizedNavHost(
             )
         ){ entry ->
             val id = entry.arguments?.getString("id")
+            Log.e("UUID from notification", id.toString())
             val title = entry.arguments?.getString("title")
+            Log.e("UUID from notification", title.toString())
             val color = entry.arguments?.getString("color")
-            val target = entry.arguments?.getString("target")
-            val targetDurationValue = LocalTime.parse(target)
+            Log.e("UUID from notification", color.toString())
+
+            val targetSeconds = entry.arguments?.getString("target")!!.toInt()
+            Log.e("UUID from notification", targetSeconds.toString())
+
+            val hour = targetSeconds/ 3600
+            val minutes = (targetSeconds % 3600) / 60
+            val seconds = targetSeconds % 60
+            val targetDurationValue = LocalTime.of(hour,minutes,seconds)
+
             DurationScreen(
                 habitProgressId = UUID.fromString(id),
                 title = title!!,
