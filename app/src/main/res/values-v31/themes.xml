@@ -2,5 +2,6 @@
 <resources>
 
     <style name="Theme.Habitized" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowSplashScreenBackground">?android:attr/colorBackground</item>
     </style>
 </resources>

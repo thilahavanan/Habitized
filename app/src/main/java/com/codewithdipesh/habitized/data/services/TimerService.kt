@@ -125,7 +125,7 @@ class TimerService : Service() {
 
     private fun createNotification(content : String,title : String,maxProgress:Int,currentProgress:Int?,pendingIntent : PendingIntent) : Notification {
         val notification =  NotificationCompat.Builder(this,"TIMER_CHANNEL")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.habitized_logo)
             .setContentTitle(title)
             .setContentText(content)
             .setContentIntent(pendingIntent)
@@ -165,7 +165,7 @@ class TimerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val notification = NotificationCompat.Builder(this, "TIMER_CHANNEL")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.habitized_logo)
             .setContentTitle("⏰ Time's Up!")
             .setContentText("Your timer finished.")
             .setCategory(NotificationCompat.CATEGORY_ALARM)
