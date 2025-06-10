@@ -84,10 +84,12 @@ fun TimerElement(
                 timerService?.setTimerCallback(object : TimerService.TimerCallback {
                     override fun onTimerUpdate(h: Int, m: Int, s: Int) {
                         // This runs on the service thread, post to main thread
+                        Log.e("TimerElement", "$h,$m,$s")
                         hour = h
                         minute = m
                         second = s
-                        count++
+                        count = (secondTimes - (hour * 3600) - (minute * 60) - second)
+                        Log.e("TimerElement", "$count")
                     }
 
                     override fun onTimerFinished() {
@@ -195,7 +197,7 @@ fun TimerElement(
         //progress
         Spacer(Modifier.height(24.dp))
         TimerProgressBar(
-            progress = (hour * 3600) + (minute * 60) + second,
+            progress = count,
             total = secondTimes,
             modifier = Modifier.padding(horizontal = 40.dp)
         )

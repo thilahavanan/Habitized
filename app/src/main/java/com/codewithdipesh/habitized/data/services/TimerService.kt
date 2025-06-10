@@ -5,9 +5,14 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.res.painterResource
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.codewithdipesh.habitized.MainActivity
@@ -19,6 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
+import androidx.core.graphics.createBitmap
 
 class TimerService : Service() {
 
@@ -85,7 +91,7 @@ class TimerService : Service() {
                 if(remainingMs <= 0){
                     //timer finished
                     timerCallback?.onTimerFinished()
-                    showAlarmNotification(pendingIntent)
+                    showAlarmNotification()
                     stopSelf()
                     break
                 }
@@ -125,7 +131,8 @@ class TimerService : Service() {
 
     private fun createNotification(content : String,title : String,maxProgress:Int,currentProgress:Int?,pendingIntent : PendingIntent) : Notification {
         val notification =  NotificationCompat.Builder(this,"TIMER_CHANNEL")
-            .setSmallIcon(R.drawable.habitized_logo)
+            .setSmallIcon(R.drawable.ic_stat_name)
+            .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.ic_stat_name))
             .setContentTitle(title)
             .setContentText(content)
             .setContentIntent(pendingIntent)
@@ -152,7 +159,7 @@ class TimerService : Service() {
         Log.d("TimerService", "Timer callback set: ${callback != null}")
     }
 
-    private fun showAlarmNotification(pendingIntent: PendingIntent) {
+    private fun showAlarmNotification() {
 
         val intent = Intent(
             applicationContext,
@@ -165,7 +172,7 @@ class TimerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val notification = NotificationCompat.Builder(this, "TIMER_CHANNEL")
-            .setSmallIcon(R.drawable.habitized_logo)
+            .setSmallIcon(R.drawable.ic_stat_name)
             .setContentTitle("⏰ Time's Up!")
             .setContentText("Your timer finished.")
             .setCategory(NotificationCompat.CATEGORY_ALARM)
