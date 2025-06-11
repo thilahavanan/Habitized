@@ -1,10 +1,16 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
@@ -38,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +62,7 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.CountUpdat
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
+import com.codewithdipesh.habitized.presentation.homescreen.component.RunningTimer
 import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertDialog
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.ndot
@@ -71,6 +79,7 @@ fun HomeScreen(
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var previousScrollOffset by remember { mutableStateOf(0) }
 
     val state by viewmodel.uiState.collectAsState()
@@ -281,7 +290,13 @@ fun HomeScreen(
                                      habitForCounter = it
                                  },
                                  onStartDuration = {
-                                     navController.navigate(Screen.DurationScreen.createRoute(it))
+                                     if(state.ongoingHabit != null && it != state.ongoingHabit ){
+                                         scope.launch {
+                                             Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
+                                         }
+                                     }else{
+                                         navController.navigate(Screen.DurationScreen.createRoute(it))
+                                     }
                                  }
                              )
                              Spacer(Modifier.height(16.dp))
@@ -313,6 +328,11 @@ fun HomeScreen(
                             Spacer(Modifier.height(16.dp))
                         }
                     }
+
+                //if showing ongoing timer then padding
+                if(state.ongoingHabit != null){
+                    Spacer(Modifier.height(150.dp))
+                }
             }
 
         }
@@ -336,6 +356,33 @@ fun HomeScreen(
                         }
                     )
 
+                }
+            }
+            //ongoing timer
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                contentAlignment = Alignment.Center
+            ){
+                AnimatedVisibility(
+                    visible = state.ongoingHabit != null,
+                    enter = slideInVertically()+ fadeIn(),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    state.ongoingHabit?.let {
+                        RunningTimer(
+                            habitWithProgress = state.ongoingHabit!!,
+                            onClick = {
+                                navController.navigate(Screen.DurationScreen.createRoute(it))
+                            },
+                            onTimerFinished = {
+                                scope.launch{
+                                    viewmodel.finishTimer()
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(bottom= 90.dp)
+                        )
+                    }
                 }
             }
             //BottomNavBar

@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,9 +42,21 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO){
             val habits = repo.getHabitsForDay(date)
             val tasks = repo.getTasksForDay(date)
+            //checking for ongoing duration or session habit
+            val ongoingHabit = habits
+                .asSequence()
+                .filter { habit ->
+                    (habit.habit.type == HabitType.Duration || habit.habit.type == HabitType.Session) &&
+                            habit.progress.status == Status.Ongoing
+                }
+                .firstOrNull()
+            Log.d("Ongoing",ongoingHabit.toString())
+            // Update ongoing timer if habit exists
+            ongoingHabit?.let { updateOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
                 habitWithProgressList = habits,
-                tasks = tasks
+                tasks = tasks,
+                ongoingHabit = ongoingHabit
             )
         }
     }
@@ -173,5 +186,21 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun updateOngoingTimer(habitWithProgress: HabitWithProgress){
+        if(_uiState.value.ongoingHabit == null){
+            _uiState.value = _uiState.value.copy(
+                ongoingHabit = habitWithProgress
+            )
+        }
+    }
+    suspend fun finishTimer(){
+        _uiState.value.ongoingHabit?.let {
+            repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+            _uiState.value = _uiState.value.copy(
+                ongoingHabit = null
+            )
+        }
     }
 }

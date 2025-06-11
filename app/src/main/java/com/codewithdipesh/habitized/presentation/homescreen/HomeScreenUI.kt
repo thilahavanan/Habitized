@@ -10,6 +10,7 @@ data class HomeScreenUI(
     val tasks : List<OneTimeTask> = emptyList(),
     val selectedOption : HomeScreenOption = HomeScreenOption.TODOS,
     val selectedDate : LocalDate = LocalDate.now(),
+    val ongoingHabit : HabitWithProgress? = null,
 
     val isShowingDatePicker : Boolean = false
 )
