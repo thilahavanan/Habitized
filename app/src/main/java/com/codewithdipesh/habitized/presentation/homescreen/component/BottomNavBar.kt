@@ -105,7 +105,6 @@ fun  BottomNavBar(
             // Custom Add button (centered manually)
             Box(modifier = Modifier
                     .size(48.dp)
-                    .offset(y = (-8).dp) // push upward
                     .clip(shape = CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable { onAddClick() }, contentAlignment = Alignment.Center) {
