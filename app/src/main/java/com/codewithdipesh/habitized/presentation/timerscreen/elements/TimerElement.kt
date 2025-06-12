@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -54,6 +55,8 @@ fun TimerElement(
     duration : LocalTime,
     start : Boolean = false,
     finished : Boolean = false,
+    onPrimary : Color,
+    inverse : Color,
     onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
     onFinish : () ->Unit = {},
@@ -136,7 +139,7 @@ fun TimerElement(
                     Text(
                         text = hour.toString().padStart(2, '0') + " : ",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = onPrimary,
                             fontFamily = ndot,
                             fontSize = 64.sp
                         )
@@ -144,7 +147,7 @@ fun TimerElement(
                     Text(
                         text = "hours",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -157,7 +160,7 @@ fun TimerElement(
                     Text(
                         text = minute.toString().padStart(2, '0') + " : ",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = onPrimary,
                             fontFamily = ndot,
                             fontSize = 64.sp
                         )
@@ -165,7 +168,7 @@ fun TimerElement(
                     Text(
                         text = "minutes",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -177,7 +180,7 @@ fun TimerElement(
                 Text(
                     text = second.toString().padStart(2, '0'),
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = onPrimary,
                         fontFamily = ndot,
                         fontSize = 64.sp
                     )
@@ -185,7 +188,7 @@ fun TimerElement(
                 Text(
                     text = "seconds",
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = onPrimary,
                         fontFamily = regular,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp
@@ -207,7 +210,7 @@ fun TimerElement(
             modifier = Modifier
                 .size(126.dp,40.dp)
                 .clip(RoundedCornerShape(15.dp))
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(onPrimary)
                 .clickable{
                     if(!start && !finished){
                         onStart(secondTimes)
@@ -225,14 +228,14 @@ fun TimerElement(
                         Icon(
                             painter = painterResource(R.drawable.resumed_icon),
                             contentDescription = "pause",
-                            tint = MaterialTheme.colorScheme.inverseOnSurface,
+                            tint = inverse,
                             modifier = Modifier.padding(end = 8.dp)
                         )
                     }else{
                         Icon(
                             imageVector = Icons.Filled.PlayArrow,
                             contentDescription = "resume",
-                            tint = MaterialTheme.colorScheme.inverseOnSurface
+                            tint = inverse
                         )
                     }
                 }
@@ -246,7 +249,7 @@ fun TimerElement(
                            }
                     ,
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        color = inverse,
                         fontFamily = regular,
                         fontSize = 16.sp
                     )
@@ -268,13 +271,13 @@ fun TimerElement(
                 Icon(
                     imageVector = Icons.Filled.Refresh,
                     contentDescription = "retry",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = onPrimary
                 )
                 //text
                 Text(
                     text = "Retry",
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = onPrimary,
                         fontFamily = regular,
                         fontSize = 16.sp
                     )

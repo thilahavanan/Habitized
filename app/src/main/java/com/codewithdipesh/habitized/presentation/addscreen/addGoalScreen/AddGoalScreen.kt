@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -84,13 +85,19 @@ fun AddGoalScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AddScreenTopBar(
-                onBackClick = {navController.navigateUp()},
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "back",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
+                isShowingLeftIcon = true,
+                leftIcon = {
+                    IconButton(
+                        onClick = {navController.navigateUp()},
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "back",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             )
         },

@@ -79,4 +79,20 @@ class DurationViewModel @Inject constructor(
         repo.onDoneHabitProgress(_state.value.progressId!!)
     }
 
+    fun chooseTheme(theme: Theme){
+        _state.value = _state.value.copy(
+            theme = theme
+        )
+    }
+    fun openSettings(){
+        _state.value = _state.value.copy(
+            isSettingsOpen = true
+        )
+    }
+    fun closeSettings(){
+        _state.value = _state.value.copy(
+            isSettingsOpen = false
+        )
+    }
+
 }

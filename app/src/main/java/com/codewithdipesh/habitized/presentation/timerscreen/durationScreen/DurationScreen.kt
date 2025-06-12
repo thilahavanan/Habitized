@@ -6,18 +6,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,12 +29,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -43,8 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.Theme.*
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
 import com.codewithdipesh.habitized.presentation.util.getColorFromKey
@@ -68,12 +67,25 @@ fun DurationScreen(
     val context = LocalContext.current
 
     val state by viewmodel.state.collectAsState()
-
     var showStarter by remember {
         mutableStateOf(false)
     }
+    var totalSeconds = 0
 
-    var totalSeconds = 0;
+    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
+    val inverseColor = MaterialTheme.colorScheme.inverseOnSurface
+    var onPrimary by remember { mutableStateOf(onPrimaryColor) }
+    var inverse by remember { mutableStateOf(inverseColor) }
+
+    LaunchedEffect(state.theme) {
+        when(state.theme){
+            Normal -> {}
+            else ->{
+               onPrimary = Color.White
+               inverse = Color.Black
+            }
+        }
+    }
 
     BackHandler {
         when(state.timerState){
@@ -95,20 +107,42 @@ fun DurationScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AddScreenTopBar(
-                onBackClick = {
-                    if(state.timerState == TimerState.Finished || state.timerState == TimerState.Not_Started){
-                        viewmodel.clearUi()
+                isShowingLeftIcon = true,
+                isShowingRightIcon = true,
+                leftIcon = {
+                    IconButton(
+                        onClick = {
+                            if(state.timerState == TimerState.Finished || state.timerState == TimerState.Not_Started){
+                                viewmodel.clearUi()
+                            }
+                            navController.navigateUp()
+                        },
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "back",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
-                    navController.navigateUp()
                 },
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "back",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                title = title
+                title = title,
+                rightIcon = {
+                    IconButton(
+                        onClick = {
+                           viewmodel.openSettings()
+                        },
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "settings",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -126,27 +160,86 @@ fun DurationScreen(
             }
         }
 
+        //todo settings
+        //todo change it to good ui
+        var tempTheme by remember {
+            mutableStateOf(state.theme)
+        }
+        if(state.isSettingsOpen){
+            AlertDialog(
+                onDismissRequest = {
+                    viewmodel.closeSettings()
+                },
+                text = {
+                    Column {
+                        TextButton(
+                            onClick = {
+                                tempTheme = Theme.Normal
+                            }
+                        ) {
+                            Text("Normal")
+                        }
+                        TextButton(
+                            onClick = {
+                                tempTheme = Theme.Matcha
+                            }
+                        ) {
+                            Text("Matcha")
+                        }
+                        TextButton(
+                            onClick = {
+                                tempTheme = Theme.Coffee
+                            }
+                        ) {
+                            Text("Coffee")
+                        }
+                    }
+                },
+                confirmButton = {
+                    Text(
+                        "confirm",
+                        modifier = Modifier.clickable{
+                            viewmodel.chooseTheme(tempTheme)
+                            viewmodel.closeSettings()
+                        }
+                    )
+                }
+            )
+        }
+
         Column(modifier = Modifier
             .fillMaxSize()
-            .background(getColorFromKey(colorKey))
-            .background(brush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.inverseOnSurface.copy(0.5f),
-                    MaterialTheme.colorScheme.inverseOnSurface.copy(0.5f),
-                    MaterialTheme.colorScheme.inverseOnSurface.copy(0.4f),
-                    MaterialTheme.colorScheme.inverseOnSurface.copy(0.25f),
-                    MaterialTheme.colorScheme.inverseOnSurface.copy(0.1f),
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                )
-            ))
-            .then(Modifier.paint(
-                painter = painterResource(R.drawable.bg_noise),
-                contentScale = ContentScale.FillBounds,
-                alpha = 0.7f
-            ))
+            .then( //different bg for diff theme
+                when(state.theme){
+                    Normal -> Modifier
+                        .background(getColorFromKey(colorKey))
+                        .background(brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.inverseOnSurface.copy(0.5f),
+                                MaterialTheme.colorScheme.inverseOnSurface.copy(0.5f),
+                                MaterialTheme.colorScheme.inverseOnSurface.copy(0.4f),
+                                MaterialTheme.colorScheme.inverseOnSurface.copy(0.25f),
+                                MaterialTheme.colorScheme.inverseOnSurface.copy(0.1f),
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Transparent,
+                            )
+                        ))
+                        .paint(
+                            painter = painterResource(R.drawable.bg_noise),
+                            contentScale = ContentScale.FillBounds
+                        )
+                    Coffee -> Modifier.paint(
+                        painter = painterResource(R.drawable.coffee_theme),
+                        contentScale = ContentScale.FillBounds
+                    )
+                    Matcha -> Modifier.paint(
+                        painter = painterResource(R.drawable.matcha_theme),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
+            )
             .padding(innerPadding)
             .padding(horizontal = 16.dp)
             .padding(bottom = 80.dp),
@@ -163,7 +256,7 @@ fun DurationScreen(
                     Text(
                         text = targetDurationValue.toWord(),
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Light,
                             fontSize = 14.sp
@@ -183,6 +276,8 @@ fun DurationScreen(
                         duration = targetDurationValue,
                         start = state.timerState == TimerState.Resumed,
                         finished = state.timerState == TimerState.Finished,
+                        onPrimary = onPrimary,
+                        inverse = inverse,
                         onStart = {
                             totalSeconds = it
                             showStarter = true

@@ -1,13 +1,10 @@
 package com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen
 
-import android.R.attr.value
 import android.os.Build
-import android.widget.Space
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,17 +26,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,8 +41,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -82,8 +73,6 @@ import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,13 +118,19 @@ fun AddHabitScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AddScreenTopBar(
-                onBackClick = {navController.navigateUp()},
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "back",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
+                isShowingLeftIcon = true,
+                leftIcon = {
+                    IconButton(
+                        onClick = {navController.navigateUp()},
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "back",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             )
         },
