@@ -365,8 +365,8 @@ fun HomeScreen(
             ){
                 AnimatedVisibility(
                     visible = state.ongoingHabit != null,
-                    enter = slideInVertically()+ fadeIn(),
-                    exit = slideOutVertically() + fadeOut()
+                    enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
                 ) {
                     state.ongoingHabit?.let {
                         RunningTimer(

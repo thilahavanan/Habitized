@@ -90,8 +90,8 @@ class TimerService : Service() {
 
                 if(remainingMs <= 0){
                     //timer finished
+                    notificationManager.notify(1,showAlarmNotification())
                     timerCallback?.onTimerFinished()
-                    showAlarmNotification()
                     stopSelf()
                     break
                 }
@@ -159,7 +159,7 @@ class TimerService : Service() {
         Log.d("TimerService", "Timer callback set: ${callback != null}")
     }
 
-    private fun showAlarmNotification() {
+    private fun showAlarmNotification() : Notification{
 
         val intent = Intent(
             applicationContext,
@@ -171,18 +171,17 @@ class TimerService : Service() {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val notification = NotificationCompat.Builder(this, "TIMER_CHANNEL")
+        return NotificationCompat.Builder(this, "TIMER_CHANNEL")
             .setSmallIcon(R.drawable.ic_stat_name)
             .setContentTitle("⏰ Time's Up!")
             .setContentText("Your timer finished.")
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setFullScreenIntent(pendingIntent, true)
-            .setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOnlyAlertOnce(false)
+            .setContentIntent(pendingIntent)
             .build()
 
-        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(1, notification)
     }
 
 

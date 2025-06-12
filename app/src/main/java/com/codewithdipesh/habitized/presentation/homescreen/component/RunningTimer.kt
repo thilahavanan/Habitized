@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.data.services.TimerService
+import com.codewithdipesh.habitized.data.services.TimerServiceManager
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreenOption
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.delay
 
 @Composable
 fun RunningTimer(
@@ -49,111 +52,62 @@ fun RunningTimer(
 ) {
 
     val context = LocalContext.current
-    var timerService: TimerService? = null
-    var isBound = false
+    val manager = remember { TimerServiceManager(context) }
+    val timerState by manager.timerState.collectAsState()
 
-    var second by remember{ mutableStateOf(0) }
-    var minute by remember{ mutableStateOf(0) }
-    var hour by remember{ mutableStateOf(0) }
+    LaunchedEffect(Unit) {
+        manager.bindService()
+    }
 
-
-    DisposableEffect(Unit){
-        val connection = object : ServiceConnection {
-            override fun onServiceConnected(className: ComponentName, service: IBinder) {
-                val binder = service as TimerService.TimerBind
-                timerService = binder.getService()
-                isBound = true
-
-                // Set callback
-                timerService?.setTimerCallback(object : TimerService.TimerCallback {
-                    override fun onTimerUpdate(h: Int, m: Int, s: Int) {
-                        // This runs on the service thread, post to main thread
-                        hour = h
-                        minute = m
-                        second = s
-                    }
-
-                    override fun onTimerFinished() {
-                        //make sure every element is 0 ( sometimes it doesn't bcz of doze mode)
-                        hour = 0
-                        minute = 0
-                        second = 0
-                        onTimerFinished()
-                    }
-                })
-            }
-
-            override fun onServiceDisconnected(arg0: ComponentName) {
-                timerService = null
-                isBound = false
-            }
+    LaunchedEffect(timerState) {
+        Log.d("TimerState",timerState.toString())
+        if (timerState.isFinished) {
+            onTimerFinished()
         }
+    }
 
-        Intent(context, TimerService::class.java).also { intent ->
-            context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-        }
-
-        onDispose {
-            if (isBound) {
-                context.unbindService(connection)
-                isBound = false
-            }
+    LaunchedEffect(Unit) {
+        delay(1500)
+        if(timerState.hour == 0 && timerState.minute == 0 && timerState.second == 0){
+            onTimerFinished()
         }
     }
 
     Box(
         modifier = modifier.fillMaxWidth()
         .wrapContentHeight()
-        .background(MaterialTheme.colorScheme.secondary)
+        .background(MaterialTheme.colorScheme.background)
         .clickable{
             onClick(habitWithProgress)
         }
     ){
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ){
-            //timer in progress
+            //title
             Text(
-                text = "Timer In Progress",
+                text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
-                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 18.sp,
                     fontFamily = regular,
-                    fontWeight = FontWeight.Light
+                    fontWeight = FontWeight.Normal
                 )
             )
-            Spacer(Modifier.height(2.dp))
-            //row 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-               //title
-                Text(
-                    text = habitWithProgress.habit.title,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 18.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal
-                    )
+            //timer
+            Text(
+                text = "${timerState.hour}:${timerState.minute}:${timerState.second}",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 32.sp,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold
                 )
-                //timer
-                Text(
-                    text = "$hour:$minute:$second",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 24.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
+            )
         }
     }
 }
