@@ -64,6 +64,7 @@ fun HabitCard(
     onSkip : (HabitWithProgress) -> Unit = {},
     onUnSkip : (HabitWithProgress) -> Unit = {},
     onStartDuration : (HabitWithProgress)-> Unit = {},
+    onFutureTaskStateChange : () ->Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
     onToggle : (SubTask)-> Unit
 ){
@@ -73,7 +74,8 @@ fun HabitCard(
                 habitWithProgress = habitWithProgress,
                 onAddCounter = {
                     onAddCounter(habitWithProgress)
-                }
+                },
+                onDeny = onFutureTaskStateChange
             )
         }
         HabitType.Duration -> {
@@ -81,7 +83,8 @@ fun HabitCard(
                 habitWithProgress = habitWithProgress,
                 onStart = {
                     onStartDuration(it)
-                }
+                },
+                onDeny = onFutureTaskStateChange
             )
         }
         HabitType.OneTime ->{
@@ -93,6 +96,8 @@ fun HabitCard(
                 content = {
                     OneTimeHabit(habitWithProgress = habitWithProgress)
                 },
+                swipable = habitWithProgress.progress.date == LocalDate.now(),
+                onDeny = onFutureTaskStateChange,
                 isReminder = habitWithProgress.habit.reminder_time != null,
                 height = 60
             )
@@ -103,8 +108,8 @@ fun HabitCard(
                 onAddSubTask = {
                     onSubTaskAdding(habitWithProgress)
                 },
-                onToggle = {onToggle(it)}
-
+                onToggle = {onToggle(it)},
+                onDeny = onFutureTaskStateChange
             )
         }
     }
@@ -145,6 +150,7 @@ fun CountHabit(
     modifier: Modifier = Modifier,
     habitWithProgress: HabitWithProgress,
     onAddCounter : ()->Unit,
+    onDeny : ()->Unit
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
@@ -216,7 +222,11 @@ fun CountHabit(
                             shape = CircleShape
                         )
                         .clickable {
-                            onAddCounter()
+                            if(habitWithProgress.progress.date == LocalDate.now()){
+                                onAddCounter()
+                            }else{
+                                onDeny()
+                            }
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -239,6 +249,7 @@ fun DurationHabit(
     modifier: Modifier = Modifier,
     habitWithProgress: HabitWithProgress,
     onStart : (HabitWithProgress) ->Unit,
+    onDeny: () -> Unit
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
@@ -265,12 +276,17 @@ fun DurationHabit(
                            else MaterialTheme.colorScheme.scrim,
                            RoundedCornerShape(10.dp))
                        .clickable{
-                          onStart(habitWithProgress)
+                           if(habitWithProgress.progress.date == LocalDate.now()){
+                               onStart(habitWithProgress)
+                           }else{
+                               onDeny()
+                           }
                        },
                     contentAlignment = Alignment.Center
                 ){
                     Text(
                         text = if(habitWithProgress.progress.status == Status.NotStarted) "Start"
+                        else if (habitWithProgress.progress.status == Status.Ongoing) "Ongoing"
                         else "Finished",
                         style = TextStyle(
                             color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
@@ -324,6 +340,7 @@ fun SessionHabit(
     habitWithProgress: HabitWithProgress,
     onAddSubTask : () -> Unit = {},
     onToggle : (SubTask)->Unit = {},
+    onDeny: () -> Unit
 ) {
     HabitElement(
         color = getColorFromKey(habitWithProgress.habit.colorKey),
@@ -347,6 +364,11 @@ fun SessionHabit(
                         .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
                         .clickable{
                             //todo
+                            if(habitWithProgress.progress.date == LocalDate.now()){
+
+                            }else{
+                                onDeny()
+                            }
                         },
                     contentAlignment = Alignment.Center
                 ){

@@ -45,6 +45,8 @@ fun SwipeContainer(
     onSkip: (HabitWithProgress) -> Unit,
     onDone: (HabitWithProgress) -> Unit,
     onUnSkipDone: (HabitWithProgress) -> Unit,
+    swipable : Boolean = true,
+    onDeny : ()->Unit,
     animationDuration: Int = 500,
     height : Int,
     content: @Composable (HabitWithProgress) -> Unit,
@@ -63,21 +65,27 @@ fun SwipeContainer(
 
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) {
-                isSkipped = true
-                false
-            }else if(value == SwipeToDismissBoxValue.StartToEnd){
-                if(item.progress.status == Status.NotStarted){
-                    isDone = true
-                    true
-                }else{
-                    isUnSkipped = true
-                    true
+            if(swipable){
+                if (value == SwipeToDismissBoxValue.EndToStart) {
+                    isSkipped = true
+                    false
+                }else if(value == SwipeToDismissBoxValue.StartToEnd){
+                    if(item.progress.status == Status.NotStarted){
+                        isDone = true
+                        true
+                    }else{
+                        isUnSkipped = true
+                        true
+                    }
                 }
-            }
-            else {
+                else {
+                    false
+                }
+            }else{
+                onDeny()
                 false
             }
+
         }
     )
 

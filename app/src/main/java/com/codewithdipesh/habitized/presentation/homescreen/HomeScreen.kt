@@ -297,6 +297,11 @@ fun HomeScreen(
                                      }else{
                                          navController.navigate(Screen.DurationScreen.createRoute(it))
                                      }
+                                 },
+                                 onFutureTaskStateChange = {
+                                     scope.launch {
+                                         Toast.makeText(context,"Can't start Future Tasks", Toast.LENGTH_SHORT).show()
+                                     }
                                  }
                              )
                              Spacer(Modifier.height(16.dp))
@@ -323,6 +328,11 @@ fun HomeScreen(
                                 onAddCounter = {
                                     showingCounter = true
                                     habitForCounter = it
+                                },
+                                onFutureTaskStateChange = {
+                                    scope.launch {
+                                        Toast.makeText(context,"Can't start Future Tasks", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             )
                             Spacer(Modifier.height(16.dp))
