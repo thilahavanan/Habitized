@@ -6,11 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -79,7 +83,10 @@ fun DurationScreen(
 
     LaunchedEffect(state.theme) {
         when(state.theme){
-            Normal -> {}
+            Normal -> {
+                onPrimary = onPrimaryColor
+                inverse = inverseColor
+            }
             else ->{
                onPrimary = Color.White
                inverse = Color.Black
@@ -123,24 +130,56 @@ fun DurationScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "back",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = if(state.theme == Theme.Normal) MaterialTheme.colorScheme.onPrimary
+                            else Color.White
                         )
                     }
                 },
-                title = title,
-                rightIcon = {
-                    IconButton(
-                        onClick = {
-                           viewmodel.openSettings()
-                        },
+                title = {
+                    Text(
+                        text = title,
+                        style = TextStyle(
+                            color = if(state.theme == Theme.Normal) MaterialTheme.colorScheme.onPrimary
+                            else Color.White,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp
+                        ),
                         modifier = Modifier
-                            .padding(top = 30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "settings",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                            .padding(top = 40.dp)
+                    )
+                },
+                rightIcon = {
+                    Row{
+                        IconButton(
+                            onClick = {
+                                viewmodel.openSettings()
+                            },
+                            modifier = Modifier
+                                .padding(top = 30.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.theme_icon),
+                                contentDescription = "settings",
+                                tint = if(state.theme == Theme.Normal) MaterialTheme.colorScheme.onPrimary
+                                else Color.White
+                            )
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        IconButton(
+                            onClick = {
+                                //todo viewmodel.openSettings()
+                            },
+                            modifier = Modifier
+                                .padding(top = 30.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "notification",
+                                tint = if(state.theme == Theme.Normal) MaterialTheme.colorScheme.onPrimary
+                                else Color.White
+                            )
+                        }
                     }
                 }
             )
@@ -226,10 +265,6 @@ fun DurationScreen(
                                 Color.Transparent,
                             )
                         ))
-                        .paint(
-                            painter = painterResource(R.drawable.bg_noise),
-                            contentScale = ContentScale.FillBounds
-                        )
                     Coffee -> Modifier.paint(
                         painter = painterResource(R.drawable.coffee_theme),
                         contentScale = ContentScale.FillBounds

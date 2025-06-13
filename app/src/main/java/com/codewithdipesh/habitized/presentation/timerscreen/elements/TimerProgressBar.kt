@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 fun TimerProgressBar(
     progress: Int,
     total : Int,
+    unprogressColor : Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    progressColor : Color = MaterialTheme.colorScheme.onPrimary,
     modifier: Modifier = Modifier
 ) {
     val progressFraction = if (total > 0) {
@@ -45,7 +47,7 @@ fun TimerProgressBar(
                 .fillMaxWidth()
                 .height(5.dp)
                 .align(Alignment.CenterStart)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .background(unprogressColor)
         )
 
         // Progress Line
@@ -54,7 +56,7 @@ fun TimerProgressBar(
                 .fillMaxWidth(progressFraction)
                 .height(5.dp)
                 .align(Alignment.CenterStart)
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(progressColor)
         )
 
         // Moving Dot
@@ -62,7 +64,7 @@ fun TimerProgressBar(
             modifier = Modifier
                 .size(16.dp)
                 .offset(x = (progressFraction * 250).dp - 2.dp)
-                .background(MaterialTheme.colorScheme.onPrimary, CircleShape)
+                .background(progressColor, CircleShape)
                 .align(Alignment.CenterStart)
         )
     }

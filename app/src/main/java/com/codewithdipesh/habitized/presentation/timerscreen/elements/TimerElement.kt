@@ -202,6 +202,7 @@ fun TimerElement(
         TimerProgressBar(
             progress = count,
             total = secondTimes,
+            progressColor = onPrimary,
             modifier = Modifier.padding(horizontal = 40.dp)
         )
         Spacer(Modifier.height(16.dp))

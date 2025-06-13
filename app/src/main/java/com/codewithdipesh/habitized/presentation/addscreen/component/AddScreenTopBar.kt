@@ -23,7 +23,7 @@ import com.codewithdipesh.habitized.ui.theme.regular
 @Composable
 fun AddScreenTopBar(
     modifier: Modifier = Modifier,
-    title : String? = null,
+    title : @Composable () -> Unit = {},
     isShowingLeftIcon : Boolean = false,
     isShowingRightIcon : Boolean = false,
     leftIcon : @Composable () -> Unit = {},
@@ -44,19 +44,7 @@ fun AddScreenTopBar(
             Row{
                 leftIcon()
                 Spacer(Modifier.width(16.dp))
-                title?.let {
-                    Text(
-                        text = title,
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
-                        ),
-                        modifier = Modifier
-                            .padding(top = 40.dp)
-                    )
-                }
+                title()
             }
             //right icon
             rightIcon()
