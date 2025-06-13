@@ -8,6 +8,7 @@ import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
 import com.codewithdipesh.habitized.data.repository.HabitRepoImpl
+import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.Module
 import dagger.Provides
@@ -62,5 +63,11 @@ object Module {
             subtaskDao = subtaskDao,
             goalDao = goalDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideHabitPreference(@ApplicationContext context: Context): HabitPreference {
+        return HabitPreference(context)
     }
 }

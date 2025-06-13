@@ -12,7 +12,7 @@ data class DurationUI(
     val progressId: UUID? =  null,
     val habitWithProgress: HabitWithProgress? = null,
     val timerState : TimerState = TimerState.Not_Started,
-    val theme : Theme = Theme.Matcha,
+    val theme : Theme = Theme.Normal,
     val isSettingsOpen : Boolean = false
 )
 
@@ -22,9 +22,4 @@ enum class TimerState{
     Not_Started,
     Resumed,
     Finished
-}
-enum class Theme{
-    Normal,
-    Coffee,
-    Matcha
 }

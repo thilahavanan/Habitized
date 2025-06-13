@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.codewithdipesh.habitized.data.repository.HabitRepoImpl
 import com.codewithdipesh.habitized.data.services.TimerService
+import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
@@ -20,11 +21,19 @@ import kotlin.jvm.java
 
 @HiltViewModel
 class DurationViewModel @Inject constructor(
-    private val repo : HabitRepository
+    private val repo : HabitRepository,
+    private val pref : HabitPreference
 ) : ViewModel(){
 
      private val _state = MutableStateFlow(DurationUI())
      val state = _state.asStateFlow()
+
+    init {
+        val theme = pref.getTheme(_state.value.theme.displayName)
+        _state.value = _state.value.copy(
+            theme = Theme.fromString(theme)
+        )
+    }
 
     suspend fun init(id : UUID){
         val response = repo.getHabitProgressById(id)
@@ -58,7 +67,12 @@ class DurationViewModel @Inject constructor(
     }
 
     fun clearUi(){
-        _state.value = DurationUI()
+        _state.value = _state.value.copy(
+            progressId = null,
+            habitWithProgress = null,
+            timerState = TimerState.Not_Started,
+            isSettingsOpen=false
+        )
     }
 
     suspend fun startTimer(context : Context, totalSeconds : Int){
@@ -83,6 +97,7 @@ class DurationViewModel @Inject constructor(
         _state.value = _state.value.copy(
             theme = theme
         )
+        pref.updateTheme(theme.displayName)
     }
     fun openSettings(){
         _state.value = _state.value.copy(
