@@ -2,13 +2,9 @@ package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import com.codewithdipesh.habitized.data.repository.HabitRepoImpl
 import com.codewithdipesh.habitized.data.services.TimerService
 import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
-import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +12,6 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
-import kotlin.concurrent.timer
 import kotlin.jvm.java
 
 @HiltViewModel
@@ -71,7 +66,7 @@ class DurationViewModel @Inject constructor(
             progressId = null,
             habitWithProgress = null,
             timerState = TimerState.Not_Started,
-            isSettingsOpen=false
+            isThemesOpen=false
         )
     }
 
@@ -99,14 +94,14 @@ class DurationViewModel @Inject constructor(
         )
         pref.updateTheme(theme.displayName)
     }
-    fun openSettings(){
+    fun openThemes(){
         _state.value = _state.value.copy(
-            isSettingsOpen = true
+            isThemesOpen = true
         )
     }
-    fun closeSettings(){
+    fun closeThemes(){
         _state.value = _state.value.copy(
-            isSettingsOpen = false
+            isThemesOpen = false
         )
     }
 

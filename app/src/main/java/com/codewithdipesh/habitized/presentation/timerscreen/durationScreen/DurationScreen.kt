@@ -1,10 +1,7 @@
 package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +14,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,6 +47,7 @@ import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.Theme.*
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
+import com.codewithdipesh.habitized.presentation.timerscreen.elements.ThemeChooser
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
 import com.codewithdipesh.habitized.presentation.util.getColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
@@ -59,6 +56,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.util.UUID
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DurationScreen(
     modifier: Modifier = Modifier,
@@ -71,6 +69,7 @@ fun DurationScreen(
 ){
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState()
 
     val state by viewmodel.state.collectAsState()
     var showStarter by remember {
@@ -157,7 +156,7 @@ fun DurationScreen(
                     Row{
                         IconButton(
                             onClick = {
-                                viewmodel.openSettings()
+                                viewmodel.openThemes()
                             },
                             modifier = Modifier
                                 .padding(top = 30.dp)
@@ -203,49 +202,16 @@ fun DurationScreen(
             }
         }
 
-        //todo settings
-        //todo change it to good ui
-        var tempTheme by remember {
-            mutableStateOf(state.theme)
-        }
-        if(state.isSettingsOpen){
-            AlertDialog(
-                onDismissRequest = {
-                    viewmodel.closeSettings()
+
+        if(state.isThemesOpen){
+            ThemeChooser(
+                sheetState = sheetState,
+                selectedTheme = state.theme,
+                onSelect = {
+                    viewmodel.chooseTheme(it)
                 },
-                text = {
-                    Column {
-                        TextButton(
-                            onClick = {
-                                tempTheme = Theme.Normal
-                            }
-                        ) {
-                            Text("Normal")
-                        }
-                        TextButton(
-                            onClick = {
-                                tempTheme = Theme.Matcha
-                            }
-                        ) {
-                            Text("Matcha")
-                        }
-                        TextButton(
-                            onClick = {
-                                tempTheme = Theme.Coffee
-                            }
-                        ) {
-                            Text("Coffee")
-                        }
-                    }
-                },
-                confirmButton = {
-                    Text(
-                        "confirm",
-                        modifier = Modifier.clickable{
-                            viewmodel.chooseTheme(tempTheme)
-                            viewmodel.closeSettings()
-                        }
-                    )
+                onDismiss = {
+                    viewmodel.closeThemes()
                 }
             )
         }
@@ -277,6 +243,7 @@ fun DurationScreen(
                         painter = painterResource(R.drawable.matcha_theme),
                         contentScale = ContentScale.FillBounds
                     )
+                    Black -> Modifier.background(Color.Black)
                 }
             )
             .padding(innerPadding)

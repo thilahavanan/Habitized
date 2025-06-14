@@ -4,6 +4,7 @@ sealed class Theme(val displayName: String) {
     object Normal : Theme("normal")
     object Coffee : Theme("coffee")
     object Matcha : Theme("matcha")
+    object Black : Theme("black")
 
     override fun toString(): String = displayName
 
@@ -13,11 +14,12 @@ sealed class Theme(val displayName: String) {
                 "normal" -> Normal
                 "coffee" -> Coffee
                 "matcha" -> Matcha
+                "black" -> Black
                 else -> Normal
             }
         }
         fun getThemes(): List<Theme> {
-            return listOf(Normal, Matcha, Coffee)
+            return listOf(Normal, Matcha, Coffee, Black)
         }
     }
 }
