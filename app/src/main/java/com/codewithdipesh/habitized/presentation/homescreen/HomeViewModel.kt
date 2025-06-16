@@ -1,11 +1,8 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
@@ -16,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
@@ -52,7 +48,7 @@ class HomeViewModel @Inject constructor(
                 .firstOrNull()
             Log.d("Ongoing",ongoingHabit.toString())
             // Update ongoing timer if habit exists
-            ongoingHabit?.let { updateOngoingTimer(it) }
+            ongoingHabit?.let { addOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
                 habitWithProgressList = habits,
                 tasks = tasks,
@@ -188,19 +184,26 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    fun updateOngoingTimer(habitWithProgress: HabitWithProgress){
+    fun addOngoingTimer(habitWithProgress: HabitWithProgress){
         if(_uiState.value.ongoingHabit == null){
             _uiState.value = _uiState.value.copy(
                 ongoingHabit = habitWithProgress
             )
         }
     }
+    fun updateOngoingTimer(hour: Int, minute: Int, second: Int){
+        _uiState.value = _uiState.value.copy(
+            ongoingHour = hour,
+            ongoingMinute = minute,
+            ongoingSecond = second
+        )
+    }
     suspend fun finishTimer(){
         _uiState.value.ongoingHabit?.let {
             repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
-            _uiState.value = _uiState.value.copy(
-                ongoingHabit = null
-            )
+//            _uiState.value = _uiState.value.copy(
+//                ongoingHabit = null
+//            )
         }
     }
 }

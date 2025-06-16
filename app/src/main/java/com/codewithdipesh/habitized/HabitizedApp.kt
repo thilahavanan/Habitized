@@ -5,8 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import com.codewithdipesh.habitized.data.services.TimerService
-import com.codewithdipesh.habitized.data.services.TimerServiceManager
+import com.codewithdipesh.habitized.data.services.timerService.TimerService
+import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

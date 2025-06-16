@@ -8,6 +8,7 @@ data class DurationUI(
     val habitWithProgress: HabitWithProgress? = null,
     val timerState : TimerState = TimerState.Not_Started,
     val theme : Theme = Theme.Normal,
+    val isStarted : Boolean = false,
     val isThemesOpen : Boolean = false
 )
 

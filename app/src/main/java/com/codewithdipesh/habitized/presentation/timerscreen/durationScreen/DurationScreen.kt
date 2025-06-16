@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -75,7 +76,7 @@ fun DurationScreen(
     var showStarter by remember {
         mutableStateOf(false)
     }
-    var totalSeconds = 0
+    var totalSeconds by remember { mutableStateOf(0) }
 
     val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
     val inverseColor = MaterialTheme.colorScheme.inverseOnSurface
@@ -280,13 +281,19 @@ fun DurationScreen(
                 ){
                     TimerElement(
                         duration = targetDurationValue,
-                        start = state.timerState == TimerState.Resumed,
+                        start = state.isStarted,
                         finished = state.timerState == TimerState.Finished,
                         onPrimary = onPrimary,
                         inverse = inverse,
                         onStart = {
                             totalSeconds = it
                             showStarter = true
+                        },
+                        onPause = {
+                            viewmodel.pauseTimer()
+                        },
+                        onResume = {
+                            viewmodel.resumeTimer()
                         },
                         onTimerFinished = {
                             viewmodel.finishTimer()

@@ -119,6 +119,7 @@ class HabitRepoImpl(
     }
 
     override suspend fun onDoneHabitProgress(progressId: UUID) {
+        Log.d("ONDONE","called $progressId")
         habitProgressDao.onUpdateStatus(
             status = Status.Done.toString(),
             progressId = progressId

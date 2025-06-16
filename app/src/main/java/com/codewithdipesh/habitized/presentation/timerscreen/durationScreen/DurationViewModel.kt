@@ -2,8 +2,9 @@ package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.codewithdipesh.habitized.data.services.TimerService
+import com.codewithdipesh.habitized.data.services.timerService.TimerService
 import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
@@ -39,7 +40,8 @@ class DurationViewModel @Inject constructor(
                 is Status.Done -> TimerState.Finished
                 Status.Ongoing -> TimerState.Resumed
                 else -> TimerState.Not_Started
-            }
+            },
+            isStarted = response.progress.status == Status.Ongoing
         )
     }
 
@@ -72,9 +74,11 @@ class DurationViewModel @Inject constructor(
 
     suspend fun startTimer(context : Context, totalSeconds : Int){
         _state.value = _state.value.copy(
+            isStarted = true,
             timerState = TimerState.Resumed
         )
         val intent = Intent(context,TimerService::class.java).apply {
+            Log.d("timerservicw-viewmodel","$totalSeconds")
             putExtra("duration_seconds",totalSeconds)
             putExtra("habit",_state.value.habitWithProgress!!.habit.title)
             putExtra("id",_state.value.progressId.toString())
@@ -85,7 +89,9 @@ class DurationViewModel @Inject constructor(
     }
 
     suspend fun finishHabit(){
-        repo.onDoneHabitProgress(_state.value.progressId!!)
+        _state.value.progressId?.let {
+            repo.onDoneHabitProgress(_state.value.progressId!!)
+        }
     }
 
     fun chooseTheme(theme: Theme){

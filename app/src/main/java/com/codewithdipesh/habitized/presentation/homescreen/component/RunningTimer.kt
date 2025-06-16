@@ -35,8 +35,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codewithdipesh.habitized.data.services.TimerService
-import com.codewithdipesh.habitized.data.services.TimerServiceManager
+import com.codewithdipesh.habitized.data.services.timerService.TimerService
+import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreenOption
 import com.codewithdipesh.habitized.ui.theme.ndot
@@ -48,6 +48,10 @@ fun RunningTimer(
     modifier: Modifier = Modifier,
     habitWithProgress: HabitWithProgress,
     onClick : (HabitWithProgress) -> Unit,
+    hour : Int,
+    minute : Int,
+    second : Int,
+    onUpdateTimer : (Int,Int,Int) -> Unit,
     onTimerFinished : ()->Unit
 ) {
 
@@ -55,23 +59,24 @@ fun RunningTimer(
     val manager = remember { TimerServiceManager(context) }
     val timerState by manager.timerState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(Unit) {
         manager.bindService()
+
+        onDispose {
+            manager.unbindService()
+        }
     }
 
     LaunchedEffect(timerState) {
-        Log.d("TimerState",timerState.toString())
         if (timerState.isFinished) {
+            Log.d("TimerFinished",timerState.toString())
             onTimerFinished()
+        }else{
+            Log.d("TimerState","Updating Homepage")
+            onUpdateTimer(timerState.hour,timerState.minute,timerState.second)
         }
     }
 
-    LaunchedEffect(Unit) {
-        delay(1500)
-        if(timerState.hour == 0 && timerState.minute == 0 && timerState.second == 0){
-            onTimerFinished()
-        }
-    }
 
     Box(
         modifier = modifier.fillMaxWidth()
@@ -100,7 +105,7 @@ fun RunningTimer(
             )
             //timer
             Text(
-                text = "${timerState.hour}:${timerState.minute}:${timerState.second}",
+                text = "${hour}:${minute}:${second}",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 32.sp,

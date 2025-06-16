@@ -39,7 +39,7 @@
 
         </activity>
         <service
-            android:name=".data.services.TimerService"
+            android:name=".data.services.timerService.TimerService"
             android:foregroundServiceType="mediaPlayback|dataSync"
             android:exported="false">
         </service>

@@ -1,30 +1,25 @@
-package com.codewithdipesh.habitized.data.services
+package com.codewithdipesh.habitized.data.services.timerService
 
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.res.painterResource
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
-import com.codewithdipesh.habitized.MainActivity
+import androidx.core.net.toUri
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.presentation.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import androidx.core.net.toUri
-import androidx.core.graphics.createBitmap
 
 class TimerService : Service() {
 
@@ -36,14 +31,28 @@ class TimerService : Service() {
     // Store the actual start time instead of relying on delays
     private var startTime: Long = 0
     private var totalDurationMs: Long = 0
-    private var isPaused: Boolean = false
     private var pausedTimeMs: Long = 0
+    private var totalPausedDurationMs: Long = 0
+
+    //store the title , id , color of the habit
+    private var title : String = ""
+    private var id : String = ""
+    private var color : String = ""
+
+    //timerState
+    private val _timerState = MutableStateFlow(TimerClassState(0, 0, 0, false,false))
+    val timerState: StateFlow<TimerClassState> = _timerState.asStateFlow()
+
+    //pendingIntent
+    private lateinit var pendingIntent : PendingIntent
 
     interface TimerCallback {
         fun onTimerUpdate(h :Int,m:Int,s:Int)
         fun onTimerFinished()
+        fun onTimerPaused()
+        fun onTimerStarted()
     }
-    inner class  TimerBind : Binder(){
+    inner class TimerBind : Binder(){
         fun getService(): TimerService = this@TimerService
     }
 
@@ -53,24 +62,56 @@ class TimerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val totalSeconds = intent?.getIntExtra("duration_seconds", 0) ?: 0
-        val id = intent?.getStringExtra("id") ?: ""
-        val title = intent?.getStringExtra("habit") ?: "Habit Timer"
-        val color = intent?.getStringExtra("color") ?: "yellow"
+        Log.d("timerservicw","${intent?.getIntExtra("duration_seconds",0)}" )
+        Log.d("TimerService","${intent?.getStringExtra("id")} ,${intent?.getStringExtra("habit")} , ${intent?.getStringExtra("color")}" )
+        id = intent?.getStringExtra("id") ?: ""
+        title = intent?.getStringExtra("habit") ?: "Habit Timer"
+        color = intent?.getStringExtra("color") ?: "yellow"
+        Log.d("TimerService","$id,$title,$color" )
         startForegroundService(durationSeconds = totalSeconds,title = title,id = id, color = color)
         return START_STICKY
     }
 
+    fun pauseTimer() {
+        if (!_timerState.value.isPaused) {
+            pausedTimeMs = System.currentTimeMillis()
+            _timerState.value = _timerState.value.copy(
+                isPaused = true
+            )
+            timerJob?.cancel()
+            timerCallback?.onTimerPaused()
+        }
+    }
+
+    fun resumeTimer() {
+        if (_timerState.value.isPaused) {
+            val pauseDuration = System.currentTimeMillis() - pausedTimeMs
+            totalDurationMs += pauseDuration
+            _timerState.value = _timerState.value.copy(
+                isPaused = false
+            )
+            resumeTimerJob()
+            timerCallback?.onTimerStarted()
+        }
+    }
+
+
     private fun startForegroundService(id:String,title:String,durationSeconds:Int,color:String){
+        //reinitializing when we retry
+        _timerState.value = TimerClassState(0, 0, 0, false,false)
 
         startTime = System.currentTimeMillis()
+        Log.d("timerservicw","$durationSeconds" )
         totalDurationMs = durationSeconds * 1000L
+        Log.d("timerservicw","$totalDurationMs" )
 
+        Log.d("TimerServiceForeground","$id,$title,$color" )
         //intent for deeplinking
         val intent = Intent(
             Intent.ACTION_VIEW,
             "com.codewithdipesh.habitized://duration/$id/$title/$durationSeconds/$color".toUri()
         )
-        val pendingIntent = PendingIntent.getActivity(
+        pendingIntent = PendingIntent.getActivity(
             this,
             0,
             intent,
@@ -79,71 +120,83 @@ class TimerService : Service() {
 
         startForeground(1,createNotification("Starting...",title,durationSeconds,0,pendingIntent))
 
+        resumeTimerJob()
+    }
+
+    private fun resumeTimerJob() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         timerJob?.cancel()
         timerJob = scope.launch {
-            while(true){
+            while (true) {
                 val currentTime = System.currentTimeMillis()
-                val elapsedMs = currentTime - startTime
+                val elapsedMs = currentTime - startTime - totalPausedDurationMs
                 val remainingMs = totalDurationMs - elapsedMs
 
-                if(remainingMs <= 0){
-                    //timer finished
-                    notificationManager.notify(1,showAlarmNotification())
+                Log.d("timerservicw","$currentTime,$elapsedMs,$remainingMs")
+
+                if (remainingMs <= 0) {
+                    notificationManager.notify(1, showAlarmNotification())
+                    _timerState.value = _timerState.value.copy(
+                        isPaused = false,
+                        isFinished = true
+                    )
                     timerCallback?.onTimerFinished()
                     stopSelf()
                     break
                 }
 
                 val remainingSeconds = (remainingMs / 1000).toInt()
-                val hour = remainingSeconds/3600
+                val hour = remainingSeconds / 3600
                 val minute = (remainingSeconds % 3600) / 60
                 val second = remainingSeconds % 60
 
-
-                //update notification
-                val timerString = String.format("%02d:%02d:%02d",hour,minute,second)
+                val timerString = String.format("%02d:%02d:%02d", hour, minute, second)
                 val notification = createNotification(
                     "Time Left : $timerString",
                     title,
-                    durationSeconds,
-                    (elapsedMs/1000).toInt(),
+                    (totalDurationMs / 1000).toInt(),
+                    (elapsedMs / 1000).toInt(),
                     pendingIntent
                 )
-                //call callback
-                timerCallback?.onTimerUpdate(hour,minute,second)
-                notificationManager.notify(1,notification)
 
-                // Use more precise delay calculation
-                val nextUpdateTime = startTime  + ((elapsedMs / 1000 + 1) * 1000)
+                //updating in service state
+                _timerState.value = _timerState.value.copy(
+                    hour=hour,
+                    minute = minute,
+                    second=second
+                )
+                timerCallback?.onTimerUpdate(hour, minute, second)
+                notificationManager.notify(1, notification)
+
+                val nextUpdateTime = startTime + ((elapsedMs / 1000 + 1) * 1000)
                 val delayMs = nextUpdateTime - System.currentTimeMillis()
-
                 if (delayMs > 0) {
                     delay(delayMs)
                 } else {
-                    delay(100) // Minimum delay to prevent tight loop
+                    delay(100)
                 }
-
             }
         }
     }
 
+
     private fun createNotification(content : String,title : String,maxProgress:Int,currentProgress:Int?,pendingIntent : PendingIntent) : Notification {
         val notification =  NotificationCompat.Builder(this,"TIMER_CHANNEL")
             .setSmallIcon(R.drawable.ic_stat_name)
-            .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.ic_stat_name))
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_stat_name))
             .setContentTitle(title)
             .setContentText(content)
             .setContentIntent(pendingIntent)
-            .setOnlyAlertOnce(true)
+            .setSilent(true)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         if(currentProgress != null){
-            notification.setProgress(maxProgress,currentProgress,false)
+            notification
+                .setProgress(maxProgress,currentProgress,false)
         }
 
         return notification.build()
@@ -159,18 +212,8 @@ class TimerService : Service() {
         Log.d("TimerService", "Timer callback set: ${callback != null}")
     }
 
-    private fun showAlarmNotification() : Notification{
+    private fun showAlarmNotification() : Notification {
 
-        val intent = Intent(
-            applicationContext,
-            MainActivity::class.java
-        )
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
         return NotificationCompat.Builder(this, "TIMER_CHANNEL")
             .setSmallIcon(R.drawable.ic_stat_name)
             .setContentTitle("⏰ Time's Up!")
@@ -183,7 +226,6 @@ class TimerService : Service() {
             .build()
 
     }
-
 
 
 }

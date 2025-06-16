@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,10 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.data.services.TimerService
+import com.codewithdipesh.habitized.data.services.timerService.TimerService
+import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
 import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.regular
 import java.time.LocalTime
+import kotlin.concurrent.timer
 
 @Composable
 fun TimerElement(
@@ -59,70 +62,57 @@ fun TimerElement(
     inverse : Color,
     onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
+    onResume : () -> Unit = {},
     onFinish : () ->Unit = {},
     onTimerFinished : () -> Unit = {},
     modifier: Modifier = Modifier
 ){
     val context = LocalContext.current
-    var timerService: TimerService? = null
-    var isBound = false
+    val manager = remember { TimerServiceManager(context) }
+    val timerState by manager.timerState.collectAsState()
+
+    var count by remember { mutableStateOf(0) }
+
+    val secondTimes = (duration.hour * 3600) + (duration.minute *60) + duration.second
+    var resumed by remember { mutableStateOf(false) }
 
     var second by remember{ mutableStateOf(duration.second) }
     var minute by remember{ mutableStateOf(duration.minute) }
     var hour by remember{ mutableStateOf(duration.hour) }
 
-    var count by remember { mutableStateOf(0) }
-
-    var secondTimes = (duration.hour * 3600) + (duration.minute *60) + duration.second
-    var resumed by remember { mutableStateOf(false) }
-
-    DisposableEffect(Unit){
-        val connection = object : ServiceConnection {
-            override fun onServiceConnected(className: ComponentName, service: IBinder) {
-                val binder = service as TimerService.TimerBind
-                timerService = binder.getService()
-                isBound = true
-
-                // Set callback
-                timerService?.setTimerCallback(object : TimerService.TimerCallback {
-                    override fun onTimerUpdate(h: Int, m: Int, s: Int) {
-                        // This runs on the service thread, post to main thread
-                        Log.e("TimerElement", "$h,$m,$s")
-                        hour = h
-                        minute = m
-                        second = s
-                        count = (secondTimes - (hour * 3600) - (minute * 60) - second)
-                        Log.e("TimerElement", "$count")
-                    }
-
-                    override fun onTimerFinished() {
-                        //make sure every element is 0 ( sometimes it doesnt bcz of doze mode)
-                        hour = 0
-                        minute = 0
-                        second = 0
-                        onTimerFinished()
-                    }
-                })
-            }
-
-            override fun onServiceDisconnected(arg0: ComponentName) {
-                timerService = null
-                isBound = false
-            }
-        }
-
-        Intent(context, TimerService::class.java).also { intent ->
-            context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-        }
+    DisposableEffect(Unit) {
+        manager.bindService()
 
         onDispose {
-            if (isBound) {
-                context.unbindService(connection)
-                isBound = false
-            }
+            manager.unbindService()
         }
     }
-
+    LaunchedEffect(timerState.minute,timerState.hour,timerState.second){
+        if (start && !finished) {
+            second = timerState.second
+            minute = timerState.minute
+            hour = timerState.hour
+            count = secondTimes - (timerState.hour * 3600) - (timerState.minute * 60) - timerState.second
+        }
+        else if (finished && timerState.hour == 0 && timerState.minute == 0 && timerState.second == 0){
+            onTimerFinished()
+        }
+    }
+    LaunchedEffect(start && timerState.isPaused) {
+        Log.d("timerPaused","$timerState")
+        if(timerState.isPaused){
+            resumed = false
+        }else{
+            resumed = true
+        }
+    }
+    LaunchedEffect(start && timerState.isFinished) {
+        if(timerState.isFinished){
+            Log.d("timerFinished","finished")
+            Log.d("timerFinished","$timerState")
+            onTimerFinished()
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -214,10 +204,21 @@ fun TimerElement(
                 .background(onPrimary)
                 .clickable{
                     if(!start && !finished){
+                        Log.d("timerservicw-timerelement","$secondTimes")
                         onStart(secondTimes)
-                    }
-                    if(finished){
-                        onFinish()
+                    }else{
+                        if(start && !finished){
+                            if(resumed){
+                                manager.pause()
+                                onPause()
+                            }else{
+                                manager.resume()
+                                onResume()
+                            }
+                        }
+                        if(finished){
+                            onFinish()
+                        }
                     }
                 },
             contentAlignment = Alignment.Center
@@ -244,8 +245,8 @@ fun TimerElement(
                 Text(
                     text = if(!start && !finished) "start"
                            else {
-                               if(resumed) "pause"
-                               else if(finished) "Finish"
+                               if(finished) "Finish"
+                               else if(resumed) "pause"
                                else "resume"
                            }
                     ,

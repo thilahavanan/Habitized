@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.rememberNavController
-import com.codewithdipesh.habitized.data.services.TimerService
+import com.codewithdipesh.habitized.data.services.timerService.TimerService
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.navigation.HabitizedNavHost
