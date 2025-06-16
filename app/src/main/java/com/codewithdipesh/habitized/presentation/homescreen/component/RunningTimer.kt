@@ -69,21 +69,22 @@ fun RunningTimer(
 
     LaunchedEffect(timerState) {
         if (timerState.isFinished) {
-            Log.d("TimerFinished",timerState.toString())
             onTimerFinished()
         }else{
-            Log.d("TimerState","Updating Homepage")
             onUpdateTimer(timerState.hour,timerState.minute,timerState.second)
         }
     }
-
 
     Box(
         modifier = modifier.fillMaxWidth()
         .wrapContentHeight()
         .background(MaterialTheme.colorScheme.background)
         .clickable{
-            onClick(habitWithProgress)
+            if(hour == 0 && minute == 0 && second == 0){
+                onTimerFinished()
+            }else{
+                onClick(habitWithProgress)
+            }
         }
     ){
         Row(
@@ -105,10 +106,12 @@ fun RunningTimer(
             )
             //timer
             Text(
-                text = "${hour}:${minute}:${second}",
+                text = if(hour == 0 && minute == 0 && second == 0) "Click to finish"
+                    else "${hour}:${minute}:${second}",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = 32.sp,
+                    fontSize = if(hour == 0 && minute == 0 && second == 0) 16.sp
+                               else 32.sp,
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold
                 )

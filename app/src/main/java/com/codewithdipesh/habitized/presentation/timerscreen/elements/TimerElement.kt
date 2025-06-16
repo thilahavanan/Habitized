@@ -8,6 +8,12 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -195,96 +202,129 @@ fun TimerElement(
             progressColor = onPrimary,
             modifier = Modifier.padding(horizontal = 40.dp)
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
         //pause retry
-        Box(
-            modifier = Modifier
-                .size(126.dp,40.dp)
-                .clip(RoundedCornerShape(15.dp))
-                .background(onPrimary)
-                .clickable{
-                    if(!start && !finished){
-                        Log.d("timerservicw-timerelement","$secondTimes")
-                        onStart(secondTimes)
-                    }else{
-                        if(start && !finished){
-                            if(resumed){
-                                manager.pause()
-                                onPause()
-                            }else{
-                                manager.resume()
-                                onResume()
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ){
+            //retry
+            AnimatedVisibility(
+                visible = start && !finished,
+                enter = slideInHorizontally(
+                    initialOffsetX = {it -> it}
+                ) + fadeIn(),
+                exit = slideOutHorizontally(
+                    targetOffsetX = {it->it}
+                ) + fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier.size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.3f))
+                        .clickable{
+                            onStart(secondTimes)
+                        },
+                    contentAlignment = Alignment.Center
+
+                ){
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = "retry",
+                        tint = onPrimary
+                    )
+                }
+            }
+            //pause/resume/start/finish
+            Box(
+                modifier = Modifier
+                    .size(126.dp,40.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(Color.White.copy(alpha = 0.3f))
+                    .clickable{
+                        if(!start && !finished){
+                            Log.d("timerservicw-timerelement","$secondTimes")
+                            onStart(secondTimes)
+                        }else{
+                            if(start && !finished){
+                                if(resumed){
+                                    manager.pause()
+                                    onPause()
+                                }else{
+                                    manager.resume()
+                                    onResume()
+                                }
+                            }
+                            if(finished){
+                                onFinish()
                             }
                         }
-                        if(finished){
-                            onFinish()
+                    },
+                contentAlignment = Alignment.Center
+            ){
+                Row(verticalAlignment = Alignment.CenterVertically){
+                    //icon
+                    if(start && !finished){
+                        if(resumed){
+                            Icon(
+                                painter = painterResource(R.drawable.resumed_icon),
+                                contentDescription = "pause",
+                                tint = onPrimary,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }else{
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = "resume",
+                                tint = onPrimary
+                            )
                         }
                     }
-                },
-            contentAlignment = Alignment.Center
-        ){
-            Row(verticalAlignment = Alignment.CenterVertically){
-                //icon
-                if(start && !finished){
-                    if(resumed){
-                        Icon(
-                            painter = painterResource(R.drawable.resumed_icon),
-                            contentDescription = "pause",
-                            tint = inverse,
-                            modifier = Modifier.padding(end = 8.dp)
+                    //text
+                    Text(
+                        text = if(!start && !finished) "start"
+                        else {
+                            if(finished) "Finish"
+                            else if(resumed) "pause"
+                            else "resume"
+                        }
+                        ,
+                        style = TextStyle(
+                            color = onPrimary,
+                            fontFamily = regular,
+                            fontSize = 16.sp
                         )
-                    }else{
-                        Icon(
-                            imageVector = Icons.Filled.PlayArrow,
-                            contentDescription = "resume",
-                            tint = inverse
-                        )
-                    }
+                    )
                 }
-                //text
-                Text(
-                    text = if(!start && !finished) "start"
-                           else {
-                               if(finished) "Finish"
-                               else if(resumed) "pause"
-                               else "resume"
-                           }
-                    ,
-                    style = TextStyle(
-                        color = inverse,
-                        fontFamily = regular,
-                        fontSize = 16.sp
-                    )
-                )
             }
-        }
-        Spacer(Modifier.height(16.dp))
-        //retry
-        AnimatedVisibility(
-            visible = start && !finished
-        ) {
-            Row(
-                modifier = Modifier.clickable{
-                    onStart(secondTimes)
-                },
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                //icon
-                Icon(
-                    imageVector = Icons.Filled.Refresh,
-                    contentDescription = "retry",
-                    tint = onPrimary
-                )
-                //text
-                Text(
-                    text = "Retry",
-                    style = TextStyle(
-                        color = onPrimary,
-                        fontFamily = regular,
-                        fontSize = 16.sp
+            //cancel
+            AnimatedVisibility(
+                visible = start && !finished,
+                enter = slideInHorizontally(
+                    initialOffsetX = {it -> -it}
+                ) + fadeIn(),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { it -> -it}
+                ) + fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier.size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.3f))
+                        .clickable{
+                            //cancel
+                            //todo
+                        },
+                    contentAlignment = Alignment.Center
+                ){
+                    Icon(
+                        painter = painterResource(R.drawable.cancel_timer),
+                        contentDescription = "cancel",
+                        tint = onPrimary
                     )
-                )
+                }
             }
+
         }
+
     }
 }

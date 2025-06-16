@@ -201,9 +201,6 @@ class HomeViewModel @Inject constructor(
     suspend fun finishTimer(){
         _uiState.value.ongoingHabit?.let {
             repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
-//            _uiState.value = _uiState.value.copy(
-//                ongoingHabit = null
-//            )
         }
     }
 }

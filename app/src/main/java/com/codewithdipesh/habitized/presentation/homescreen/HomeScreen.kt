@@ -383,6 +383,7 @@ fun HomeScreen(
                             onTimerFinished = {
                                 scope.launch{
                                     viewmodel.finishTimer()
+                                    viewmodel.loadHomePage(state.selectedDate)
                                 }
                             },
                             modifier = Modifier
