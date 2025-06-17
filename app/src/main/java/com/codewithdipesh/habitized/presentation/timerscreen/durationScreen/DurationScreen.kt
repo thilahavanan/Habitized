@@ -47,6 +47,7 @@ import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.Theme.*
+import com.codewithdipesh.habitized.presentation.timerscreen.elements.MarkAsCompleteAlertDialog
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.ThemeChooser
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
@@ -76,6 +77,8 @@ fun DurationScreen(
     var showStarter by remember {
         mutableStateOf(false)
     }
+    var showCompleteAlertBox by remember { mutableStateOf(false) }
+
     var totalSeconds by remember { mutableStateOf(0) }
 
     val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
@@ -172,14 +175,14 @@ fun DurationScreen(
                         Spacer(Modifier.width(16.dp))
                         IconButton(
                             onClick = {
-                                //todo viewmodel.openSettings()
+                                showCompleteAlertBox = true
                             },
                             modifier = Modifier
                                 .padding(top = 30.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "notification",
+                                painter = painterResource(R.drawable.tick_icon),
+                                contentDescription = "mark as complete",
                                 tint = if(state.theme == Theme.Normal) MaterialTheme.colorScheme.onPrimary
                                 else Color.White
                             )
@@ -216,6 +219,25 @@ fun DurationScreen(
                 }
             )
         }
+
+        //mark as complete
+        if(showCompleteAlertBox){
+            MarkAsCompleteAlertDialog(
+                onDismiss = {
+                    showCompleteAlertBox = false
+                },
+                onConfirm = {
+                    //mark as done
+                    scope.launch {
+                        viewmodel.finishHabit()
+                        navController.navigateUp()
+                        viewmodel.clearUi()
+                    }
+                }
+            )
+        }
+
+
 
         Column(modifier = Modifier
             .fillMaxSize()
