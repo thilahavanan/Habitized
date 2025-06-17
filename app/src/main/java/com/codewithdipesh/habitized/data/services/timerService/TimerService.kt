@@ -206,6 +206,10 @@ class TimerService : Service() {
         timerCallback = null
         super.onDestroy()
     }
+    fun cancel(){
+        stopSelf()
+        timerJob?.cancel()
+    }
 
     fun setTimerCallback(callback: TimerCallback?) {
         this.timerCallback = callback
