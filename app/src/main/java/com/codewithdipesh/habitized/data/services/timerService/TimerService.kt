@@ -202,7 +202,7 @@ class TimerService : Service() {
         return notification.build()
     }
     override fun onDestroy() {
-         timerJob?.cancel()
+        timerJob?.cancel()
         timerCallback = null
         super.onDestroy()
     }

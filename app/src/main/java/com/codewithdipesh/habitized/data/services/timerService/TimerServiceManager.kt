@@ -103,4 +103,7 @@ class TimerServiceManager(
     fun resume() {
         timerService?.resumeTimer()
     }
+    fun cancel(){
+        timerService?.onDestroy()
+    }
 }

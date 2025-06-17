@@ -63,6 +63,14 @@ class DurationViewModel @Inject constructor(
         )
     }
 
+    suspend fun cancelTimer(){
+        repo.onNotStartedHabitProgress(_state.value.progressId!!)
+        _state.value = _state.value.copy(
+            timerState = TimerState.Not_Started,
+            isStarted = false
+        )
+    }
+
     fun clearUi(){
         _state.value = _state.value.copy(
             progressId = null,

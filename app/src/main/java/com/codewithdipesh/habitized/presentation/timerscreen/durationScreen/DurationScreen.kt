@@ -284,7 +284,6 @@ fun DurationScreen(
                         start = state.isStarted,
                         finished = state.timerState == TimerState.Finished,
                         onPrimary = onPrimary,
-                        inverse = inverse,
                         onStart = {
                             totalSeconds = it
                             showStarter = true
@@ -294,6 +293,11 @@ fun DurationScreen(
                         },
                         onResume = {
                             viewmodel.resumeTimer()
+                        },
+                        onCancel = {
+                            scope.launch {
+                                viewmodel.cancelTimer()
+                            }
                         },
                         onTimerFinished = {
                             viewmodel.finishTimer()

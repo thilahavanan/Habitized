@@ -66,10 +66,10 @@ fun TimerElement(
     start : Boolean = false,
     finished : Boolean = false,
     onPrimary : Color,
-    inverse : Color,
     onStart : (Int)->Unit = {},
     onPause : () ->Unit= {},
     onResume : () -> Unit = {},
+    onCancel : () ->Unit = {},
     onFinish : () ->Unit = {},
     onTimerFinished : () -> Unit = {},
     modifier: Modifier = Modifier
@@ -311,8 +311,14 @@ fun TimerElement(
                         .clip(CircleShape)
                         .background(Color.White.copy(alpha = 0.3f))
                         .clickable{
-                            //cancel
-                            //todo
+                            manager.cancel()
+                            onCancel()
+
+                            hour = duration.hour
+                            minute = duration.minute
+                            second = duration.second
+
+                            count = 0
                         },
                     contentAlignment = Alignment.Center
                 ){
