@@ -1,35 +1,20 @@
  package com.codewithdipesh.habitized
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.rememberNavController
-import com.codewithdipesh.habitized.data.services.timerService.TimerService
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.navigation.HabitizedNavHost
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
+import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionViewModel
 import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,11 +42,13 @@ class MainActivity : ComponentActivity() {
                 val homeViewModel by viewModels<HomeViewModel>()
                 val addViewModel by viewModels<AddViewModel>()
                 val durationViewModel by viewModels<DurationViewModel>()
+                val sessionViewModel by viewModels<SessionViewModel>()
                 HabitizedNavHost(
                     navController = navController,
                     homeViewModel = homeViewModel,
                     addViewModel = addViewModel,
-                    durationViewModel = durationViewModel
+                    durationViewModel = durationViewModel,
+                    sessionViewModel = sessionViewModel
                 )
             }
         }

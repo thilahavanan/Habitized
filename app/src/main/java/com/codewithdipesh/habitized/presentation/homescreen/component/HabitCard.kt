@@ -57,13 +57,13 @@ import java.util.UUID
 @Composable
 fun HabitCard(
     habitWithProgress: HabitWithProgress,
-    onAddButton : () -> Unit = {},
     modifier: Modifier = Modifier,
     onAddCounter : (HabitWithProgress) -> Unit = {},
     onDone : (HabitWithProgress) -> Unit = {},
     onSkip : (HabitWithProgress) -> Unit = {},
     onUnSkip : (HabitWithProgress) -> Unit = {},
     onStartDuration : (HabitWithProgress)-> Unit = {},
+    onStartSession : (HabitWithProgress)-> Unit = {},
     onFutureTaskStateChange : () ->Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
     onToggle : (SubTask)-> Unit
@@ -105,6 +105,9 @@ fun HabitCard(
         HabitType.Session -> {
             SessionHabit(
                 habitWithProgress = habitWithProgress,
+                onStartSession = {
+                    onStartSession(it)
+                },
                 onAddSubTask = {
                     onSubTaskAdding(habitWithProgress)
                 },
@@ -338,6 +341,7 @@ fun DurationHabit(
 fun SessionHabit(
     modifier: Modifier = Modifier,
     habitWithProgress: HabitWithProgress,
+    onStartSession: (HabitWithProgress) -> Unit,
     onAddSubTask : () -> Unit = {},
     onToggle : (SubTask)->Unit = {},
     onDeny: () -> Unit
@@ -363,9 +367,8 @@ fun SessionHabit(
                         .clip(RoundedCornerShape(10.dp))
                         .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
                         .clickable{
-                            //todo
                             if(habitWithProgress.progress.date == LocalDate.now()){
-
+                                onStartSession(habitWithProgress)
                             }else{
                                 onDeny()
                             }

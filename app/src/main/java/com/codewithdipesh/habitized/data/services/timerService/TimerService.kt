@@ -38,6 +38,7 @@ class TimerService : Service() {
     private var title : String = ""
     private var id : String = ""
     private var color : String = ""
+    private var screen : String = ""
 
     //timerState
     private val _timerState = MutableStateFlow(TimerClassState(0, 0, 0, false,false))
@@ -62,13 +63,12 @@ class TimerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val totalSeconds = intent?.getIntExtra("duration_seconds", 0) ?: 0
-        Log.d("timerservicw","${intent?.getIntExtra("duration_seconds",0)}" )
-        Log.d("TimerService","${intent?.getStringExtra("id")} ,${intent?.getStringExtra("habit")} , ${intent?.getStringExtra("color")}" )
         id = intent?.getStringExtra("id") ?: ""
         title = intent?.getStringExtra("habit") ?: "Habit Timer"
         color = intent?.getStringExtra("color") ?: "yellow"
-        Log.d("TimerService","$id,$title,$color" )
-        startForegroundService(durationSeconds = totalSeconds,title = title,id = id, color = color)
+        screen = intent?.getStringExtra("screen") ?: "duration"
+        Log.d("TimerService","$id,$title,$color,$screen")
+        startForegroundService(durationSeconds = totalSeconds,title = title,id = id, color = color, screen = screen)
         return START_STICKY
     }
 
@@ -92,24 +92,22 @@ class TimerService : Service() {
             )
             resumeTimerJob()
             timerCallback?.onTimerStarted()
-        }
+        } 
     }
 
 
-    private fun startForegroundService(id:String,title:String,durationSeconds:Int,color:String){
+    private fun startForegroundService(id:String,title:String,durationSeconds:Int,color:String,screen:String){
         //reinitializing when we retry
         _timerState.value = TimerClassState(0, 0, 0, false,false)
 
         startTime = System.currentTimeMillis()
-        Log.d("timerservicw","$durationSeconds" )
         totalDurationMs = durationSeconds * 1000L
-        Log.d("timerservicw","$totalDurationMs" )
 
         Log.d("TimerServiceForeground","$id,$title,$color" )
         //intent for deeplinking
         val intent = Intent(
             Intent.ACTION_VIEW,
-            "com.codewithdipesh.habitized://duration/$id/$title/$durationSeconds/$color".toUri()
+            "com.codewithdipesh.habitized://$screen/$id/$title/$durationSeconds/$color".toUri()
         )
         pendingIntent = PendingIntent.getActivity(
             this,

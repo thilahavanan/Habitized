@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
+import android.view.Surface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -143,6 +144,8 @@ fun SubTaskEditor(
     subTask: SubTask,
     enabled : Boolean = true,
     textSize :Int = 18,
+    textColor : Color =MaterialTheme.colorScheme.onPrimary,
+    onSurface: Color = MaterialTheme.colorScheme.onSurface,
     onChange : (String) ->Unit = {},
     onToggleSubtask : () -> Unit= {},
     onDelete : () -> Unit = {}
@@ -167,14 +170,14 @@ fun SubTaskEditor(
             Box(
                 modifier = Modifier.size(18.dp,18.dp)
                     .background(
-                        if(subTask.isCompleted) MaterialTheme.colorScheme.onSurface
+                        if(subTask.isCompleted) onSurface
                         else Color.Transparent
                     )
                     .border(
                         width = 1.dp,
                         color =
-                            if(subTask.isCompleted) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.onPrimary
+                            if(subTask.isCompleted) onSurface
+                            else textColor
                     )
                     .clickable{
                         onToggleSubtask()
@@ -185,7 +188,7 @@ fun SubTaskEditor(
                     Icon(
                         imageVector = Icons.Filled.Check,
                         contentDescription = "Check",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = textColor
                     )
                 }
             }
@@ -200,7 +203,7 @@ fun SubTaskEditor(
                         },
                         enabled = enabled,
                         textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = textColor,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = textSize.sp
@@ -216,7 +219,7 @@ fun SubTaskEditor(
                         Text(
                             text = "Write Down",
                             style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = onSurface,
                                 fontFamily = regular,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = textSize.sp
@@ -228,7 +231,7 @@ fun SubTaskEditor(
                 Text(
                     text = subTask.title,
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = textColor,
                         fontFamily = regular,
                         fontWeight = FontWeight.Normal,
                         fontSize = textSize.sp
@@ -249,7 +252,7 @@ fun SubTaskEditor(
                 Icon(
                     imageVector = Icons.Filled.Clear,
                     contentDescription = "Cross",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = textColor
                 )
             }
         }

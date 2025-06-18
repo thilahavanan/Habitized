@@ -199,8 +199,20 @@ class HomeViewModel @Inject constructor(
         )
     }
     suspend fun finishTimer(){
-        _uiState.value.ongoingHabit?.let {
-            repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+        if(_uiState.value.ongoingHabit != null && _uiState.value.ongoingHabit!!.habit.type == HabitType.Duration){
+            _uiState.value.ongoingHabit?.let {
+                repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+            }
+        }else if(_uiState.value.ongoingHabit != null){
+            //session
+            var prevCount = _uiState.value.ongoingHabit!!.progress.currentCount
+            val targetCount = _uiState.value.ongoingHabit!!.progress.targetCount
+            prevCount = prevCount!! + 1
+            if(prevCount == targetCount){
+                repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+            }else{
+                repo.onNotStartedHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+            }
         }
     }
 }

@@ -1,8 +1,8 @@
-package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
-
+package com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,7 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
+import com.codewithdipesh.habitized.presentation.homescreen.component.SubTaskEditor
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Black
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Coffee
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Matcha
@@ -65,18 +70,19 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DurationScreen(
+fun SessionScreen(
     modifier: Modifier = Modifier,
     habitProgressId : UUID,
     title : String,
     targetDurationValue : LocalTime,
     colorKey : String,
-    viewmodel: DurationViewModel,
+    viewmodel: SessionViewModel,
     navController: NavController
 ){
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
+    val scrollState = rememberScrollState()
 
     val state by viewmodel.state.collectAsState()
     var showStarter by remember {
@@ -87,21 +93,21 @@ fun DurationScreen(
     var totalSeconds by remember { mutableStateOf(0) }
 
     val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
-    val inverseColor = MaterialTheme.colorScheme.inverseOnSurface
+    val onSurfaceColor  = MaterialTheme.colorScheme.onSurface
     var onPrimary by remember { mutableStateOf(onPrimaryColor) }
-    var inverse by remember { mutableStateOf(inverseColor) }
+    var onSurface by remember { mutableStateOf(onSurfaceColor) }
 
-
+    var showSubTaskAddOption by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.theme) {
         when(state.theme){
             Normal -> {
                 onPrimary = onPrimaryColor
-                inverse = inverseColor
+                onSurface = onSurface
             }
             else ->{
                 onPrimary = Color.White
-                inverse = Color.Black
+                onSurface = Color(0xFF5F5F5F)
             }
         }
     }
@@ -243,6 +249,19 @@ fun DurationScreen(
         }
 
 
+        //add/edit subtask
+        if(showSubTaskAddOption){
+            AddSubTask(
+                habitWithProgress = state.habitWithProgress!!,
+                onUpdateSubTask = {
+                    scope.launch{
+                        viewmodel.addUpdateSubTasks(it)
+                        showSubTaskAddOption = false
+                    }
+                }
+            )
+        }
+
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -339,6 +358,48 @@ fun DurationScreen(
                             }
                         }
                     )
+                }
+                //subtasks
+                Box(
+                    Modifier.align(Alignment.Center)
+                ){
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 350.dp)
+                            .fillMaxWidth(0.8f)
+                            .verticalScroll(scrollState),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        state.habitWithProgress?.subtasks?.forEachIndexed { index, subTask ->
+                            SubTaskEditor(
+                                subTask = subTask,
+                                enabled = false,
+                                onToggleSubtask = {
+                                    scope.launch {
+                                        viewmodel.toggleSubTask(index)
+                                    }
+                                },
+                                textSize = 14,
+                                textColor = onPrimary,
+                                onSurface = onSurface
+                            )
+                        }
+                        Text(
+                            text = "+ List Subtask",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp
+                            ),
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .clickable{
+                                    showSubTaskAddOption = true
+                                }
+                        )
+                    }
                 }
             }
 

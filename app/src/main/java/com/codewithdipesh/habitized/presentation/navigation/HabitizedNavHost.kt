@@ -2,11 +2,8 @@ package com.codewithdipesh.habitized.presentation.navigation
 
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -20,8 +17,10 @@ import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoal
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
-import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationScreen
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
+import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationScreen
+import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionScreen
+import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -34,7 +33,8 @@ fun HabitizedNavHost(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     addViewModel: AddViewModel,
-    durationViewModel : DurationViewModel
+    durationViewModel : DurationViewModel,
+    sessionViewModel : SessionViewModel
 ){
     NavHost(
         navController = navController,
@@ -87,14 +87,9 @@ fun HabitizedNavHost(
             )
         ){ entry ->
             val id = entry.arguments?.getString("id")
-            Log.e("UUID from notification", id.toString())
             val title = entry.arguments?.getString("title")
-            Log.e("UUID from notification", title.toString())
             val color = entry.arguments?.getString("color")
-            Log.e("UUID from notification", color.toString())
-
             val targetSeconds = entry.arguments?.getString("target")!!.toInt()
-            Log.e("UUID from notification", targetSeconds.toString())
 
             val hour = targetSeconds/ 3600
             val minutes = (targetSeconds % 3600) / 60
@@ -114,6 +109,48 @@ fun HabitizedNavHost(
             AddGoalScreen(
                 navController = navController,
                 viewmodel = addViewModel
+            )
+        }
+        composable(
+            Screen.SessionScreen.route,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "com.codewithdipesh.habitized://session/{id}/{title}/{target}/{color}"
+                    action = Intent.ACTION_VIEW
+                }
+            ),
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.StringType
+                },
+                navArgument("title"){
+                    type = NavType.StringType
+                },
+                navArgument("target"){
+                    type = NavType.StringType
+                },
+                navArgument("color"){
+                    type = NavType.StringType
+                }
+            )
+        ){ entry ->
+            val id = entry.arguments?.getString("id")
+            val title = entry.arguments?.getString("title")
+            val color = entry.arguments?.getString("color")
+            val targetSeconds = entry.arguments?.getString("target")!!.toInt()
+
+            val hour = targetSeconds/ 3600
+            val minutes = (targetSeconds % 3600) / 60
+            val seconds = targetSeconds % 60
+            val targetDurationValue = LocalTime.of(hour,minutes,seconds)
+
+            SessionScreen(
+                habitProgressId = UUID.fromString(id),
+                title = title!!,
+                targetDurationValue = targetDurationValue,
+                colorKey = color!!,
+                navController = navController,
+                viewmodel = sessionViewModel
             )
         }
     }

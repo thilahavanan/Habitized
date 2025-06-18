@@ -86,10 +86,12 @@ class HabitRepoImpl(
     override suspend fun getHabitProgressById(habitProgressId: UUID): HabitWithProgress {
         val response =  habitProgressDao.getHabitProgressById(habitProgressId)
         val habit = habitDao.getHabitById(response.habitId)
+        val subtasks = subtaskDao.getSubtasksByHabitProgressId(habitProgressId)
         return HabitWithProgress(
             habit = habit.toHabit(),
             progress = response.toHabitProgress(),
-            date = response.date
+            date = response.date,
+            subtasks = subtasks?.map { it.toSubTask() } ?: emptyList()
         )
     }
 

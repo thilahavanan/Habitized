@@ -1,7 +1,7 @@
 package com.codewithdipesh.habitized.data.sharedPref
 
 import android.content.Context
-import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.Theme
+import com.codewithdipesh.habitized.presentation.timerscreen.Theme
 import androidx.core.content.edit
 
 class HabitPreference(context : Context){

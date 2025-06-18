@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.Theme
+import com.codewithdipesh.habitized.presentation.timerscreen.Theme
 import com.codewithdipesh.habitized.ui.theme.regular
 
 @OptIn(ExperimentalMaterial3Api::class)

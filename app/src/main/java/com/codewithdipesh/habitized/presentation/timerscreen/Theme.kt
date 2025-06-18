@@ -1,4 +1,4 @@
-package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
+package com.codewithdipesh.habitized.presentation.timerscreen
 
 sealed class Theme(val displayName: String) {
     object Normal : Theme("normal")

@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
+import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
@@ -288,9 +289,18 @@ fun HomeScreen(
                                          navController.navigate(Screen.DurationScreen.createRoute(it))
                                      }
                                  },
+                                 onStartSession = {
+                                     if(state.ongoingHabit != null && it != state.ongoingHabit ){
+                                         scope.launch {
+                                             Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
+                                         }
+                                     }else{
+                                         navController.navigate(Screen.SessionScreen.createRoute(it))
+                                     }
+                                 },
                                  onFutureTaskStateChange = {
                                      scope.launch {
-                                         Toast.makeText(context,"Can't start Future Tasks", Toast.LENGTH_SHORT).show()
+                                         Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
                                      }
                                  }
                              )
@@ -321,7 +331,7 @@ fun HomeScreen(
                                 },
                                 onFutureTaskStateChange = {
                                     scope.launch {
-                                        Toast.makeText(context,"Can't start Future Tasks", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             )
@@ -378,7 +388,11 @@ fun HomeScreen(
                                 viewmodel.updateOngoingTimer(h,m,s)
                             },
                             onClick = {
-                                navController.navigate(Screen.DurationScreen.createRoute(it))
+                                if(state.ongoingHabit!!.habit.type == HabitType.Session){
+                                    navController.navigate(Screen.SessionScreen.createRoute(it))
+                                }else{
+                                    navController.navigate(Screen.DurationScreen.createRoute(it))
+                                }
                             },
                             onTimerFinished = {
                                 scope.launch{
