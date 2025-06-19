@@ -63,6 +63,7 @@ import kotlin.concurrent.timer
 @Composable
 fun TimerElement(
     duration : LocalTime,
+    manager : TimerServiceManager,
     start : Boolean = false,
     finished : Boolean = false,
     onPrimary : Color,
@@ -74,8 +75,6 @@ fun TimerElement(
     onTimerFinished : () -> Unit = {},
     modifier: Modifier = Modifier
 ){
-    val context = LocalContext.current
-    val manager = remember { TimerServiceManager(context) }
     val timerState by manager.timerState.collectAsState()
 
     var count by remember { mutableStateOf(0) }

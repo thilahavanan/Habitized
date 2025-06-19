@@ -99,7 +99,9 @@ class TimerServiceManager(
     fun pause() {
         timerService?.pauseTimer()
     }
-
+    fun complete(){
+        timerService?.finishTimer()
+    }
     fun resume() {
         timerService?.resumeTimer()
     }

@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
@@ -88,6 +89,7 @@ fun SessionScreen(
     val scrollState = rememberScrollState()
     val screen = LocalConfiguration.current
     val height = screen.screenHeightDp
+    val manager = remember { TimerServiceManager(context) }
 
     val state by viewmodel.state.collectAsState()
     var showStarter by remember {
@@ -244,6 +246,7 @@ fun SessionScreen(
                     //mark as done
                     scope.launch {
                         viewmodel.finishHabit()
+                        manager.complete()
                         navController.navigateUp()
                         viewmodel.clearUi()
                     }
@@ -315,6 +318,7 @@ fun SessionScreen(
                 ){
                     TimerElement(
                         duration = targetDurationValue,
+                        manager = manager,
                         start = state.isStarted,
                         finished = state.timerState == TimerState.Finished,
                         onPrimary = onPrimary,

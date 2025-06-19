@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Black
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Coffee
@@ -77,6 +78,7 @@ fun DurationScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
+    val manager = remember { TimerServiceManager(context) }
 
     val state by viewmodel.state.collectAsState()
     var showStarter by remember {
@@ -235,6 +237,7 @@ fun DurationScreen(
                     //mark as done
                     scope.launch {
                         viewmodel.finishHabit()
+                        manager.complete()
                         navController.navigateUp()
                         viewmodel.clearUi()
                     }
@@ -308,6 +311,7 @@ fun DurationScreen(
                 ){
                     TimerElement(
                         duration = targetDurationValue,
+                        manager = manager,
                         start = state.isStarted,
                         finished = state.timerState == TimerState.Finished,
                         onPrimary = onPrimary,

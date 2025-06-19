@@ -82,6 +82,13 @@ class TimerService : Service() {
             timerCallback?.onTimerPaused()
         }
     }
+    fun finishTimer(){
+        _timerState.value = _timerState.value.copy(
+            isPaused = false,
+            isFinished = true
+        )
+        stopSelf()
+    }
 
     fun resumeTimer() {
         if (_timerState.value.isPaused) {
