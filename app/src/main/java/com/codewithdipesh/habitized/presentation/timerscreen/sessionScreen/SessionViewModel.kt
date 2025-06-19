@@ -107,6 +107,7 @@ class SessionViewModel @Inject constructor(
         var prevCount = _state.value.habitWithProgress!!.progress.currentCount
         val targetCount = _state.value.habitWithProgress!!.progress.targetCount
         prevCount = prevCount!! + 1
+        repo.onUpdateCounterHabitProgress(prevCount,_state.value.progressId!!)
         if(prevCount == targetCount){
             _state.value.progressId?.let {
                 repo.onDoneHabitProgress(_state.value.progressId!!)
@@ -136,54 +137,66 @@ class SessionViewModel @Inject constructor(
         )
     }
 
-    suspend fun addUpdateSubTasks(subtasks : List<SubTask>){
+    fun addSubTask(){
         //add on the ui first then add on the database
-
-        //change in local first(Ui)
-        var updatedhabit = _state.value.habitWithProgress!!
-        updatedhabit = updatedhabit.also {
-            it.copy(subtasks = subtasks)
-        }
-        _state.value = _state.value.copy(
-            habitWithProgress = updatedhabit
+        val subTasks = _state.value.habitWithProgress!!.subtasks.toMutableList()
+        val newSubtask = SubTask(
+            title = "",
+            habitProgressId = _state.value.progressId!!
         )
-        //change in room
-        val previous = repo.getSubtasks(habitProgerssId = _state.value.progressId!!)
-
-        val deleted = previous.filter { !subtasks.contains(it) }
-        val added = subtasks.filter { !previous.contains(it) }
-        val updated = subtasks.filter { previous.contains(it) }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            added.forEach {
-                repo.insertSubtask(it)
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            updated.forEach {
-                repo.insertSubtask(it)
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            deleted.forEach {
-                repo.deleteSubtask(it.subtaskId)
-            }
-        }
+        subTasks.add(newSubtask)
+        _state.value = _state.value.copy(
+            habitWithProgress = _state.value.habitWithProgress!!.copy(
+                subtasks = subTasks
+            ),
+            tempSubTask = newSubtask.subtaskId
+        )
     }
     suspend fun toggleSubTask(index:Int){
-        val previous = _state.value.habitWithProgress!!.subtasks[index].isCompleted
-        _state.value = _state.value.copy(
-            habitWithProgress = _state.value.habitWithProgress!!
-                .also {
-                    it.subtasks
-                        .toMutableList()
-                        .also {
-                            it[index] = it[index].copy(isCompleted = !previous)
-                        }
-                }
-        )
-        repo.insertSubtask(_state.value.habitWithProgress!!.subtasks[index])
+        val current = _state.value.habitWithProgress ?: return
+        val updatedSubtasks = current.subtasks.toMutableList().apply {
+            this[index] = this[index].copy(isCompleted = !this[index].isCompleted)
+        }
+
+        val updatedHabit = current.copy(subtasks = updatedSubtasks)
+
+        _state.value = _state.value.copy(habitWithProgress = updatedHabit)
+
+        repo.insertSubtask(updatedSubtasks[index])
     }
+    suspend fun updateSubTask(index: Int, title: String){
+        //if new task is being written
+        if(_state.value.habitWithProgress!!.subtasks[index].subtaskId
+            == _state.value.tempSubTask && title != "")
+        {
+            _state.value = _state.value.copy(
+                tempSubTask = null
+            )
+        }
+        val current = _state.value.habitWithProgress ?: return
+        val updatedSubtasks = current.subtasks.toMutableList().apply {
+            this[index] = this[index].copy(title = title)
+        }
+
+        val updatedHabit = current.copy(subtasks = updatedSubtasks)
+
+        _state.value = _state.value.copy(habitWithProgress = updatedHabit)
+
+        repo.insertSubtask(updatedSubtasks[index])
+    }
+    suspend fun deleteSubTask(id: UUID){
+        val current = _state.value.habitWithProgress ?: return
+        val updatedSubtasks = current.subtasks.toMutableList().apply {
+             removeIf{it.subtaskId == id}
+        }
+
+        val updatedHabit = current.copy(subtasks = updatedSubtasks)
+
+        _state.value = _state.value.copy(habitWithProgress = updatedHabit)
+
+        repo.deleteSubtask(id)
+    }
+
 
 
 

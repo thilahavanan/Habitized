@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -37,6 +39,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -83,6 +86,8 @@ fun SessionScreen(
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
     val scrollState = rememberScrollState()
+    val screen = LocalConfiguration.current
+    val height = screen.screenHeightDp
 
     val state by viewmodel.state.collectAsState()
     var showStarter by remember {
@@ -96,8 +101,6 @@ fun SessionScreen(
     val onSurfaceColor  = MaterialTheme.colorScheme.onSurface
     var onPrimary by remember { mutableStateOf(onPrimaryColor) }
     var onSurface by remember { mutableStateOf(onSurfaceColor) }
-
-    var showSubTaskAddOption by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.theme) {
         when(state.theme){
@@ -248,21 +251,6 @@ fun SessionScreen(
             )
         }
 
-
-        //add/edit subtask
-        if(showSubTaskAddOption){
-            AddSubTask(
-                habitWithProgress = state.habitWithProgress!!,
-                onUpdateSubTask = {
-                    scope.launch{
-                        viewmodel.addUpdateSubTasks(it)
-                        showSubTaskAddOption = false
-                    }
-                }
-            )
-        }
-
-
         Column(modifier = Modifier
             .fillMaxSize()
             .then( //different bg for diff theme
@@ -361,23 +349,34 @@ fun SessionScreen(
                 }
                 //subtasks
                 Box(
-                    Modifier.align(Alignment.Center)
+                    Modifier.align(Alignment.TopCenter)
                 ){
                     Column(
                         modifier = Modifier
-                            .padding(top = 350.dp)
+                            .padding(top =  (height/2).dp + 16.dp )
                             .fillMaxWidth(0.8f)
                             .verticalScroll(scrollState),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
+                        Log.d("SubTask","${state.habitWithProgress?.subtasks}")
                         state.habitWithProgress?.subtasks?.forEachIndexed { index, subTask ->
                             SubTaskEditor(
                                 subTask = subTask,
-                                enabled = false,
+                                enabled = true,
                                 onToggleSubtask = {
                                     scope.launch {
                                         viewmodel.toggleSubTask(index)
+                                    }
+                                },
+                                onChange = {
+                                    scope.launch {
+                                        viewmodel.updateSubTask(index,it)
+                                    }
+                                },
+                                onDelete = {
+                                    scope.launch {
+                                        viewmodel.deleteSubTask(it)
                                     }
                                 },
                                 textSize = 14,
@@ -385,6 +384,7 @@ fun SessionScreen(
                                 onSurface = onSurface
                             )
                         }
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             text = "+ List Subtask",
                             style = TextStyle(
@@ -396,7 +396,9 @@ fun SessionScreen(
                             modifier = Modifier
                                 .padding(start = 8.dp)
                                 .clickable{
-                                    showSubTaskAddOption = true
+                                    if(state.tempSubTask == null){
+                                         viewmodel.addSubTask()
+                                    }
                                 }
                         )
                     }

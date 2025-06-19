@@ -49,6 +49,7 @@ import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.addscreen.component.Button
 import com.codewithdipesh.habitized.presentation.addscreen.component.ColorChoserItem
 import com.codewithdipesh.habitized.ui.theme.regular
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,7 +149,7 @@ fun SubTaskEditor(
     onSurface: Color = MaterialTheme.colorScheme.onSurface,
     onChange : (String) ->Unit = {},
     onToggleSubtask : () -> Unit= {},
-    onDelete : () -> Unit = {}
+    onDelete : (UUID) -> Unit = {}
 ) {
 
     Row(
@@ -245,7 +246,7 @@ fun SubTaskEditor(
         if(enabled){
             IconButton(
                 onClick = {
-                    onDelete()
+                    onDelete(subTask.subtaskId)
                 },
                 modifier = Modifier.weight(0.3f)
             ) {
