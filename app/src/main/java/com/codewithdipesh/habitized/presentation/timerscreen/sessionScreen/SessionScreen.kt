@@ -388,7 +388,7 @@ fun SessionScreen(
                         Text(
                             text = "+ List Subtask",
                             style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = onPrimary,
                                 fontFamily = regular,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 14.sp

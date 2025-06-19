@@ -181,8 +181,8 @@ class TimerService : Service() {
 
     private fun createNotification(content : String,title : String,maxProgress:Int,currentProgress:Int?,pendingIntent : PendingIntent) : Notification {
         val notification =  NotificationCompat.Builder(this,"TIMER_CHANNEL")
-            .setSmallIcon(R.drawable.ic_stat_name)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_stat_name))
+            .setSmallIcon(R.drawable.ic_action_name)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_action_name))
             .setContentTitle(title)
             .setContentText(content)
             .setContentIntent(pendingIntent)
@@ -217,7 +217,7 @@ class TimerService : Service() {
     private fun showAlarmNotification() : Notification {
 
         return NotificationCompat.Builder(this, "TIMER_CHANNEL")
-            .setSmallIcon(R.drawable.ic_stat_name)
+            .setSmallIcon(R.drawable.ic_action_name)
             .setContentTitle("⏰ Time's Up!")
             .setContentText("Your timer finished.")
             .setCategory(NotificationCompat.CATEGORY_ALARM)
