@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.addscreen.component.Button
 import com.codewithdipesh.habitized.presentation.addscreen.component.ColorChoserItem
@@ -115,7 +116,11 @@ fun AddSubTask(
             Text(
                 text = "+ List Subtask",
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = if(habitWithProgress.progress.status == Status.Done){
+                        MaterialTheme.colorScheme.scrim
+                    }else{
+                        MaterialTheme.colorScheme.onSurface
+                    },
                     fontFamily = regular,
                     fontWeight = FontWeight.Normal,
                     fontSize = 18.sp

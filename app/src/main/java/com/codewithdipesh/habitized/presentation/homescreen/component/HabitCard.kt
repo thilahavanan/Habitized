@@ -292,8 +292,12 @@ fun DurationHabit(
                         else if (habitWithProgress.progress.status == Status.Ongoing) "Ongoing"
                         else "Finished",
                         style = TextStyle(
-                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.scrim,
+                            color = when(habitWithProgress.progress.status){
+                                Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                                Status.Done -> MaterialTheme.colorScheme.scrim
+                                Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                                Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                            },
                             fontFamily = ndot,
                             fontSize = 12.sp
                         )
@@ -302,8 +306,12 @@ fun DurationHabit(
 
                 VerticalDivider(
                     thickness = 1.dp,
-                    color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.scrim,
+                    color = when(habitWithProgress.progress.status){
+                        Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                        Status.Done -> MaterialTheme.colorScheme.scrim
+                        Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                        Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                    },
                     modifier = Modifier.height(18.dp)
                 )
 
@@ -312,8 +320,12 @@ fun DurationHabit(
                     Text(
                         text = habitWithProgress.habit.duration.toWord(),
                         style = TextStyle(
-                            color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.scrim,
+                            color = when(habitWithProgress.progress.status){
+                                Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                                Status.Done -> MaterialTheme.colorScheme.scrim
+                                Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                                Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                            },
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -326,8 +338,12 @@ fun DurationHabit(
             Text(
                 text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = if(habitWithProgress.progress.status == Status.NotStarted) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.scrim,
+                    color = when(habitWithProgress.progress.status){
+                        Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                        Status.Done -> MaterialTheme.colorScheme.scrim
+                        Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                        Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                    },
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -365,7 +381,16 @@ fun SessionHabit(
                 Box(
                     modifier = Modifier.size(80.dp,20.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .border(1.dp,MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(10.dp))
+                        .border(
+                            1.dp,
+                            when(habitWithProgress.progress.status){
+                                Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                                Status.Done -> MaterialTheme.colorScheme.scrim
+                                Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                                Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                            },
+                            RoundedCornerShape(10.dp)
+                        )
                         .clickable{
                             if(habitWithProgress.progress.date == LocalDate.now()){
                                 onStartSession(habitWithProgress)
@@ -376,9 +401,16 @@ fun SessionHabit(
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = "Start",
+                        text = if(habitWithProgress.progress.status == Status.NotStarted) "Start"
+                        else if (habitWithProgress.progress.status == Status.Ongoing) "Ongoing"
+                        else "Finished",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = when(habitWithProgress.progress.status){
+                                Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                                Status.Done -> MaterialTheme.colorScheme.scrim
+                                Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                                Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                            },
                             fontFamily = ndot,
                             fontSize = 12.sp
                         )
@@ -387,7 +419,12 @@ fun SessionHabit(
 
                 VerticalDivider(
                     thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = when(habitWithProgress.progress.status){
+                        Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                        Status.Done -> MaterialTheme.colorScheme.scrim
+                        Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                        Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                    },
                     modifier = Modifier.height(18.dp)
                 )
 
@@ -400,7 +437,12 @@ fun SessionHabit(
                         text = "${habitWithProgress.progress.currentCount}/"+
                                 "${habitWithProgress.progress.targetCount}",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = when(habitWithProgress.progress.status){
+                                Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                                Status.Done -> MaterialTheme.colorScheme.scrim
+                                Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                                Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                            },
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
@@ -410,7 +452,12 @@ fun SessionHabit(
                     Text(
                         text = habitWithProgress.progress.countParam.displayName,
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = when(habitWithProgress.progress.status){
+                                Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                                Status.Done -> MaterialTheme.colorScheme.scrim
+                                Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                                Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                            },
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -423,7 +470,12 @@ fun SessionHabit(
             Text(
                 text = habitWithProgress.habit.title,
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = when(habitWithProgress.progress.status){
+                        Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                        Status.Done -> MaterialTheme.colorScheme.scrim
+                        Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                        Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                    },
                     fontFamily = regular,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -435,6 +487,12 @@ fun SessionHabit(
                 SubTaskEditor(
                     subTask = subtask,
                     textSize = 12,
+                    textColor = when(habitWithProgress.progress.status){
+                        Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                        Status.Done -> MaterialTheme.colorScheme.scrim
+                        Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                        Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                    },
                     enabled = false,
                     onToggleSubtask = {onToggle(subtask)},
                     modifier = modifier
@@ -445,7 +503,12 @@ fun SessionHabit(
             Text(
                 text = "+ Add Task",
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = when(habitWithProgress.progress.status){
+                        Status.Cancelled -> MaterialTheme.colorScheme.scrim
+                        Status.Done -> MaterialTheme.colorScheme.scrim
+                        Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
+                        Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
+                    },
                     fontFamily = regular,
                     fontWeight = FontWeight.Normal,
                     fontSize = 12.sp
