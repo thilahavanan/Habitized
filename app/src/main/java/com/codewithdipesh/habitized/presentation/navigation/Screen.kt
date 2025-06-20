@@ -29,7 +29,7 @@ sealed class Screen(val route : String){
         fun createRoute(id: String, title: String, target: Int, color: String) =
             "duration/$id/$title/$target/$color"
     }
-    object SessionScreen : Screen("session/{id}/{title}/{target}/{color}") {
+    object SessionScreen : Screen("session_screen/{id}/{title}/{target}/{color}") {
         fun createRoute(habitWithProgress: HabitWithProgress): String {
             val id = habitWithProgress.progress.progressId
             val title = habitWithProgress.habit.title
@@ -41,7 +41,7 @@ sealed class Screen(val route : String){
             val target = (hour*3600) +( minutes*60) + seconds
 
             val color = habitWithProgress.habit.colorKey
-            return "session/$id/$title/$target/$color"
+            return "session_screen/$id/$title/$target/$color"
         }
     }
     object AddGoal : Screen("addGoal")

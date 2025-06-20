@@ -115,7 +115,7 @@ fun HabitizedNavHost(
             Screen.SessionScreen.route,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "com.codewithdipesh.habitized://session/{id}/{title}/{target}/{color}"
+                    uriPattern = "com.codewithdipesh.habitized://session_screen/{id}/{title}/{target}/{color}"
                     action = Intent.ACTION_VIEW
                 }
             ),

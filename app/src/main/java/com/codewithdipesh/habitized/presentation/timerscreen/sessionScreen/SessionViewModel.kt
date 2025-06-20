@@ -48,7 +48,8 @@ class SessionViewModel @Inject constructor(
                 is Status.Done -> TimerState.Finished
                 Status.Ongoing -> TimerState.Resumed
                 else -> TimerState.Not_Started
-            }
+            },
+            isStarted = response.progress.status == Status.Ongoing
         )
     }
 
@@ -95,7 +96,7 @@ class SessionViewModel @Inject constructor(
             putExtra("habit",_state.value.habitWithProgress!!.habit.title)
             putExtra("id",_state.value.progressId.toString())
             putExtra("color",_state.value.habitWithProgress!!.habit.colorKey)
-            putExtra("screen","session")
+            putExtra("screen","session_screen")
         }
         context.startForegroundService(intent)
         repo.onStartedHabitProgress(_state.value.progressId!!)
