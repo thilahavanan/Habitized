@@ -151,7 +151,7 @@ fun TimerElement(
                     )
                 }
             }
-            if(duration.minute > 0){
+            if(duration.hour >0 || duration.minute > 0){
                 Column(verticalArrangement = Arrangement.Center){
                     Text(
                         text = minute.toString().padStart(2, '0') + " : ",
