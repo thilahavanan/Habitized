@@ -64,7 +64,6 @@ import com.codewithdipesh.habitized.presentation.timerscreen.elements.MarkAsComp
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.ThemeChooser
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
-import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerScreen
 import com.codewithdipesh.habitized.presentation.util.getColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.regular
