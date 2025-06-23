@@ -37,7 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +64,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.addscreen.component.ColorChoser
 import com.codewithdipesh.habitized.presentation.addscreen.component.DashedDivider
+import com.codewithdipesh.habitized.presentation.addscreen.component.GoalsForHabit
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
 import com.codewithdipesh.habitized.presentation.addscreen.component.MonthlyDaySelector
 import com.codewithdipesh.habitized.presentation.addscreen.component.ParamChoser
@@ -90,6 +94,8 @@ fun AddHabitScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    var isShowingGoals by remember { mutableStateOf(false) }
+
     BackHandler {
         navController.navigateUp()
         viewmodel.clearHabitUI()
@@ -99,6 +105,7 @@ fun AddHabitScreen(
         val keys = state.colorOptions.keys.toList()
         val color = keys.random()
         viewmodel.setColor(state.colorOptions.get(color)!!)
+        viewmodel.getGoals()
     }
 
     LaunchedEffect(viewmodel.uiEvent) {
@@ -194,6 +201,19 @@ fun AddHabitScreen(
             )
         }
 
+        if(isShowingGoals){
+            GoalsForHabit(
+               goals = state.availableGoals,
+               onSelect = {
+                   viewmodel.setGoal(it)
+               },
+               sheetState = sheetstate,
+               onDismiss = {
+                   isShowingGoals = false
+               }
+            )
+        }
+
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
@@ -221,7 +241,7 @@ fun AddHabitScreen(
                         fontFamily = playfair,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
-                        fontSize = 26.sp
+                        fontSize = 28.sp
                     )
                 )
             }
@@ -523,7 +543,7 @@ fun AddHabitScreen(
                             fontSize = 16.sp
                         ),
                         modifier = Modifier.clickable{
-                            navController.navigate(Screen.AddGoal.route)
+                            isShowingGoals = true
                         }
                     )
                 }

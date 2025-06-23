@@ -1,17 +1,17 @@
 package com.codewithdipesh.habitized.presentation.addscreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
+import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
+import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalUI
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitUI
-import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.util.Days
 import com.codewithdipesh.habitized.presentation.util.WeekDayMapToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +21,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -34,11 +35,15 @@ class AddViewModel @Inject constructor(
     private val _habitUiState = MutableStateFlow(AddHabitUI())
     val habitUiState = _habitUiState.asStateFlow()
 
+    private val _goalUiState = MutableStateFlow(AddGoalUI())
+    val goalUiState = _goalUiState.asStateFlow()
+
     private val _uiEvent = Channel<String>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
     private var lastEmitted =""
     private var clearJob : Job? = null
 
+    //habit
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     suspend fun addHabit(date : LocalDate){
         if(checkSavability()){
@@ -67,6 +72,28 @@ class AddViewModel @Inject constructor(
                 )
             )
             sendEvent("Habit Created Successfully")
+        }
+    }
+
+    suspend fun getGoals(){
+        val goals = repo.getExistingGoals()
+        _habitUiState.value = _habitUiState.value.copy(
+            availableGoals = goals
+        )
+    }
+
+    fun setGoal(goal:Goal?){
+        goal?.let {
+            _habitUiState.value = _habitUiState.value.copy(
+                goal_id = goal.id,
+                goal_name = goal.title
+            )
+        }
+        if(goal == null){
+            _habitUiState.value = _habitUiState.value.copy(
+                goal_id = null,
+                goal_name = ""
+            )
         }
     }
 
@@ -129,18 +156,18 @@ class AddViewModel @Inject constructor(
         )
     }
 
-    fun setTitle(title : String){
+    fun setHabitTitle(title : String){
         _habitUiState.value = _habitUiState.value.copy(
             title = title
         )
     }
 
-    fun setDescription(description : String){
+    fun setHabitDescription(description : String){
         _habitUiState.value = _habitUiState.value.copy(
             description = description
         )
     }
-    fun toggleColorOption(){
+    fun toggleHabitColorOption(){
         _habitUiState.value = _habitUiState.value.copy(
             colorOptionAvailable = !_habitUiState.value.colorOptionAvailable
         )
@@ -243,6 +270,58 @@ class AddViewModel @Inject constructor(
 
     fun clearHabitUI(){
         _habitUiState.value = AddHabitUI()
+    }
+
+    //goal
+    fun setGoalTitle(title : String){
+        _goalUiState.value = _goalUiState.value.copy(
+            title = title
+        )
+    }
+    fun setGoalDescription(description : String){
+        _goalUiState.value = _goalUiState.value.copy(
+            description = description
+        )
+    }
+    fun toggleGoalTargetDateOption(){
+        _goalUiState.value = _goalUiState.value.copy(
+            isTargetDateVisible = !_goalUiState.value.isTargetDateVisible
+        )
+    }
+    suspend fun getExistingHabits(){
+        repo.getAllExistingHabits().collect {
+            _goalUiState.value =_goalUiState.value.copy(
+                availableHabits = it
+            )
+        }
+    }
+    fun setHabitsAttachedWithGoal(newHabits : List<Habit>){
+        _goalUiState.value = _goalUiState.value.copy(
+            habits = _goalUiState.value.habits + newHabits
+        )
+    }
+    fun setTargetDate(date : LocalDate){
+        _goalUiState.value = _goalUiState.value.copy(
+            target_date = date
+        )
+    }
+    suspend fun addGoal(){
+        if(_goalUiState.value.title == ""){
+            sendEvent("Title cannot be empty")
+            return
+        }
+        repo.addGoal(
+            Goal(
+                title = _goalUiState.value.title,
+                description = _goalUiState.value.description,
+                target_date = _goalUiState.value.target_date,
+                habits = _goalUiState.value.habits
+            )
+        )
+        _goalUiState.value.habits.forEach {
+            repo.addOrUpdateHabit(it)
+        }
+        sendEvent("Goal Created Successfully")
     }
 
 

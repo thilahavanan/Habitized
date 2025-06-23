@@ -13,6 +13,7 @@ import java.util.UUID
 interface HabitRepository {
 
     // Habits
+    suspend fun getAllExistingHabits() : Flow<List<Habit>>
     suspend fun addOrUpdateHabit(habit: Habit)
     suspend fun deleteHabit(habitId: UUID)
     suspend fun getHabitById(habitId: UUID): Habit?
@@ -35,7 +36,8 @@ interface HabitRepository {
     suspend fun updateGoal(goal: Goal)
     suspend fun deleteGoal(goalId: UUID)
     suspend fun getGoalById(goalId: UUID): Flow<Goal?> //sending habits also with it
-    fun getAllGoals(): Flow<List<Goal>>
+    suspend fun getAllGoals(): List<Goal>
+    suspend fun getExistingGoals(): List<Goal>
 
     // One-Time Tasks
     suspend fun addOneTimeTask(task: OneTimeTask)

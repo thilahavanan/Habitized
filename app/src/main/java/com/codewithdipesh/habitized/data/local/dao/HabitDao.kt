@@ -34,5 +34,5 @@ interface HabitDao {
     suspend fun updateHabitStatus(habitId: UUID, isActive: Boolean)
 
     @Query("SELECT * FROM habits WHERE goal_id = :goalId")
-    fun getHabitsByGoal(goalId: UUID): Flow<List<HabitEntity>>
+    suspend fun getHabitsByGoal(goalId: UUID): List<HabitEntity>
 }

@@ -4,11 +4,15 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,16 +26,21 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +48,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,11 +56,15 @@ import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.addscreen.component.HabitsForGoal
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
 import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
+import com.codewithdipesh.habitized.presentation.addscreen.component.TargetDatePicker
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun AddGoalScreen(
@@ -58,14 +72,23 @@ fun AddGoalScreen(
     navController: NavController,
     viewmodel: AddViewModel
 ) {
-    val state by viewmodel.habitUiState.collectAsState()
+    val state by viewmodel.goalUiState.collectAsState()
     val scrollstate = rememberScrollState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    var isShowingExistingHabits by remember { mutableStateOf(false) }
+    var isShowingLinkedHabits by remember { mutableStateOf(false) }
+
     BackHandler {
         navController.navigateUp()
+    }
+    LaunchedEffect(Unit) {
+        viewmodel.getExistingHabits()
     }
 
     LaunchedEffect(viewmodel.uiEvent) {
@@ -111,7 +134,7 @@ fun AddGoalScreen(
                     .clip(RoundedCornerShape(20.dp))
                     .clickable{
                         scope.launch {
-                            //add goal
+                            viewmodel.addGoal()
                         }
                     },
                 contentAlignment = Alignment.Center
@@ -129,6 +152,32 @@ fun AddGoalScreen(
         }
     ){innerPadding->
 
+        if(isShowingExistingHabits){
+            HabitsForGoal(
+                clickable = true,
+                habits = state.availableHabits,
+                selected = state.habits,
+                onDismiss = {
+                    isShowingExistingHabits = false
+                },
+                onSelect = {
+                    viewmodel.setHabitsAttachedWithGoal(it)
+                },
+                sheetState = sheetState
+            )
+        }
+
+        if(isShowingLinkedHabits){
+            HabitsForGoal(
+                clickable = false,
+                habits = state.habits,
+                onDismiss = {
+                    isShowingLinkedHabits = false
+                },
+                sheetState = sheetState
+            )
+        }
+
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
@@ -138,7 +187,7 @@ fun AddGoalScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ){
             //heading
-            Row{
+            Row(verticalAlignment = Alignment.CenterVertically){
                 Text(
                     text = "Create",
                     style = TextStyle(
@@ -156,7 +205,7 @@ fun AddGoalScreen(
                         fontFamily = playfair,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
-                        fontSize = 26.sp
+                        fontSize = 28.sp
                     )
                 )
             }
@@ -169,7 +218,7 @@ fun AddGoalScreen(
                     BasicTextField(
                         value = state.title,
                         onValueChange = {
-                            //onchange
+                            viewmodel.setGoalTitle(it)
                         },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -206,7 +255,7 @@ fun AddGoalScreen(
                     BasicTextField(
                         value = state.description,
                         onValueChange = {
-                            //todo
+                            viewmodel.setGoalDescription(it)
                         },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -237,7 +286,7 @@ fun AddGoalScreen(
             //Target Date
             InputElement{
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     Row(
@@ -255,14 +304,92 @@ fun AddGoalScreen(
                             )
                         )
                         SlidingButton(
-                            isSelected = state.isShowReminderTime,
+                            isSelected = state.isTargetDateVisible,
                             onToggle = {
-                                //todo
+                                viewmodel.toggleGoalTargetDateOption()
+                            }
+                        )
+                    }
+                    //date
+                    AnimatedVisibility(
+                        visible = state.isTargetDateVisible
+                    ) {
+                        TargetDatePicker(
+                            date = state.target_date,
+                            onSelect = {
+                                viewmodel.setTargetDate(it)
                             }
                         )
                     }
 
                 }
+            }
+            //link habits
+            InputElement {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    maxLines = 3,
+                    overflow = FlowRowOverflow.Clip,
+                ) {
+                    state.habits.take(6).forEach { habit ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = habit.title,
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                ),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+                    if (state.habits.size > 6) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .clickable {
+                                    isShowingLinkedHabits = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "+${state.habits.size - 6}",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                ),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+                }
+                if(state.habits.isNotEmpty()){
+                    Spacer(Modifier.height((8.dp)))
+                }
+                Text(
+                    text = "+ link existing habits",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    ),
+                    modifier = Modifier.clickable{
+                        isShowingExistingHabits = true
+                    }
+                )
             }
 
         }

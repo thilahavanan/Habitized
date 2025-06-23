@@ -4,6 +4,7 @@ import androidx.annotation.ColorRes
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
+import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.util.DailySelected
@@ -46,5 +47,6 @@ data class AddHabitUI(
         R.color.purple to "purple",
         R.color.see_green to "see_green"
     ),
-    val colorOptionAvailable : Boolean = false
+    val colorOptionAvailable : Boolean = false,
+    val availableGoals : List<Goal> = emptyList()
 )

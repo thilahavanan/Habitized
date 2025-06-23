@@ -25,7 +25,7 @@ import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
         HabitProgressEntity::class,
         SubtaskEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -9,6 +9,7 @@ import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
 import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import com.codewithdipesh.habitized.data.local.entity.HabitProgressEntity
 import com.codewithdipesh.habitized.data.local.mapper.toEntity
+import com.codewithdipesh.habitized.data.local.mapper.toGoal
 import com.codewithdipesh.habitized.data.local.mapper.toHabit
 import com.codewithdipesh.habitized.data.local.mapper.toHabitProgress
 import com.codewithdipesh.habitized.data.local.mapper.toOneTimeTask
@@ -26,8 +27,10 @@ import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getWeekDayIndex
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.util.UUID
@@ -39,6 +42,15 @@ class HabitRepoImpl(
     private val subtaskDao: SubTaskDao,
     private val goalDao: GoalDao
 ) : HabitRepository {
+    override suspend fun getAllExistingHabits(): Flow<List<Habit>> {
+        val habits =  habitDao.getAllHabits()
+            .map {list->
+                list.filter { it.goal_id == null }
+                    .map { it.toHabit() }
+            }
+        return habits
+    }
+
     override suspend fun addOrUpdateHabit(habit: Habit) {
         habitDao.insertHabit(habit.toEntity())
     }
@@ -155,7 +167,7 @@ class HabitRepoImpl(
 
 
     override suspend fun addGoal(goal: Goal) {
-        TODO("Not yet implemented")
+        goalDao.insertGoal(goal.toEntity())
     }
     override suspend fun updateGoal(goal: Goal) {
         TODO("Not yet implemented")
@@ -166,10 +178,18 @@ class HabitRepoImpl(
     override suspend fun getGoalById(goalId: UUID): Flow<Goal?> {
         TODO("Not yet implemented")
     }
-    override fun getAllGoals(): Flow<List<Goal>> {
-        TODO("Not yet implemented")
+    override suspend fun getAllGoals(): List<Goal> {
+       return goalDao.getAllGoals().map{
+           val habits = habitDao.getHabitsByGoal(it.goal_id)
+           it.toGoal(
+               habits.map { it.toHabit() }
+           )
+       }
     }
 
+    override suspend fun getExistingGoals(): List<Goal> {
+        return goalDao.getAllGoals().map { it.toGoal(emptyList()) }
+    }
 
 
     override suspend fun addOneTimeTask(task: OneTimeTask) {

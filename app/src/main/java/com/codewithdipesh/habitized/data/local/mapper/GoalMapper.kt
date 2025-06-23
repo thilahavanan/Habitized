@@ -18,7 +18,7 @@ fun Goal.toEntity(): GoalEntity {
     )
 }
 
-fun GoalEntity.toHabit(habits :List<Habit>) : Goal {
+fun GoalEntity.toGoal(habits :List<Habit>) : Goal {
     return Goal(
         id=goal_id,
         title = title,

@@ -17,7 +17,7 @@ interface GoalDao {
     suspend fun getGoalById(goalId: UUID): GoalEntity?
 
     @Query("SELECT * FROM goals")
-    fun getAllGoals(): Flow<List<GoalEntity>>
+    suspend fun getAllGoals(): List<GoalEntity>
 
     @Query("DELETE FROM goals WHERE goal_id = :goalId")
     suspend fun deleteGoal(goalId: UUID)
