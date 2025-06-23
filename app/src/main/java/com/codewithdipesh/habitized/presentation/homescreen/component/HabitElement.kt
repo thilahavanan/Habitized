@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.playfair
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -65,9 +66,7 @@ fun HabitElement(
                     style = TextStyle(
                         color = if(!isDone) MaterialTheme.colorScheme.surfaceDim
                         else MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.4f),
-                        fontFamily = playfair,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
+                        fontFamily = ndot,
                         fontSize = 12.sp
                     )
                 )

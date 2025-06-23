@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.codewithdipesh.habitized.ui.theme.ndot
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import com.kizitonwose.calendar.core.WeekDay
@@ -64,9 +65,7 @@ fun WeekDayComponent(
                 style = TextStyle(
                     color = if(selected) MaterialTheme.colorScheme.outlineVariant
                     else MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
+                    fontFamily = ndot,
                     fontSize = 26.sp
                 )
             )

@@ -43,7 +43,7 @@ fun OptionSelector(
         verticalAlignment = Alignment.CenterVertically
     ){
 
-        //todos
+        //Habits
         Box(
             modifier = Modifier
                 .width(screenWidth/2)
@@ -51,19 +51,19 @@ fun OptionSelector(
                 .height(40.dp)
                 .clip(RoundedCornerShape(50.dp))
                 .background(color =
-                    if (selectedOption == HomeScreenOption.TODOS) MaterialTheme.colorScheme.onPrimary
+                    if (selectedOption == HomeScreenOption.Habits) MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50.dp)
                 )
                 .clickable{
-                    onOptionSelected(HomeScreenOption.TODOS)
+                    onOptionSelected(HomeScreenOption.Habits)
                 },
             contentAlignment = Alignment.Center
         ){
             Text(
-                text = "Todos",
+                text = "Habits",
                 style = TextStyle(
-                    color = if (selectedOption == HomeScreenOption.TODOS) MaterialTheme.colorScheme.inverseOnSurface
+                    color = if (selectedOption == HomeScreenOption.Habits) MaterialTheme.colorScheme.inverseOnSurface
                             else MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
                     fontFamily = playfair,
@@ -74,7 +74,7 @@ fun OptionSelector(
         }
         Spacer(Modifier.width(16.dp))
 
-        //Reminder
+        //Todos
         Box(
             modifier = Modifier
                 .width(screenWidth/2)
@@ -82,19 +82,19 @@ fun OptionSelector(
                 .height(40.dp)
                 .clip(RoundedCornerShape(50.dp))
                 .background(color =
-                    if (selectedOption == HomeScreenOption.REMINDER) MaterialTheme.colorScheme.onPrimary
+                    if (selectedOption == HomeScreenOption.Todos) MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50.dp)
                 )
                 .clickable{
-                    onOptionSelected(HomeScreenOption.REMINDER)
+                    onOptionSelected(HomeScreenOption.Todos)
                 },
             contentAlignment = Alignment.Center
         ){
             Text(
-                text = "Reminder",
+                text = "Todos",
                 style = TextStyle(
-                    color = if (selectedOption == HomeScreenOption.REMINDER) MaterialTheme.colorScheme.inverseOnSurface
+                    color = if (selectedOption == HomeScreenOption.Todos) MaterialTheme.colorScheme.inverseOnSurface
                     else MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
                     fontFamily = playfair,
