@@ -39,12 +39,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
@@ -58,7 +58,7 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSele
 import com.codewithdipesh.habitized.presentation.homescreen.component.RunningTimer
 import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertDialog
 import com.codewithdipesh.habitized.presentation.navigation.Screen
-import com.codewithdipesh.habitized.ui.theme.ndot
+import com.codewithdipesh.habitized.ui.theme.playfair
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -211,8 +211,9 @@ fun HomeScreen(
                         text = if(state.selectedDate == LocalDate.now()) "Today,$date" else "$date",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = ndot,
-                            fontWeight = FontWeight.Normal,
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
                             fontSize = 24.sp
                         ),
                         modifier = Modifier

@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -69,7 +70,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButt
 import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
 import com.codewithdipesh.habitized.presentation.navigation.Screen
-import com.codewithdipesh.habitized.ui.theme.ndot
+import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -170,7 +171,7 @@ fun AddHabitScreen(
                     viewmodel.setColor(it)
                 },
                 onDismiss = {
-                    viewmodel.toggleColorOption()
+                    viewmodel.toggleHabitColorOption()
                 },
                 sheetState = sheetstate,
                 selectedColor = state.colorKey,
@@ -217,8 +218,9 @@ fun AddHabitScreen(
                     text = "Habit",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = ndot,
-                        fontWeight = FontWeight.Normal,
+                        fontFamily = playfair,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
                         fontSize = 26.sp
                     )
                 )
@@ -232,7 +234,7 @@ fun AddHabitScreen(
                     BasicTextField(
                         value = state.title,
                         onValueChange = {
-                            viewmodel.setTitle(it)
+                            viewmodel.setHabitTitle(it)
                         },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -269,7 +271,7 @@ fun AddHabitScreen(
                     BasicTextField(
                         value = state.description,
                         onValueChange = {
-                            viewmodel.setDescription(it)
+                            viewmodel.setHabitDescription(it)
                         },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -323,7 +325,7 @@ fun AddHabitScreen(
                                 colorResource(state.colorOptions.entries.first { it.value == state.colorKey }.key)
                             )
                             .clickable{
-                                viewmodel.toggleColorOption()
+                                viewmodel.toggleHabitColorOption()
                             }
                     )
 

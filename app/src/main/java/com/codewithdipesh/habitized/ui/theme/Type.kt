@@ -5,18 +5,24 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
 val regular = FontFamily(
-    Font(R.font.regular_mono, FontWeight.Normal),
-    Font(R.font.light_mono,FontWeight.Light),
-    Font(R.font.bold_mono,FontWeight.Bold)
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_light,FontWeight.Light),
+    Font(R.font.inter_bold,FontWeight.Bold)
 )
 
 val ndot = FontFamily(
     Font(R.font.ndot_mono, FontWeight.Normal)
+)
+
+val playfair = FontFamily(
+    Font(R.font.playfair_bolditalic, FontWeight.Bold, FontStyle.Italic),
+    Font(R.font.playfair_bold, FontWeight.Bold)
 )
 
 val Typography = Typography(

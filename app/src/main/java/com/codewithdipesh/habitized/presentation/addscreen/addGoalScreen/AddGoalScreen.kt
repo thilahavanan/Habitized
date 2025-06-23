@@ -48,7 +48,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
 import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
-import com.codewithdipesh.habitized.ui.theme.ndot
+import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -153,8 +153,9 @@ fun AddGoalScreen(
                     text = "Goal",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = ndot,
-                        fontWeight = FontWeight.Normal,
+                        fontFamily = playfair,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
                         fontSize = 26.sp
                     )
                 )

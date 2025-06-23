@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
+import androidx.compose.ui.text.font.FontStyle
 import com.codewithdipesh.habitized.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,12 +10,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
@@ -27,31 +25,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codewithdipesh.habitized.domain.model.CountParam
-import com.codewithdipesh.habitized.domain.model.Frequency
-import com.codewithdipesh.habitized.domain.model.Habit
-import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.util.getColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
-import com.codewithdipesh.habitized.ui.theme.ndot
+import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 //count based
 @Composable
@@ -298,7 +285,9 @@ fun DurationHabit(
                                 Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
                                 Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
                             },
-                            fontFamily = ndot,
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
                             fontSize = 12.sp
                         )
                     )
@@ -411,7 +400,9 @@ fun SessionHabit(
                                 Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
                                 Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
                             },
-                            fontFamily = ndot,
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
                             fontSize = 12.sp
                         )
                     )
