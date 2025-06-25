@@ -13,7 +13,8 @@ import java.util.UUID
 interface HabitRepository {
 
     // Habits
-    suspend fun getAllExistingHabits() : Flow<List<Habit>>
+    suspend fun getAllHabits(): List<Habit>
+    suspend fun getAllExistingHabits() : List<Habit>
     suspend fun addOrUpdateHabit(habit: Habit)
     suspend fun deleteHabit(habitId: UUID)
     suspend fun getHabitById(habitId: UUID): Habit?

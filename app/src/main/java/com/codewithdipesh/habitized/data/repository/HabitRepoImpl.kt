@@ -42,12 +42,19 @@ class HabitRepoImpl(
     private val subtaskDao: SubTaskDao,
     private val goalDao: GoalDao
 ) : HabitRepository {
-    override suspend fun getAllExistingHabits(): Flow<List<Habit>> {
-        val habits =  habitDao.getAllHabits()
-            .map {list->
-                list.filter { it.goal_id == null }
-                    .map { it.toHabit() }
+    override suspend fun getAllHabits(): List<Habit>{
+        val habits = habitDao.getAllHabits()
+            .map {
+                it.toHabit()
             }
+        return habits
+    }
+
+    override suspend fun getAllExistingHabits(): List<Habit>{
+        val habits =  habitDao.getAllHabits()
+            .filter { it.goal_id == null }
+            .map { it.toHabit() }
+
         return habits
     }
 
@@ -58,11 +65,9 @@ class HabitRepoImpl(
         //delete habit with habit progress and subtasks
         //get all habit progress
         val habitProgress = habitProgressDao.getHabitProgress(habitId)
-        habitProgress.collect {
-            it.forEach {
+        habitProgress.forEach {
                 subtaskDao.deleteSubtaskByHabitId(it.progressId)
                 habitProgressDao.deleteProgress(it.progressId)
-            }
         }
         //delete habit
         habitDao.deleteHabit(habitId)
@@ -108,7 +113,7 @@ class HabitRepoImpl(
     }
 
     override suspend fun getAllHabitProgress(habitId: UUID): List<HabitProgress>? {
-        TODO("Not yet implemented")
+        return habitProgressDao.getHabitProgress(habitId).map { it.toHabitProgress() }
     }
 
     override suspend fun addTodayHabitProgresses(habits : List<HabitEntity>,date: LocalDate) {
@@ -235,7 +240,9 @@ class HabitRepoImpl(
                 _habit.frequency == Frequency.Daily.toString() //all others habit daily frequency
             }
         //create all the progress
-        addTodayHabitProgresses(habits,date)
+        (0 until 7).map{date.plusDays(it.toLong())}.forEach {
+            addTodayHabitProgresses(habits,date)
+        }
 
         return habits.map { habit ->
             val progress = habitProgressDao.getHabitProgressOfTheDay(habit.habit_id, date)

@@ -289,11 +289,10 @@ class AddViewModel @Inject constructor(
         )
     }
     suspend fun getExistingHabits(){
-        repo.getAllExistingHabits().collect {
-            _goalUiState.value =_goalUiState.value.copy(
-                availableHabits = it
-            )
-        }
+        val habits = repo.getAllExistingHabits()
+        _goalUiState.value =_goalUiState.value.copy(
+            availableHabits = habits
+        )
     }
     fun setHabitsAttachedWithGoal(newHabits : List<Habit>){
         _goalUiState.value = _goalUiState.value.copy(

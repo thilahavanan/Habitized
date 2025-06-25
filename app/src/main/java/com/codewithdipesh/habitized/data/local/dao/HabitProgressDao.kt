@@ -15,7 +15,7 @@ interface HabitProgressDao {
     suspend fun insertProgress(progress: HabitProgressEntity)
 
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId")
-    fun getHabitProgress(habitId: UUID): Flow<List<HabitProgressEntity>>
+    suspend fun getHabitProgress(habitId: UUID): List<HabitProgressEntity>
 
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId AND date = :date")
     suspend fun getHabitProgressOfTheDay(habitId: UUID, date: LocalDate): HabitProgressEntity
