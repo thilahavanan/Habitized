@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.ui.theme.playfair
 
 @Composable
-fun Selector(
+fun <T> Selector(
     modifier: Modifier = Modifier,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
+    options: List<T>,
+    selectedOption: T,
+    onOptionSelected: (T) -> Unit,
     backgroundColor : Color,
     selectedTextColor : Color,
     nonSelectedTextColor : Color,
@@ -79,7 +79,7 @@ fun Selector(
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = it,
+                        text = it.toString(),
                         style = TextStyle(
                             color = if(it == option) selectedTextColor
                                     else nonSelectedTextColor,
