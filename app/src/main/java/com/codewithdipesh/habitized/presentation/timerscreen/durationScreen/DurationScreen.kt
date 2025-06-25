@@ -51,12 +51,11 @@ import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Coffee
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Matcha
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Normal
 import com.codewithdipesh.habitized.presentation.timerscreen.TimerState
-import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.MarkAsCompleteAlertDialog
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.ThemeChooser
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
-import com.codewithdipesh.habitized.presentation.util.getColorFromKey
+import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
@@ -251,7 +250,7 @@ fun DurationScreen(
             .then( //different bg for diff theme
                 when(state.theme){
                     Normal -> Modifier
-                        .background(getColorFromKey(colorKey))
+                        .background(getThemedColorFromKey(colorKey))
                         .background(brush = Brush.verticalGradient(
                             colors = listOf(
                                 MaterialTheme.colorScheme.inverseOnSurface.copy(0.5f),

@@ -2,13 +2,15 @@ package com.codewithdipesh.habitized.presentation.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.ui.theme.LocalCustomColors
 
 fun Int.toColor(): Color = Color(this)
 fun Color.toInt(): Int = this.value.toInt()
 
 @Composable
-fun getColorFromKey(key: String): Color {
+fun getThemedColorFromKey(key: String): Color {
     val colors = LocalCustomColors.current
     return when (key) {
         "blue" -> colors.blue
@@ -18,5 +20,18 @@ fun getColorFromKey(key: String): Color {
         "purple" -> colors.purple
         "see_green" -> colors.see_green
         else -> colors.yellow
+    }
+}
+
+@Composable
+fun getOriginalColorFromKey(key: String): Color {
+    return when (key) {
+        "blue" -> colorResource(R.color.blue)
+        "green" -> colorResource(R.color.green)
+        "red" -> colorResource(R.color.red)
+        "yellow" -> colorResource(R.color.yellow)
+        "purple" ->colorResource(R.color.purple)
+        "see_green" -> colorResource(R.color.see_green)
+        else -> colorResource(R.color.yellow)
     }
 }

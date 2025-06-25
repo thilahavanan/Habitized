@@ -34,7 +34,7 @@ import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
-import com.codewithdipesh.habitized.presentation.util.getColorFromKey
+import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
@@ -111,7 +111,7 @@ fun OneTimeHabit(
     habitWithProgress: HabitWithProgress
 ) {
     HabitElement(
-        color = getColorFromKey(habitWithProgress.habit.colorKey),
+        color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
         isDone = habitWithProgress.progress.status != Status.NotStarted
     ){
@@ -143,7 +143,7 @@ fun CountHabit(
     onDeny : ()->Unit
 ) {
     HabitElement(
-        color = getColorFromKey(habitWithProgress.habit.colorKey),
+        color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
         isDone = habitWithProgress.progress.status != Status.NotStarted
     ){
@@ -242,7 +242,7 @@ fun DurationHabit(
     onDeny: () -> Unit
 ) {
     HabitElement(
-        color = getColorFromKey(habitWithProgress.habit.colorKey),
+        color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
         isDone = habitWithProgress.progress.status != Status.NotStarted
     ){
@@ -352,7 +352,7 @@ fun SessionHabit(
     onDeny: () -> Unit
 ) {
     HabitElement(
-        color = getColorFromKey(habitWithProgress.habit.colorKey),
+        color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
         isDone = habitWithProgress.progress.status != Status.NotStarted
     ){

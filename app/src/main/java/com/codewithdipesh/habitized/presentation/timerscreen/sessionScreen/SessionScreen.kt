@@ -50,21 +50,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.data.services.timerService.TimerServiceManager
-import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
-import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.SubTaskEditor
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Black
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Coffee
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Matcha
 import com.codewithdipesh.habitized.presentation.timerscreen.Theme.Normal
 import com.codewithdipesh.habitized.presentation.timerscreen.TimerState
-import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.MarkAsCompleteAlertDialog
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.Starter
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.ThemeChooser
 import com.codewithdipesh.habitized.presentation.timerscreen.elements.TimerElement
-import com.codewithdipesh.habitized.presentation.util.getColorFromKey
+import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
@@ -258,7 +255,7 @@ fun SessionScreen(
             .then( //different bg for diff theme
                 when(state.theme){
                     Normal -> Modifier
-                        .background(getColorFromKey(colorKey))
+                        .background(getThemedColorFromKey(colorKey))
                         .background(brush = Brush.verticalGradient(
                             colors = listOf(
                                 MaterialTheme.colorScheme.inverseOnSurface.copy(0.5f),

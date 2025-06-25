@@ -28,7 +28,7 @@ val DarkCustomColors = CustomColors(
     blue = Color(0xFF38576E),
     green = Color(0xFF3E6B58),
     red = Color(0xFF6A4150),
-    yellow = Color(0xFF9A6B2D),
+    yellow = Color(0xDA9A6B2D),
     purple = Color(0xFF554A68),
     see_green = Color(0xFF2C6D75)
 )

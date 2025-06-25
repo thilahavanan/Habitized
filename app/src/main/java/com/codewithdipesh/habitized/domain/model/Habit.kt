@@ -26,4 +26,6 @@ data class Habit(
     val countParam : CountParam? = null,
     val countTarget:Int?,
     val duration: LocalTime?,
+    val currentStreak :Int = 0,
+    val maxStreak :Int = 0
 )

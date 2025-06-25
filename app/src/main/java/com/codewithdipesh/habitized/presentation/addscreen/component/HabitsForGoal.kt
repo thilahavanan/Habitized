@@ -5,11 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -34,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
-import com.codewithdipesh.habitized.presentation.util.getColorFromKey
+import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.ui.theme.regular
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,7 +93,7 @@ fun HabitsForGoal(
                             .wrapContentHeight()
                             .padding(vertical = 4.dp)
                             .background(
-                                color = if(selectedHabits.contains(habit)) getColorFromKey(habit.colorKey) else Color.Transparent,
+                                color = if(selectedHabits.contains(habit)) getThemedColorFromKey(habit.colorKey) else Color.Transparent,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .clip(RoundedCornerShape(10.dp))
