@@ -118,15 +118,17 @@ fun HomeScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(80.dp),
                 contentAlignment = Alignment.Center
             ){
                 IconButton(
                     onClick = {//todo
                     },
-                    modifier = Modifier.align(Alignment.CenterStart)
-                        .padding(top = 30.dp,start = 16.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(top = 30.dp, start = 16.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.three_dots),
@@ -414,7 +416,8 @@ fun HomeScreen(
             ){
                 BottomNavBar(
                     selectedScreen = Screen.Home,
-                    onAddClick = {showAddingOptions= !showAddingOptions}
+                    onAddClick = {showAddingOptions= !showAddingOptions},
+                    onNavigate = { navController.navigate(it.route) }
                 )
             }
         }

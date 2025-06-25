@@ -17,6 +17,8 @@ import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoal
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
+import com.codewithdipesh.habitized.presentation.progress.ProgressScreen
+import com.codewithdipesh.habitized.presentation.progress.ProgressViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationScreen
 import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionScreen
@@ -34,7 +36,8 @@ fun HabitizedNavHost(
     homeViewModel: HomeViewModel,
     addViewModel: AddViewModel,
     durationViewModel : DurationViewModel,
-    sessionViewModel : SessionViewModel
+    sessionViewModel : SessionViewModel,
+    progressViewModel : ProgressViewModel
 ){
     NavHost(
         navController = navController,
@@ -151,6 +154,12 @@ fun HabitizedNavHost(
                 colorKey = color!!,
                 navController = navController,
                 viewmodel = sessionViewModel
+            )
+        }
+        composable(Screen.Progress.route) {
+            ProgressScreen(
+                navController = navController,
+                viewmodel = progressViewModel
             )
         }
     }

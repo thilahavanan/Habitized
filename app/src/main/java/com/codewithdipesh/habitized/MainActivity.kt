@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.navigation.HabitizedNavHost
+import com.codewithdipesh.habitized.presentation.progress.ProgressViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionViewModel
 import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
@@ -43,12 +44,14 @@ class MainActivity : ComponentActivity() {
                 val addViewModel by viewModels<AddViewModel>()
                 val durationViewModel by viewModels<DurationViewModel>()
                 val sessionViewModel by viewModels<SessionViewModel>()
+                val progressViewModel by viewModels<ProgressViewModel>()
                 HabitizedNavHost(
                     navController = navController,
                     homeViewModel = homeViewModel,
                     addViewModel = addViewModel,
                     durationViewModel = durationViewModel,
-                    sessionViewModel = sessionViewModel
+                    sessionViewModel = sessionViewModel,
+                    progressViewModel = progressViewModel
                 )
             }
         }

@@ -118,12 +118,12 @@ fun  BottomNavBar(
             Spacer(modifier = Modifier.width(16.dp))
 
             NavigationBarItem(
-                selected = selectedScreen == Screen.Habits,
-                onClick = { onNavigate(Screen.Habits) },
+                selected = selectedScreen == Screen.Progress,
+                onClick = { onNavigate(Screen.Progress) },
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.habits),
-                        contentDescription = "Habits"
+                        contentDescription = "Progress"
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

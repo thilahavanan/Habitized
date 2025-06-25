@@ -45,5 +45,5 @@ sealed class Screen(val route : String){
         }
     }
     object AddGoal : Screen("addGoal")
-    object Habits : Screen("habits")
+    object Progress : Screen("progress")
 }
