@@ -3,6 +3,7 @@ package com.codewithdipesh.habitized.presentation.progress
 import android.util.Log
 import androidx.core.util.toRange
 import androidx.lifecycle.ViewModel
+import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.util.UUID
 
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
@@ -53,7 +55,8 @@ class ProgressViewModel @Inject constructor(
             )
         }
         _state.value = _state.value.copy(
-            habits = finalHabits
+            habits = finalHabits,
+            showedHabits = finalHabits
         )
 
 
@@ -79,6 +82,35 @@ class ProgressViewModel @Inject constructor(
                     }
                     .reversed()
 
+        )
+
+    }
+
+    suspend fun getAllGoals(){
+        val goals = repo.getAllGoals()
+        _state.value = _state.value.copy(
+            goals = goals
+        )
+    }
+
+    fun selectGoal(goal : Goal?){
+        if(goal == null){
+            _state.value = _state.value.copy(
+                selectedGoal = null,
+                showedHabits = _state.value.habits
+            )
+        }else{
+            val goal = _state.value.goals.find { it.id == goal.id }
+            _state.value = _state.value.copy(
+                selectedGoal = goal,
+                showedHabits = _state.value.habits.filter { it.habit.goal_id == goal!!.id }
+            )
+        }
+    }
+
+    fun setOption(option : Options){
+        _state.value = _state.value.copy(
+            selectedOption = option
         )
 
     }

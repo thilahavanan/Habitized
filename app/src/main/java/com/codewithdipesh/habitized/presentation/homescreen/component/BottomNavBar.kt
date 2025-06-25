@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -67,7 +68,7 @@ import com.codewithdipesh.habitized.ui.theme.regular
 import org.w3c.dom.Text
 
 @Composable
-fun  BottomNavBar(
+fun BottomNavBar(
     selectedScreen: Screen,
     onAddClick: () -> Unit = {},
     onNavigate: (Screen) -> Unit = {},
@@ -103,16 +104,23 @@ fun  BottomNavBar(
             Spacer(modifier = Modifier.width(16.dp))
 
             // Custom Add button (centered manually)
-            Box(modifier = Modifier
+            AnimatedVisibility(
+                visible = selectedScreen == Screen.Home
+            ) {
+                Box(modifier = Modifier
                     .size(48.dp)
                     .clip(shape = CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable { onAddClick() }, contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add",
-                    tint = MaterialTheme.colorScheme.inverseOnSurface
-                )
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                        tint = MaterialTheme.colorScheme.inverseOnSurface
+                    )
+                }
+            }
+            if(selectedScreen != Screen.Home){
+                Spacer(modifier = Modifier.width(48.dp))
             }
 
             Spacer(modifier = Modifier.width(16.dp))

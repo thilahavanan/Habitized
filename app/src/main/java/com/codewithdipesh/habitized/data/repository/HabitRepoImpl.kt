@@ -185,10 +185,7 @@ class HabitRepoImpl(
     }
     override suspend fun getAllGoals(): List<Goal> {
        return goalDao.getAllGoals().map{
-           val habits = habitDao.getHabitsByGoal(it.goal_id)
-           it.toGoal(
-               habits.map { it.toHabit() }
-           )
+           it.toGoal(emptyList())
        }
     }
 

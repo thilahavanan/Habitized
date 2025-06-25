@@ -11,7 +11,9 @@ data class ProgressUI(
     val WeeklyDateRange : List<LocalDate> = emptyList(),
     val OverAllDateRange : List<LocalDate> = emptyList(),
     val selectedGoal : Goal? = null,
-    val habits : List<HabitWithWeeklyAndOverallProgress> = emptyList()
+    val showedHabits : List<HabitWithWeeklyAndOverallProgress> = emptyList(),
+    val habits : List<HabitWithWeeklyAndOverallProgress> = emptyList(),
+    val goals : List<Goal> = emptyList()
 )
 
 
