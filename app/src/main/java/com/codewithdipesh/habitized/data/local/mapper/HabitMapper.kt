@@ -11,6 +11,7 @@ import com.codewithdipesh.habitized.presentation.util.toInt
 import com.codewithdipesh.habitized.presentation.util.toLocalTime
 import com.codewithdipesh.habitized.presentation.util.toWord
 import java.util.UUID
+import kotlin.math.max
 
 fun Habit.toEntity(): HabitEntity {
     val days_of_Month = daysOfMonth?.joinToString(",")
@@ -29,7 +30,9 @@ fun Habit.toEntity(): HabitEntity {
         colorKey = colorKey,
         countParam = countParam.toString(),
         countTarget = countTarget,
-        duration = duration?.SingleString()
+        duration = duration?.SingleString(),
+        currentStreak = currentStreak,
+        maxStreak = maxStreak
     )
 }
 
@@ -49,6 +52,8 @@ fun HabitEntity.toHabit() : Habit {
         colorKey = colorKey,
         countParam = CountParam.fromString(countParam),
         countTarget = countTarget,
-        duration = duration?.toLocalTime()
+        duration = duration?.toLocalTime(),
+        currentStreak = currentStreak,
+        maxStreak = maxStreak
     )
 }

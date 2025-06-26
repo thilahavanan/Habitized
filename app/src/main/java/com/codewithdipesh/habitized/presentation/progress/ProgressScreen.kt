@@ -146,7 +146,7 @@ fun ProgressScreen(
                                     viewmodel.selectGoal(goal)
                                 },
                             contentAlignment = Alignment.Center
-                        ){
+                        ){ 
                             Text(
                                 text = goal.title,
                                 style = TextStyle(

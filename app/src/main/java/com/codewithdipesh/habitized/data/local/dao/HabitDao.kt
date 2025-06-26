@@ -33,6 +33,13 @@ interface HabitDao {
     """)
     suspend fun updateHabitStatus(habitId: UUID, isActive: Boolean)
 
+    @Query("""
+        UPDATE habits 
+        SET currentStreak = :current , maxStreak = :max
+        WHERE habit_id = :habitId
+    """)
+    suspend fun updateStreak(habitId: UUID, current: Int, max: Int)
+
     @Query("SELECT * FROM habits WHERE goal_id = :goalId")
     suspend fun getHabitsByGoal(goalId: UUID): List<HabitEntity>
 }

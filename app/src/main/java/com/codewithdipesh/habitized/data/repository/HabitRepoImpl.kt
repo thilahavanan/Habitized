@@ -82,6 +82,13 @@ class HabitRepoImpl(
         }
     }
 
+    override suspend fun updateStreak(
+        habitId: UUID,
+        current: Int,
+        max: Int
+    ) {
+        habitDao.updateStreak(habitId,current,max)
+    }
 
 
     override suspend fun addHabitProgresses() {
@@ -168,6 +175,10 @@ class HabitRepoImpl(
 
     override suspend fun onUpdateCounterHabitProgress(count:Int,progressId: UUID) {
         habitProgressDao.onUpdateCount(count,progressId)
+    }
+
+    override suspend fun getAllCompletedDates(habitId: UUID): List<LocalDate> {
+        return  habitProgressDao.getCompletedHabitProgress(habitId)
     }
 
 

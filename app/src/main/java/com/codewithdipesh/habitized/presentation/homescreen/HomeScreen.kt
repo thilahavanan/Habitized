@@ -173,7 +173,7 @@ fun HomeScreen(
                 habitWithProgress = habitForCounter!!,
                 onUpdateCounter = {
                     scope.launch{
-                        viewmodel.onUpdateCounter(it,habitForCounter!!.progress)
+                        viewmodel.onUpdateCounter(it,habitForCounter!!)
                         showingCounter = false
                     }
 
@@ -276,8 +276,10 @@ fun HomeScreen(
                                      habitForShowingAlert = it
                                  },
                                  onDone = {
-                                     viewmodel.onDoneHabit(it.progress)
-                                     viewmodel.loadHomePage(state.selectedDate)
+                                     scope.launch {
+                                         viewmodel.onDoneHabit(it)
+                                         viewmodel.loadHomePage(state.selectedDate)
+                                     }
                                  },
                                  onAddCounter = {
                                      showingCounter = true
@@ -325,8 +327,10 @@ fun HomeScreen(
                                     viewmodel.toggleSubtask(it)
                                 },
                                 onUnSkip = {
-                                    viewmodel.onUnSkipDoneHabit(it.progress)
-                                    viewmodel.loadHomePage(state.selectedDate)
+                                    scope.launch {
+                                        viewmodel.onUnSkipDoneHabit(it)
+                                        viewmodel.loadHomePage(state.selectedDate)
+                                    }
                                 },
                                 onAddCounter = {
                                     showingCounter = true

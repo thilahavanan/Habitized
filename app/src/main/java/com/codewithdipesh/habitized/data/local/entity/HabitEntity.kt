@@ -26,4 +26,6 @@ data class HabitEntity(
     val countParam : String,
     val countTarget:Int? = null,
     val duration:String? = null,
+    val currentStreak : Int = 0,
+    val maxStreak : Int = 0
 )

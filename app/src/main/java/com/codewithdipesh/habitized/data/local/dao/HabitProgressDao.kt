@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.codewithdipesh.habitized.data.local.entity.HabitProgressEntity
+import com.codewithdipesh.habitized.domain.model.Status
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.util.UUID
@@ -16,6 +17,13 @@ interface HabitProgressDao {
 
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId")
     suspend fun getHabitProgress(habitId: UUID): List<HabitProgressEntity>
+
+    @Query("SELECT date FROM habit_progress WHERE habitId = :habitId AND status = :status AND date <= :today ORDER BY date DESC")
+    suspend fun getCompletedHabitProgress(
+        habitId: UUID,
+        status: String = Status.Done.displayName,
+        today: LocalDate= LocalDate.now()
+    ): List<LocalDate>
 
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId AND date = :date")
     suspend fun getHabitProgressOfTheDay(habitId: UUID, date: LocalDate): HabitProgressEntity

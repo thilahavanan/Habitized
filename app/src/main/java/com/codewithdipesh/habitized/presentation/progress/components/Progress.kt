@@ -125,7 +125,7 @@ fun Progress(
                     //current streak
                     Row {
                         Text(
-                            text = habit.title,
+                            text = habit.currentStreak.toString(),
                             style = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontFamily = playfair,
