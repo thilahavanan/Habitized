@@ -153,7 +153,7 @@ class HomeViewModel @Inject constructor(
     fun onUnSkipDoneHabit(habitWithProgress: HabitWithProgress){
         viewModelScope.launch(Dispatchers.IO){
             repo.onNotStartedHabitProgress(progressId = habitWithProgress.progress.progressId)
-            updateStreak(habitWithProgress)
+            updateStreak(habitWithProgress,true)
         }
     }
 
@@ -210,6 +210,7 @@ class HomeViewModel @Inject constructor(
         if(_uiState.value.ongoingHabit != null && _uiState.value.ongoingHabit!!.habit.type == HabitType.Duration){
             _uiState.value.ongoingHabit?.let {
                 repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+                updateStreak(_uiState.value.ongoingHabit!!)
             }
         }else if(_uiState.value.ongoingHabit != null){
             //session
@@ -218,6 +219,7 @@ class HomeViewModel @Inject constructor(
             prevCount = prevCount!! + 1
             if(prevCount == targetCount){
                 repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
+                updateStreak(_uiState.value.ongoingHabit!!)
             }else{
                 repo.onNotStartedHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
             }
@@ -231,7 +233,11 @@ class HomeViewModel @Inject constructor(
         repo.updateStreak(
             habitId = habitWithProgress.habit.habit_id,
             current = streak,
-            max = max(streak,habitWithProgress.habit.maxStreak)
+            max = if(isSkipped) {
+                if(habitWithProgress.habit.maxStreak == habitWithProgress.habit.currentStreak) max(streak-1,0)
+                else max(streak,habitWithProgress.habit.maxStreak)
+            }
+            else max(streak,habitWithProgress.habit.maxStreak)
         )
 
     }
