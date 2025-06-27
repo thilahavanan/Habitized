@@ -65,8 +65,9 @@ fun WeekDayComponent(
                 style = TextStyle(
                     color = if(selected) MaterialTheme.colorScheme.outlineVariant
                     else MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = ndot,
-                    fontSize = 26.sp
+                    fontFamily = playfair,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp
                 )
             )
         }

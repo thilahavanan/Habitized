@@ -123,7 +123,7 @@ fun Progress(
                     horizontalAlignment = Alignment.End
                 ){
                     //current streak
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically){
                         Text(
                             text = habit.currentStreak.toString(),
                             style = TextStyle(
@@ -131,13 +131,13 @@ fun Progress(
                                 fontFamily = playfair,
                                 fontWeight =  FontWeight.Bold,
                                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                                fontSize = 18.sp
+                                fontSize = 20.sp
                             )
                         )
-                        Icon(
-                            painter = painterResource(R.drawable.fire_icon),
-                            contentDescription = "streak",
-                            tint = getOriginalColorFromKey(habit.colorKey)
+                        //fire animation
+                        FireAnimation(
+                            modifier = Modifier.padding(start = 4.dp),
+                            colorKey = habit.colorKey
                         )
                     }
 

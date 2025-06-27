@@ -120,7 +120,7 @@ fun OverAllCell(
                     if(isSelect) color
                     else MaterialTheme.colorScheme.surfaceContainerHigh
                 }
-                else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f)
+                else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.2f)
 
             )
             .clickable {

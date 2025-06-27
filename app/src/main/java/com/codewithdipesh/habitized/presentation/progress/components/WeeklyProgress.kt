@@ -116,7 +116,7 @@ fun WeeklyCell(
             .size(40.dp)
             .clip(CircleShape)
             .background(
-                if (!isActive) MaterialTheme.colorScheme.surfaceContainerLow
+                if (!isActive) MaterialTheme.colorScheme.surfaceContainerLow.copy(0.3f)
                 else if (isSelect) color
                 else Color.Transparent
             )
@@ -127,7 +127,7 @@ fun WeeklyCell(
                         if(isLater) color.copy(alpha = 0.4f)
                         else color
                     }
-                    else MaterialTheme.colorScheme.surfaceContainerLow,
+                    else MaterialTheme.colorScheme.surfaceContainerLow.copy(0.3f),
                 shape = CircleShape
             )
             .clickable {

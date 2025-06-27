@@ -35,3 +35,17 @@ fun getOriginalColorFromKey(key: String): Color {
         else -> colorResource(R.color.yellow)
     }
 }
+
+@Composable
+fun getAnimatedFireIcon(key : String) : Int {
+    return when (key) {
+        "blue" -> R.raw.fire_blue
+        "green" -> R.raw.fire_green
+        "red" -> R.raw.fire_red
+        "yellow" -> R.raw.fire_yellow
+        "purple" -> R.raw.fire_purple
+        "see_green" -> R.raw.fire_see_green
+        else -> R.raw.fire_blue
+    }
+}
+

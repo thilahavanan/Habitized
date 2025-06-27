@@ -17,18 +17,18 @@ data class CustomColors(
 val LocalCustomColors = staticCompositionLocalOf<CustomColors>{ LightCustomColors }
 
 val LightCustomColors = CustomColors(
-    blue = Color(0xFF9EC2DC),
-    green = Color(0xFFAADEC8),
-    red = Color(0xFFDEADBE),
-    yellow = Color(0xFFDA9A55),
-    purple = Color(0xFFC5B8DA),
-    see_green = Color(0xFF92DCE5)
+    blue = Color(0xFFACC3D5),
+    green = Color(0xFFB3D3C6),
+    red = Color(0xFFD5B3C1),
+    yellow = Color(0xFFECC69F),
+    purple = Color(0xFFC7BED3),
+    see_green = Color(0xFFA3D4DB)
 )
 val DarkCustomColors = CustomColors(
-    blue = Color(0xFF38576E),
-    green = Color(0xFF3E6B58),
-    red = Color(0xFF6A4150),
-    yellow = Color(0xDA9A6B2D),
-    purple = Color(0xFF554A68),
-    see_green = Color(0xFF2C6D75)
+    blue = Color(0xFF263C4B),
+    green = Color(0xFF284438),
+    red = Color(0xFF472C36),
+    yellow = Color(0xFF5E3C17),
+    purple = Color(0xFF3F2F59),
+    see_green = Color(0xFF205A59)
 )

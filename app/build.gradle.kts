@@ -78,4 +78,7 @@ dependencies {
     //calendar
     implementation("com.kizitonwose.calendar:compose:2.6.2")
 
+    //lottie
+    implementation("com.github.LottieFiles:dotlottie-android:0.4.1")
+
 }
