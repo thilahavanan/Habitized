@@ -82,6 +82,10 @@ class HabitRepoImpl(
         }
     }
 
+    override suspend fun getHabitsByGoal(goalId: UUID): List<Habit> {
+        return habitDao.getHabitsByGoal(goalId).map { it.toHabit() }
+    }
+
     override suspend fun updateStreak(
         habitId: UUID,
         current: Int,

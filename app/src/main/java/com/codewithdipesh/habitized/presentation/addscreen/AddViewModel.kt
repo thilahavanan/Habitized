@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.addscreen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -295,8 +296,13 @@ class AddViewModel @Inject constructor(
         )
     }
     fun setHabitsAttachedWithGoal(newHabits : List<Habit>){
+        val updatedHabits = newHabits.map {
+            it.copy(
+                goal_id = _goalUiState.value.goal_id
+            )
+        }
         _goalUiState.value = _goalUiState.value.copy(
-            habits = _goalUiState.value.habits + newHabits
+            habits = updatedHabits
         )
     }
     fun setTargetDate(date : LocalDate){
@@ -311,6 +317,7 @@ class AddViewModel @Inject constructor(
         }
         repo.addGoal(
             Goal(
+                id = _goalUiState.value.goal_id,
                 title = _goalUiState.value.title,
                 description = _goalUiState.value.description,
                 target_date = _goalUiState.value.target_date,
@@ -321,6 +328,9 @@ class AddViewModel @Inject constructor(
             repo.addOrUpdateHabit(it)
         }
         sendEvent("Goal Created Successfully")
+    }
+    fun clearGoalUI(){
+        _goalUiState.value = AddGoalUI()
     }
 
 

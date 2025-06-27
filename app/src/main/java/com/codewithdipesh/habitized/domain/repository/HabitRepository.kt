@@ -18,6 +18,7 @@ interface HabitRepository {
     suspend fun addOrUpdateHabit(habit: Habit)
     suspend fun deleteHabit(habitId: UUID)
     suspend fun getHabitById(habitId: UUID): Habit?
+    suspend fun getHabitsByGoal(goalId: UUID): List<Habit>
     suspend fun updateStreak(habitId: UUID,current : Int,max: Int)
 
     // Habit Progress

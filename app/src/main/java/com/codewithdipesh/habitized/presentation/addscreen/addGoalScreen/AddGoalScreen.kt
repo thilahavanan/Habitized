@@ -86,22 +86,23 @@ fun AddGoalScreen(
 
     BackHandler {
         navController.navigateUp()
+        viewmodel.clearGoalUI()
     }
-    LaunchedEffect(Unit) {
-        viewmodel.getExistingHabits()
-    }
-
     LaunchedEffect(viewmodel.uiEvent) {
         viewmodel.uiEvent.collect {
             scope.launch {
                 if(it == "Goal Created Successfully"){
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     navController.navigateUp()
+                    viewmodel.clearGoalUI()
                 }else{
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+    LaunchedEffect(Unit) {
+        viewmodel.getExistingHabits()
     }
 
     Scaffold(
@@ -111,7 +112,10 @@ fun AddGoalScreen(
                 isShowingLeftIcon = true,
                 leftIcon = {
                     IconButton(
-                        onClick = {navController.navigateUp()},
+                        onClick = {
+                            navController.navigateUp()
+                            viewmodel.clearGoalUI()
+                            },
                         modifier = Modifier
                             .padding(top = 30.dp)
                     ) {

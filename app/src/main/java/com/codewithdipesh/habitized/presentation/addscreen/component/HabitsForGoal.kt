@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.addscreen.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -69,7 +70,7 @@ fun HabitsForGoal(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 50.dp,top = 30.dp)
+                    .padding(bottom = 70.dp,top = 30.dp)
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -93,15 +94,15 @@ fun HabitsForGoal(
                             .wrapContentHeight()
                             .padding(vertical = 4.dp)
                             .background(
-                                color = if(selectedHabits.contains(habit)) getThemedColorFromKey(habit.colorKey) else Color.Transparent,
+                                color = if(selectedHabits.find { it.habit_id == habit.habit_id } != null) getThemedColorFromKey(habit.colorKey) else Color.Transparent,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .clip(RoundedCornerShape(10.dp))
                             .then(
                                 if(clickable){
                                     Modifier.clickable{
-                                        if(selectedHabits.contains(habit)){
-                                            selectedHabits = selectedHabits - habit
+                                        if(selectedHabits.find { it.habit_id == habit.habit_id } != null){
+                                            selectedHabits = selectedHabits.filter { it.habit_id != habit.habit_id }
                                         }else{
                                             selectedHabits = selectedHabits + habit
                                         }
