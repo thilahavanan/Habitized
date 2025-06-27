@@ -56,7 +56,8 @@ class ProgressViewModel @Inject constructor(
         }
         _state.value = _state.value.copy(
             habits = finalHabits,
-            showedHabits = finalHabits
+            showedHabits = if(_state.value.selectedGoal == null) finalHabits
+            else finalHabits.filter { it.habit.goal_id == _state.value.selectedGoal?.id}
         )
 
 

@@ -27,15 +27,13 @@ fun FireAnimation(
 
     val context = LocalContext.current
     val jsonFile = getAnimatedFireIcon(colorKey)
-    val jsonString = remember {
-        context.resources.openRawResource(jsonFile).bufferedReader().use { it.readText() }
-    }
-
+    val jsonString = context.resources.openRawResource(jsonFile).bufferedReader().use { it.readText() }
+    
     DotLottieAnimation(
         modifier = modifier.size(30.dp),
         source = DotLottieSource.Json(jsonString),
         autoplay = true,
-        loop = true,
+        loop = false,
         speed = 1.5f,
         playMode = Mode.FORWARD
     )
