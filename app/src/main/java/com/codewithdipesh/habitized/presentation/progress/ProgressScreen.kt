@@ -233,7 +233,7 @@ fun ProgressScreen(
                                         habit = it.habit,
                                         progresses = it.WeeklyProgresses
                                     )
-                                    Spacer(Modifier.height(8.dp))
+                                    Spacer(Modifier.height(16.dp))
                                 }
                             }
 
@@ -244,7 +244,7 @@ fun ProgressScreen(
                                         habit = it.habit,
                                         progresses = it.OverallProgresses
                                     )
-                                    Spacer(Modifier.height(8.dp))
+                                    Spacer(Modifier.height(16.dp))
                                 }
                             }
                         }

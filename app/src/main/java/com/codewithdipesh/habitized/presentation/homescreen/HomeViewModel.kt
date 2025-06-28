@@ -171,7 +171,7 @@ class HomeViewModel @Inject constructor(
                     )
                 )
             }else{
-                habitWithProgress
+                it
             }
         }
 

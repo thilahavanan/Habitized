@@ -30,26 +30,17 @@ class ProgressViewModel @Inject constructor(
         //all habits
         var finalHabits = emptyList<HabitWithWeeklyAndOverallProgress>()
         val habits = repo.getAllHabits()
-        Log.d("progress",habits.toString())
-        habits.map {
+        habits.forEach {habit->
             //all progress
-            val progresses = repo.getAllHabitProgress(it.habit_id!!)
-            var overallProgresses = emptyList<HabitProgress>()
-            var weeklyProgresses = emptyList<HabitProgress>()
-            _state.value.OverAllDateRange.forEach {
-                //if date matches with monthly range
-                val overallPresent = progresses
-                    ?.find{ it.date == _state.value.date}
-                if(overallPresent != null){
-                    overallProgresses = overallProgresses.plus(overallPresent)
-                    //if overall present means weekly also
-                    if(_state.value.WeeklyDateRange.contains(overallPresent.date)){
-                        weeklyProgresses = weeklyProgresses.plus(overallPresent)
-                    }
-                }
-            }
+            val progresses = repo.getAllHabitProgress(habit.habit_id!!)
+            var overallProgresses = progresses?.filter {
+                _state.value.OverAllDateRange.contains(it.date)
+            } ?:emptyList()
+            var weeklyProgresses = progresses?.filter {
+                _state.value.WeeklyDateRange.contains(it.date)
+            } ?: emptyList()
             finalHabits += HabitWithWeeklyAndOverallProgress(
-                habit = it,
+                habit = habit,
                 WeeklyProgresses = weeklyProgresses,
                 OverallProgresses = overallProgresses
             )
