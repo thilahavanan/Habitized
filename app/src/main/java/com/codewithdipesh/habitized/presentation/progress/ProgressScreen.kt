@@ -233,6 +233,7 @@ fun ProgressScreen(
                                         habit = it.habit,
                                         progresses = it.WeeklyProgresses,
                                         onClick = {
+                                            navController.navigate(Screen.HabitScreen.createRoute(it.habit))
                                         }
                                     )
                                     Spacer(Modifier.height(16.dp))
@@ -246,6 +247,7 @@ fun ProgressScreen(
                                         habit = it.habit,
                                         progresses = it.OverallProgresses,
                                         onClick = {
+                                            navController.navigate(Screen.HabitScreen.createRoute(it.habit))
                                         }
                                     )
                                     Spacer(Modifier.height(16.dp))

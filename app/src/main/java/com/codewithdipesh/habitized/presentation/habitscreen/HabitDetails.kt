@@ -1,0 +1,361 @@
+package com.codewithdipesh.habitized.presentation.habitscreen
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.codewithdipesh.habitized.domain.model.Frequency
+import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
+import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
+import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
+import com.codewithdipesh.habitized.presentation.util.toWord
+import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.launch
+import java.util.UUID
+
+@Composable
+fun HabitDetails(
+    id : UUID,
+    title : String,
+    colorKey : String,
+    modifier: Modifier = Modifier,
+    viewmodel: HabitViewModel,
+    navController:NavController
+){
+    val state by viewmodel.state.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            viewmodel.init(id)
+        }
+    }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .height(80.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                //left icon
+                IconButton(
+                    onClick = {navController.navigateUp()},
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = "back",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+                //title
+                Text(
+                    text = "Habit",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = playfair,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 20.sp
+                    ),
+                    modifier = Modifier.padding(top = 40.dp)
+                )
+                //options(share,edit,delete
+                IconButton(
+                    onClick = {//todo
+                    },
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "back",
+                        tint = Color.Red
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            //title , frequency , and target
+            Element(){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    //title, frequency
+                    Column (
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ){
+                        Text(
+                            text = title,
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        )
+                        Text(
+                            text = when(state.frequency){
+                                Frequency.Daily -> "Everyday"
+                                Frequency.Weekly -> {
+                                    IntToWeekDayMap(state.days_of_week)
+                                        .filter { it.value == true }
+                                        .keys
+                                        .joinToString(", ") { it.name.lowercase().take(3) }
+                                }
+                                Frequency.Monthly -> {
+                                    state.daysOfMonth!!.joinToString(", ")
+                                }
+                                else -> "Everyday"
+                            },
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 14.sp
+                            )
+                        )
+                    }
+                    //session , target
+                    Column (
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ){
+                        when(state.type){
+                            HabitType.OneTime -> {
+                                Text(
+                                    text = "OneTime",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                            }
+                            HabitType.Duration -> {
+                                Text(
+                                    text = state.targetTime?.toWord() ?: "",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                            }
+                            else -> {
+                                Text(
+                                    text = "${state.targetCount} ${state.countParam?.displayName}",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                            }
+                        }
+                        //only for session
+                        if(state.type == HabitType.Session){
+                            Text(
+                                text = state.targetTime?.toWord() ?: "",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 14.sp
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            //streak
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                //current streak
+                Element(
+                    modifier = Modifier.weight(1f)
+                ){
+                    Text(
+                        text = "Current streak",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        )
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically){
+                        Text(
+                            text = "${state.currentStreak} days",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = playfair,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Italic,
+                                fontSize = 18.sp
+                            )
+                        )
+                        //fire animation
+                        FireAnimation(
+                            modifier = Modifier.padding(start = 4.dp),
+                            colorKey = colorKey,
+                            loop = true,
+                            size = 30
+                        )
+                    }
+                }
+                //maximum streak
+                Element(
+                    modifier = Modifier.weight(1f)
+                ){
+                    Text(
+                        text = "Maximum streak",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        )
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "${state.maximumStreak} days",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    )
+                }
+            }
+            //completion
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                //total completed
+                Element(modifier = Modifier.weight(1f)){
+                    Text(
+                        text = "Total Completed",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        )
+                    )
+                    Text(
+                        text = "${state.totalCompleted}",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    )
+                }
+                //completion rate
+                Element(modifier = Modifier.weight(1f)){
+                    Text(
+                        text = "Completion rate",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        )
+                    )
+                    Text(
+                        text = "${state.completionRate}%",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    )
+                }
+            }
+            //Description
+            if(state.description != ""){
+                Element(){
+                    Text(
+                        text = "Description",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        )
+                    )
+                    Text(
+                        text = "${state.description}",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+            }
+
+        }
+    }
+
+}

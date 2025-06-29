@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.navigation
 
+import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import java.time.LocalDate
@@ -46,4 +47,12 @@ sealed class Screen(val route : String){
     }
     object AddGoal : Screen("addGoal")
     object Progress : Screen("progress")
+    object HabitScreen : Screen("habit_screen/{id}/{title}/{color}"){
+        fun createRoute(habit: Habit): String {
+            val id = habit.habit_id
+            val title = habit.title
+            val color = habit.colorKey
+            return "habit_screen/$id/$title/$color"
+        }
+    }
 }

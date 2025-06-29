@@ -15,6 +15,8 @@ import androidx.navigation.navDeepLink
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalScreen
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
+import com.codewithdipesh.habitized.presentation.habitscreen.HabitDetails
+import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.progress.ProgressScreen
@@ -37,7 +39,8 @@ fun HabitizedNavHost(
     addViewModel: AddViewModel,
     durationViewModel : DurationViewModel,
     sessionViewModel : SessionViewModel,
-    progressViewModel : ProgressViewModel
+    progressViewModel : ProgressViewModel,
+    habitViewModel : HabitViewModel
 ){
     NavHost(
         navController = navController,
@@ -160,6 +163,32 @@ fun HabitizedNavHost(
             ProgressScreen(
                 navController = navController,
                 viewmodel = progressViewModel
+            )
+        }
+        composable(
+            Screen.HabitScreen.route,
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.StringType
+                },
+                navArgument("title"){
+                    type = NavType.StringType
+                },
+                navArgument("color"){
+                    type = NavType.StringType
+                }
+            )
+        ) {entry->
+            val id = entry.arguments?.getString("id")
+            val title = entry.arguments?.getString("title")
+            val color = entry.arguments?.getString("color")
+
+            HabitDetails(
+                id = UUID.fromString(id),
+                title = title!! ,
+                colorKey = color!!,
+                navController = navController,
+                viewmodel = habitViewModel
             )
         }
     }

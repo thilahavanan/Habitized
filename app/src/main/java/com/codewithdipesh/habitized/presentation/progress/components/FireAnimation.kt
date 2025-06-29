@@ -23,6 +23,8 @@ import com.lottiefiles.dotlottie.core.util.DotLottieSource
 fun FireAnimation(
     modifier: Modifier = Modifier,
     colorKey: String,
+    loop : Boolean = false,
+    size : Int = 30
 ) {
 
     val context = LocalContext.current
@@ -30,10 +32,10 @@ fun FireAnimation(
     val jsonString = context.resources.openRawResource(jsonFile).bufferedReader().use { it.readText() }
     
     DotLottieAnimation(
-        modifier = modifier.size(30.dp),
+        modifier = modifier.size(size.dp),
         source = DotLottieSource.Json(jsonString),
         autoplay = true,
-        loop = false,
+        loop = loop,
         speed = 1.5f,
         playMode = Mode.FORWARD
     )
