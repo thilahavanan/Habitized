@@ -55,6 +55,7 @@ import kotlin.String
 fun Progress(
     habit: Habit,
     color : Color,
+    onClick : () ->Unit = {},
     progress : @Composable ()->Unit
 ) {
     Box(modifier = Modifier
@@ -64,7 +65,10 @@ fun Progress(
         .background(
             color = color,
             shape = RoundedCornerShape(15.dp)
-        ),
+        )
+        .clickable{
+            onClick()
+        },
         contentAlignment = Alignment.Center
     ){
         Column(

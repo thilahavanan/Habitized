@@ -57,11 +57,13 @@ fun OverallProgress(
     overallRange : List<LocalDate>,
     habit: Habit,
     progresses : List<HabitProgress>,
+    onClick : () ->Unit,
     modifier: Modifier = Modifier
 ) {
     Progress(
         habit = habit,
-        color = MaterialTheme.colorScheme.secondary,
+        color = getThemedColorFromKey(habit.colorKey),
+        onClick = {onClick()},
         progress = {
             Row(
                 modifier = Modifier.wrapContentSize()
@@ -90,10 +92,7 @@ fun OverallProgress(
                             OverAllCell(
                                color = getOriginalColorFromKey(habit.colorKey),
                                isActive = habitDayList.contains(day),
-                               isSelect = (progress != null && progress.status == Status.Done),
-                               onClick = {
-                                    //todo show the bottom sheet
-                               }
+                               isSelect = (progress != null && progress.status == Status.Done)
                             )
                         }
                     }
@@ -108,25 +107,16 @@ fun OverAllCell(
     modifier: Modifier = Modifier,
     color: Color,
     isSelect: Boolean,
-    isActive :Boolean,
-    onClick: () -> Unit
+    isActive :Boolean
 ){
     Box(
         modifier = Modifier
             .size(16.dp)
             .clip(CircleShape)
             .background(
-                if(isActive){
-                    if(isSelect) color
-                    else MaterialTheme.colorScheme.surfaceContainerHigh
-                }
-                else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.2f)
-
+                if (!isActive) MaterialTheme.colorScheme.surfaceContainerLow.copy(0.3f)
+                else if (isSelect) color
+                else MaterialTheme.colorScheme.surfaceContainerLow.copy(0.5f)
             )
-            .clickable {
-                if (isActive) {
-                    onClick()
-                }
-            }
     )
 }

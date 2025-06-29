@@ -231,7 +231,9 @@ fun ProgressScreen(
                                         date = state.date,
                                         weekDayRange = state.WeeklyDateRange,
                                         habit = it.habit,
-                                        progresses = it.WeeklyProgresses
+                                        progresses = it.WeeklyProgresses,
+                                        onClick = {
+                                        }
                                     )
                                     Spacer(Modifier.height(16.dp))
                                 }
@@ -242,7 +244,9 @@ fun ProgressScreen(
                                     OverallProgress(
                                         overallRange = state.OverAllDateRange,
                                         habit = it.habit,
-                                        progresses = it.OverallProgresses
+                                        progresses = it.OverallProgresses,
+                                        onClick = {
+                                        }
                                     )
                                     Spacer(Modifier.height(16.dp))
                                 }

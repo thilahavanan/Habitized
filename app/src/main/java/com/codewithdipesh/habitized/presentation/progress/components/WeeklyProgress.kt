@@ -57,11 +57,15 @@ fun WeeklyProgress(
     weekDayRange : List<LocalDate>,
     habit: Habit,
     progresses : List<HabitProgress>,
+    onClick :()->Unit,
     modifier: Modifier = Modifier
 ) {
     Progress(
         habit = habit,
         color = getThemedColorFromKey(habit.colorKey),
+        onClick = {
+            onClick()
+        },
         progress = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,10 +95,7 @@ fun WeeklyProgress(
                         isActive = habitDayList.contains(day),
                         isSelect = (progress != null && progress.status == Status.Done),
                         isLater = habitDayList.contains(day) && day > date,
-                        color = getOriginalColorFromKey(habit.colorKey),
-                        onClick = {
-                            //todo show the bottom sheet
-                        }
+                        color = getOriginalColorFromKey(habit.colorKey)
                     )
                 }
             }
@@ -109,7 +110,6 @@ fun WeeklyCell(
     isSelect: Boolean,
     isActive :Boolean,
     isLater : Boolean,
-    onClick: () -> Unit
 ){
     Box(
         modifier = Modifier
@@ -129,12 +129,7 @@ fun WeeklyCell(
                     }
                     else MaterialTheme.colorScheme.surfaceContainerLow.copy(0.3f),
                 shape = CircleShape
-            )
-            .clickable {
-                if (isActive) {
-                    onClick()
-                }
-            },
+            ),
         contentAlignment = Alignment.Center
     ){
         if(isSelect){

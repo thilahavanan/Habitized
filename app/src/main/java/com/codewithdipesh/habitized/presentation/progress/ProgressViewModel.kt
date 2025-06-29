@@ -68,7 +68,7 @@ class ProgressViewModel @Inject constructor(
             OverAllDateRange =
                 //the last column is subjective monday to sunday
                 //so range can be 141-147 ( 140 is fixed then calculate -->1--7
-                (0..(133 + _state.value.date.dayOfWeek.value) )
+                (0..(126 + _state.value.date.dayOfWeek.value) )
                     .map{ offset ->
                         _state.value.date.minusDays(offset.toLong())
                     }
