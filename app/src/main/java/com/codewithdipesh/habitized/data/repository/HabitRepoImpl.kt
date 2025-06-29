@@ -24,14 +24,8 @@ import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
-import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getWeekDayIndex
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.util.UUID
 
@@ -182,7 +176,11 @@ class HabitRepoImpl(
     }
 
     override suspend fun getAllCompletedDates(habitId: UUID): List<LocalDate> {
-        return  habitProgressDao.getCompletedHabitProgress(habitId)
+        return  habitProgressDao.getCompletedHabitProgressDates(habitId)
+    }
+
+    override suspend fun getAllCompletedProgress(habitId: UUID): List<HabitProgress> {
+        return habitProgressDao.getCompletedHabitProgress(habitId).map { it.toHabitProgress() }
     }
 
 

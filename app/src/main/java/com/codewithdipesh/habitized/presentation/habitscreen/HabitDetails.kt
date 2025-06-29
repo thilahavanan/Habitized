@@ -37,9 +37,11 @@ import androidx.navigation.NavController
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
+import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
@@ -140,7 +142,7 @@ fun HabitDetails(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontFamily = regular,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
+                                fontSize = 20.sp
                             )
                         )
                         Text(
@@ -229,15 +231,6 @@ fun HabitDetails(
                 Element(
                     modifier = Modifier.weight(1f)
                 ){
-                    Text(
-                        text = "Current streak",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Light,
-                            fontSize = 14.sp
-                        )
-                    )
                     Row(verticalAlignment = Alignment.CenterVertically){
                         Text(
                             text = "${state.currentStreak} days",
@@ -246,7 +239,7 @@ fun HabitDetails(
                                 fontFamily = playfair,
                                 fontWeight = FontWeight.Bold,
                                 fontStyle = FontStyle.Italic,
-                                fontSize = 18.sp
+                                fontSize = 20.sp
                             )
                         )
                         //fire animation
@@ -257,28 +250,37 @@ fun HabitDetails(
                             size = 30
                         )
                     }
+                    Text(
+                        text = "Current streak",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
+                        )
+                    )
                 }
                 //maximum streak
                 Element(
                     modifier = Modifier.weight(1f)
                 ){
                     Text(
-                        text = "Maximum streak",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Light,
-                            fontSize = 14.sp
-                        )
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
                         text = "${state.maximumStreak} days",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            fontSize = 20.sp
+                        )
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Maximum streak",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
                         )
                     )
                 }
@@ -291,42 +293,55 @@ fun HabitDetails(
                 //total completed
                 Element(modifier = Modifier.weight(1f)){
                     Text(
-                        text = "Total Completed",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Light,
-                            fontSize = 14.sp
-                        )
-                    )
-                    Text(
                         text = "${state.totalCompleted}",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            fontSize = 20.sp
                         )
                     )
-                }
-                //completion rate
-                Element(modifier = Modifier.weight(1f)){
+                    Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Completion rate",
+                        text = "Total Completed",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onSecondary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Light,
                             fontSize = 14.sp
                         )
                     )
+                }
+                //completion rate
+                Element(modifier = Modifier.weight(1f)){
+                    Row(verticalAlignment = Alignment.CenterVertically){
+                        Text(
+                            text = "${state.completionRate}",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                        )
+                        Text(
+                            text = "%",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "${state.completionRate}%",
+                        text = "Completion rate",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onSecondary,
                             fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            fontWeight = FontWeight.Light,
+                            fontSize = 14.sp
                         )
                     )
                 }
@@ -343,6 +358,7 @@ fun HabitDetails(
                             fontSize = 14.sp
                         )
                     )
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         text = "${state.description}",
                         style = TextStyle(
@@ -354,6 +370,11 @@ fun HabitDetails(
                     )
                 }
             }
+
+             CalendarStat(
+                 color = getThemedColorFromKey(colorKey),
+                 progressList = state.progressList
+             )
 
         }
     }

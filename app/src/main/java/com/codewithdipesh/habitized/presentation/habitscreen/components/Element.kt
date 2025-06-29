@@ -32,7 +32,6 @@ fun Element(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
             .clip(shape = RoundedCornerShape(15.dp))
             .background(MaterialTheme.colorScheme.secondary)
             .padding(16.dp),

@@ -39,7 +39,7 @@ class HabitViewModel @Inject constructor(
             currentStreak = habit.currentStreak,
             maximumStreak = habit.maxStreak
         )
-        val completed  = repo.getAllCompletedDates(id)
+        val completed  = repo.getAllCompletedProgress(id)
         val total = when(state.value.frequency){
             Frequency.Daily -> {
                 (LocalDate.now().toEpochDay() - habit.start_date.toEpochDay()).toInt() + 1
@@ -61,8 +61,9 @@ class HabitViewModel @Inject constructor(
         }
         _state.value = _state.value.copy(
             totalCompleted = completed.size,
-            completionRate = (completed.size.toFloat() / total.toFloat() * 100).toInt()
-            )
+            completionRate = (completed.size.toFloat() / total.toFloat() * 100).toInt(),
+            progressList = completed
+        )
 
     }
 }

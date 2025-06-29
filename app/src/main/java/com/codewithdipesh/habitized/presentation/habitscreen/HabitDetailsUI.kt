@@ -2,6 +2,7 @@ package com.codewithdipesh.habitized.presentation.habitscreen
 
 import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
+import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import java.time.LocalTime
 import java.util.UUID
@@ -20,5 +21,7 @@ data class HabitDetailsUI(
     val currentStreak :Int = 0,
     val maximumStreak :Int = 0,
     val totalCompleted :Int = 0,
-    val completionRate :Int = 0
+    val completionRate :Int = 0,
+
+    val progressList : List<HabitProgress> = emptyList()
 )

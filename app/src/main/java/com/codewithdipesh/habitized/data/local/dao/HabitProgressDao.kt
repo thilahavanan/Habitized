@@ -19,11 +19,18 @@ interface HabitProgressDao {
     suspend fun getHabitProgress(habitId: UUID): List<HabitProgressEntity>
 
     @Query("SELECT date FROM habit_progress WHERE habitId = :habitId AND status = :status AND date <= :today ORDER BY date DESC")
-    suspend fun getCompletedHabitProgress(
+    suspend fun getCompletedHabitProgressDates(
         habitId: UUID,
         status: String = Status.Done.displayName,
         today: LocalDate= LocalDate.now()
     ): List<LocalDate>
+
+    @Query("SELECT * FROM habit_progress WHERE habitId = :habitId AND status = :status AND date <= :today ORDER BY date DESC")
+    suspend fun getCompletedHabitProgress(
+        habitId: UUID,
+        status: String = Status.Done.displayName,
+        today: LocalDate= LocalDate.now()
+    ): List<HabitProgressEntity>
 
     @Query("SELECT * FROM habit_progress WHERE habitId = :habitId AND date = :date")
     suspend fun getHabitProgressOfTheDay(habitId: UUID, date: LocalDate): HabitProgressEntity
