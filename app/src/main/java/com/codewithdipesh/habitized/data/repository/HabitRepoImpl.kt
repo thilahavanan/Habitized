@@ -4,6 +4,7 @@ import android.util.Log
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
 import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
+import com.codewithdipesh.habitized.data.local.dao.ImageProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
 import com.codewithdipesh.habitized.data.local.entity.HabitEntity
@@ -12,6 +13,7 @@ import com.codewithdipesh.habitized.data.local.mapper.toEntity
 import com.codewithdipesh.habitized.data.local.mapper.toGoal
 import com.codewithdipesh.habitized.data.local.mapper.toHabit
 import com.codewithdipesh.habitized.data.local.mapper.toHabitProgress
+import com.codewithdipesh.habitized.data.local.mapper.toImageProgress
 import com.codewithdipesh.habitized.data.local.mapper.toOneTimeTask
 import com.codewithdipesh.habitized.data.local.mapper.toSubTask
 import com.codewithdipesh.habitized.domain.model.Frequency
@@ -20,6 +22,7 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
@@ -34,7 +37,8 @@ class HabitRepoImpl(
     private val habitProgressDao: HabitProgressDao,
     private val oneTimeTaskDao: OneTimeTaskDao,
     private val subtaskDao: SubTaskDao,
-    private val goalDao: GoalDao
+    private val goalDao: GoalDao,
+    private val imageProgressDao: ImageProgressDao
 ) : HabitRepository {
     override suspend fun getAllHabits(): List<Habit>{
         val habits = habitDao.getAllHabits()
@@ -237,6 +241,22 @@ class HabitRepoImpl(
     }
     override suspend fun toggleSubTask(subtaskId: UUID) {
         subtaskDao.updateSubtaskCompletion(subtaskId)
+    }
+
+    override suspend fun insertImageProgress(imageProcess: ImageProgress) {
+        imageProgressDao.insertImageProgress(imageProcess.toEntity())
+    }
+
+    override suspend fun getImageProgress(imageProgressId: UUID): ImageProgress {
+        return imageProgressDao.getImageProcess(imageProgressId).toImageProgress()
+    }
+
+    override suspend fun getImageProgressesForHabit(habitId: UUID): List<ImageProgress> {
+        return imageProgressDao.getImageProcessesForHabit(habitId).map { it.toImageProgress() }
+    }
+
+    override suspend fun deleteImageProgress(imageProgressId: UUID) {
+        imageProgressDao.deleteImageProgress(imageProgressId)
     }
 
 

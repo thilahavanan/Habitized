@@ -9,11 +9,13 @@ import com.codewithdipesh.habitized.data.local.converter.Converters
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
 import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
+import com.codewithdipesh.habitized.data.local.dao.ImageProgressDao
 import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
 import com.codewithdipesh.habitized.data.local.entity.GoalEntity
 import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import com.codewithdipesh.habitized.data.local.entity.HabitProgressEntity
+import com.codewithdipesh.habitized.data.local.entity.ImageProgressEntity
 import com.codewithdipesh.habitized.data.local.entity.OneTimeTaskEntity
 import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
 
@@ -23,9 +25,10 @@ import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
         GoalEntity::class,
         HabitEntity::class,
         HabitProgressEntity::class,
-        SubtaskEntity::class
+        SubtaskEntity::class,
+        ImageProgressEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -36,6 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun habitProgressDao(): HabitProgressDao
     abstract fun subtaskDao(): SubTaskDao
+    abstract fun imageProgressDao(): ImageProgressDao
 
     companion object {
         @Volatile

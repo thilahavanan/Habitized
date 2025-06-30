@@ -4,6 +4,7 @@ import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.SubTask
 import kotlinx.coroutines.flow.Flow
@@ -57,6 +58,12 @@ interface HabitRepository {
     suspend fun updateSubtask(subtask: SubTask)
     suspend fun deleteSubtask(subtaskId: UUID)
     suspend fun toggleSubTask(subtaskId: UUID)
+
+    //image progress
+    suspend fun insertImageProgress(imageProcess : ImageProgress)
+    suspend fun getImageProgress(imageProgressId: UUID) : ImageProgress
+    suspend fun getImageProgressesForHabit(habitId : UUID) : List<ImageProgress>
+    suspend fun deleteImageProgress(imageProgressId: UUID)
 
     suspend fun getHabitsForDay(date: LocalDate): List<HabitWithProgress>
     suspend fun getTasksForDay(date: LocalDate): List<OneTimeTask>
