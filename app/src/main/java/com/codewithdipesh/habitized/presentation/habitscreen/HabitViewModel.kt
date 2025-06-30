@@ -64,6 +64,9 @@ class HabitViewModel @Inject constructor(
             completionRate = (completed.size.toFloat() / total.toFloat() * 100).toInt(),
             progressList = completed
         )
-
+        val imageProgresses = repo.getImageProgressesForHabit(id)
+        _state.value = _state.value.copy(
+            imageProgresses = imageProgresses
+        )
     }
 }

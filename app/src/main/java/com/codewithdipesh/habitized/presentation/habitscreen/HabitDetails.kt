@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.habitscreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Delete
@@ -24,7 +27,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,16 +42,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
 import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
+import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
+import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
 import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
+import java.util.Locale
 import java.util.UUID
 
 @Composable
@@ -59,6 +70,10 @@ fun HabitDetails(
 ){
     val state by viewmodel.state.collectAsState()
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+
+    var showImageProgress by remember { mutableStateOf(false) }
+    var imageProgress by remember { mutableStateOf<ImageProgress?>(null) }
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -114,13 +129,30 @@ fun HabitDetails(
             }
         }
     ) { innerPadding ->
+        if(showImageProgress){
+            AddEditImageProgress(
+                imageProgress = imageProgress,
+                title = state.title,
+                color = getOriginalColorFromKey(colorKey),
+                onCancel = {
+                    showImageProgress = false
+                },
+                onSave = {image,date,description ->
+//                    viewmodel.addImageProgress(image,date,description)
+                    showImageProgress = false
+                },
+                onDelete = {
+//                    viewmodel.deleteImageProgress(imageProgress!!)
+                }
+            )
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 80.dp),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
@@ -372,9 +404,39 @@ fun HabitDetails(
             }
 
              CalendarStat(
-                 color = getThemedColorFromKey(colorKey),
+                 color = getOriginalColorFromKey(colorKey),
                  progressList = state.progressList
              )
+            //images
+            Element {
+                Text(
+                    text = "Visual Journey",
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 18.sp,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(Modifier.height(16.dp))
+                ImageElement(
+                    image = null,
+                    onclick = {
+                        imageProgress = null
+                        showImageProgress = true
+                    }
+                )
+                state.imageProgresses.forEach {
+                    ImageElement(
+                        image = it,
+                        onclick = {
+                            imageProgress = it
+                            showImageProgress = true
+                        }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
 
         }
     }

@@ -1,0 +1,471 @@
+package com.codewithdipesh.habitized.presentation.habitscreen.components
+
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.graphics.fonts.FontStyle
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.domain.model.ImageProgress
+import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
+import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.time.LocalDate
+import java.util.Locale
+import java.util.UUID
+import kotlin.String
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddEditImageProgress(
+    modifier: Modifier = Modifier,
+    title : String,
+    imageProgress: ImageProgress? = null,
+    color: Color,
+    onSave : (String, LocalDate, String) ->Unit,
+    onCancel : ()->Unit,
+    onDelete : ()->Unit
+) {
+    var image by remember {
+        mutableStateOf(imageProgress?.imagePath ?: "")
+    }
+    var date by remember {
+        mutableStateOf(imageProgress?.date ?: LocalDate.now())
+    }
+    var description by remember {
+        mutableStateOf(imageProgress?.description ?: "")
+    }
+    var showOptionChooser by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri:Uri? ->
+        uri?.let{
+            val bitmap = if(Build.VERSION.SDK_INT < 28){
+                MediaStore.Images.Media.getBitmap(context.contentResolver,it)
+            }else {
+                val source = ImageDecoder.createSource(context.contentResolver,uri)
+                ImageDecoder.decodeBitmap(source)
+            }
+            val dir = File(context.filesDir, "habit_image")
+            if (!dir.exists()) {
+                dir.mkdirs() // create the folder if it doesn't exist
+            }
+            val file = File(dir, "${System.currentTimeMillis()}.png")
+            FileOutputStream(file).use { out ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+
+            image = file.absolutePath
+        }
+    }
+    var capturedImageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && capturedImageUri != null) {
+            capturedImageUri?.let{
+                val bitmap = if(Build.VERSION.SDK_INT < 28){
+                    MediaStore.Images.Media.getBitmap(context.contentResolver,it)
+                }else {
+                    val source = ImageDecoder.createSource(context.contentResolver,capturedImageUri!!)
+                    ImageDecoder.decodeBitmap(source)
+                }
+                val dir = File(context.filesDir, "habit_image")
+                if (!dir.exists()) {
+                    dir.mkdirs() // create the folder if it doesn't exist
+                }
+                val file = File(dir, "${System.currentTimeMillis()}.png")
+                FileOutputStream(file).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+
+                image = file.absolutePath
+            }
+        }
+    }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(context)
+            .data(File(image)) // <- ensure it's a File or Uri
+            .crossfade(true)
+            .build()
+    )
+
+
+    ModalBottomSheet(
+        onDismissRequest = {
+           onCancel()
+        },
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if(showOptionChooser){
+            ChooseOption(
+                onDismiss = {
+                    showOptionChooser = false
+                },
+                onCameraSelected = {
+                    val imageFile = File(
+                        context.filesDir,
+                        "habit_image/${System.currentTimeMillis()}.jpg"
+                    )
+                    val uri = FileProvider.getUriForFile(
+                        context,
+                        context.packageName + ".provider",
+                        imageFile
+                    )
+                    capturedImageUri = uri
+                    cameraLauncher.launch(uri)
+                },
+                onGallerySelected = {
+                    galleryLauncher.launch("image/*")
+                }
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(top = 16.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            //heading
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "Visual progress",
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 18.sp,
+                        fontFamily = playfair,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
+                )
+            }
+            //habit name
+            Text(
+                text = title,
+                style = androidx.compose.ui.text.TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 24.sp,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+            //Date
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text = "Date",
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 20.sp,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+                Text(
+                    text = "${date.dayOfMonth} ${date.month.name.take(3)?.lowercase()} ${date.year}",
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 20.sp,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+            //Box for image
+            Box(
+                modifier = Modifier
+                    .size(300.dp)
+                    .background(MaterialTheme.colorScheme.outline)
+                    .clickable {
+                        if(image.isEmpty()){
+                            showOptionChooser = true
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ){
+                if(image.isNotEmpty()){
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    //edit and delete image
+                    Row(modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopEnd),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.3f))
+                                .clickable {
+                                    showOptionChooser = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "edit image",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.3f))
+                                .clickable {
+                                    image = ""
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "delete image",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }else{
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_camera_alt_24),
+                        contentDescription = "add image  ",
+                        tint = MaterialTheme.colorScheme.scrim
+                    )
+                }
+            }
+            //description
+            Box {
+                BasicTextField(
+                    value = description,
+                    onValueChange = {
+                        description = it
+                    },
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 22.sp
+                    ),
+                    singleLine = false,
+                    cursorBrush = SolidColor(colorResource(R.color.primary)),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Placeholder shown only when title is empty
+                if (description.isEmpty()) {
+                    Text(
+                        text = "Tell about your progress",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onSecondary, // make it look like a placeholder
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 22.sp
+                        )
+                    )
+                }
+            }
+
+        }
+        //log progress button
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 30.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(color)
+                    .clickable {
+                        onSave(image, date, description)
+                        onCancel()
+                    },
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "Log Progress",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 20.sp
+                    )
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+fun ChooseOption(
+    modifier: Modifier = Modifier,
+    onDismiss : () ->Unit,
+    onCameraSelected : () ->Unit,
+    onGallerySelected : () ->Unit
+) {
+
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss()
+        },
+        confirmButton = {},
+        containerColor = Color.Transparent,
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ){
+                Box(
+                    modifier = Modifier.wrapContentSize()
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .clickable{
+                            onCameraSelected()
+                            onDismiss()
+                        },
+                    contentAlignment = Alignment.Center
+                ){
+                    Row(
+                        modifier = Modifier.wrapContentSize().padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_camera_alt_24),
+                            contentDescription = "camera",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = "Take Picture",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier.wrapContentSize()
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .clickable{
+                            onGallerySelected()
+                            onDismiss()
+                        },
+                    contentAlignment = Alignment.Center
+                ){
+                    Row(
+                        modifier = Modifier.wrapContentSize().padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_insert_photo_24),
+                            contentDescription = "gallery",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = "Choose Photo",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    )
+
+}

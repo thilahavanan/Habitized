@@ -81,4 +81,7 @@ dependencies {
     //lottie
     implementation("com.github.LottieFiles:dotlottie-android:0.4.1")
 
+    //coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
 }

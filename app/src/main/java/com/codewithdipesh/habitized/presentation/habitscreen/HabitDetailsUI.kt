@@ -4,6 +4,7 @@ import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.domain.model.ImageProgress
 import java.time.LocalTime
 import java.util.UUID
 
@@ -23,5 +24,6 @@ data class HabitDetailsUI(
     val totalCompleted :Int = 0,
     val completionRate :Int = 0,
 
-    val progressList : List<HabitProgress> = emptyList()
+    val progressList : List<HabitProgress> = emptyList(),
+    val imageProgresses : List<ImageProgress> = emptyList()
 )
