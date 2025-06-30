@@ -137,9 +137,12 @@ fun HabitDetails(
                 onCancel = {
                     showImageProgress = false
                 },
-                onSave = {image,date,description ->
-//                    viewmodel.addImageProgress(image,date,description)
-                    showImageProgress = false
+                onSave = {id,image,date,description ->
+                    scope.launch {
+                        viewmodel.saveImage(id,image,date,description)
+                        viewmodel.init(state.id!!)
+                        showImageProgress = false
+                    }
                 },
                 onDelete = {
 //                    viewmodel.deleteImageProgress(imageProgress!!)
@@ -426,6 +429,7 @@ fun HabitDetails(
                         showImageProgress = true
                     }
                 )
+                Spacer(Modifier.height(8.dp))
                 state.imageProgresses.forEach {
                     ImageElement(
                         image = it,

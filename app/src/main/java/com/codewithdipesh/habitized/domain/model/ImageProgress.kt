@@ -7,7 +7,7 @@ import java.util.UUID
 
 data class ImageProgress(
     val id : UUID = UUID.randomUUID(),
-    val habitId: String,
+    val habitId: UUID,
     val description: String,
     val date: LocalDate,
     val imagePath: String

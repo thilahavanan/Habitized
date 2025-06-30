@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -81,7 +83,7 @@ fun AddEditImageProgress(
     title : String,
     imageProgress: ImageProgress? = null,
     color: Color,
-    onSave : (String, LocalDate, String) ->Unit,
+    onSave : (UUID?,String, LocalDate, String) ->Unit,
     onCancel : ()->Unit,
     onDelete : ()->Unit
 ) {
@@ -165,7 +167,7 @@ fun AddEditImageProgress(
         modifier = Modifier.fillMaxSize()
     ) {
         if(showOptionChooser){
-            ChooseOption(
+            ChooseMediaOption(
                 onDismiss = {
                     showOptionChooser = false
                 },
@@ -339,7 +341,7 @@ fun AddEditImageProgress(
                     Text(
                         text = "Tell about your progress",
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onSecondary, // make it look like a placeholder
+                            color = MaterialTheme.colorScheme.scrim, // make it look like a placeholder
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 22.sp
@@ -362,7 +364,7 @@ fun AddEditImageProgress(
                     .clip(RoundedCornerShape(20.dp))
                     .background(color)
                     .clickable {
-                        onSave(image, date, description)
+                        onSave(imageProgress?.id,image, date, description)
                         onCancel()
                     },
                 contentAlignment = Alignment.Center
@@ -379,93 +381,5 @@ fun AddEditImageProgress(
             }
         }
     }
-
-}
-
-@Composable
-fun ChooseOption(
-    modifier: Modifier = Modifier,
-    onDismiss : () ->Unit,
-    onCameraSelected : () ->Unit,
-    onGallerySelected : () ->Unit
-) {
-
-    AlertDialog(
-        onDismissRequest = {
-            onDismiss()
-        },
-        confirmButton = {},
-        containerColor = Color.Transparent,
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
-                Box(
-                    modifier = Modifier.wrapContentSize()
-                        .clip(RoundedCornerShape(5.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .clickable{
-                            onCameraSelected()
-                            onDismiss()
-                        },
-                    contentAlignment = Alignment.Center
-                ){
-                    Row(
-                        modifier = Modifier.wrapContentSize().padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_camera_alt_24),
-                            contentDescription = "camera",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Text(
-                            text = "Take Picture",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
-                            )
-                        )
-                    }
-                }
-                Box(
-                    modifier = Modifier.wrapContentSize()
-                        .clip(RoundedCornerShape(5.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .clickable{
-                            onGallerySelected()
-                            onDismiss()
-                        },
-                    contentAlignment = Alignment.Center
-                ){
-                    Row(
-                        modifier = Modifier.wrapContentSize().padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_insert_photo_24),
-                            contentDescription = "gallery",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Text(
-                            text = "Choose Photo",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    )
 
 }

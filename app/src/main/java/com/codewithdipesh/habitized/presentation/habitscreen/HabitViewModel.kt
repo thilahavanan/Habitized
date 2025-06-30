@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -67,6 +68,18 @@ class HabitViewModel @Inject constructor(
         val imageProgresses = repo.getImageProgressesForHabit(id)
         _state.value = _state.value.copy(
             imageProgresses = imageProgresses
+        )
+    }
+
+    suspend fun saveImage(id : UUID?,image : String, date : LocalDate, description : String){
+        repo.insertImageProgress(
+            ImageProgress(
+                id = id ?: UUID.randomUUID(),
+                habitId = state.value.id!!,
+                imagePath = image,
+                date = date,
+                description = description
+            )
         )
     }
 }

@@ -8,7 +8,7 @@ import java.util.UUID
 @Entity(tableName = "imageProgress")
 data class ImageProgressEntity(
     @PrimaryKey  val id : UUID,
-    val habitId: String,
+    val habitId: UUID,
     val description: String,
     val date: LocalDate,
     val imagePath: String

@@ -74,7 +74,7 @@ fun ImageElement(
         //description
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = if(image == null) Alignment.CenterHorizontally else Alignment.Start
         ){
             //date
             if(image != null){
@@ -97,18 +97,8 @@ fun ImageElement(
                     )
                 )
             }else{
-                val today = LocalDate.now()
                 Text(
-                    text = "${today.dayOfMonth} ${today.month.name.take(3).lowercase().capitalize(Locale.ROOT)} ${today.year}",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontSize = 18.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Text(
-                    text = "Log your image today",
+                    text = "Log your image",
                     style = androidx.compose.ui.text.TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 16.sp,
