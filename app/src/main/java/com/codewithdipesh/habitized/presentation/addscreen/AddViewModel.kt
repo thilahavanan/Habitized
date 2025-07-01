@@ -14,6 +14,7 @@ import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalUI
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitUI
 import com.codewithdipesh.habitized.presentation.util.Days
+import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.WeekDayMapToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.UUID
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
@@ -50,11 +52,12 @@ class AddViewModel @Inject constructor(
         if(checkSavability()){
             repo.addOrUpdateHabit(
                 Habit(
+                    habit_id = _habitUiState.value.habit_id,
                     title = _habitUiState.value.title,
                     description = _habitUiState.value.description,
                     type = _habitUiState.value.type,
                     goal_id = _habitUiState.value.goal_id,
-                    start_date = date,
+                    start_date = if(_habitUiState.value.habit_id != null) _habitUiState.value.start_date else date,
                     frequency = _habitUiState.value.frequency,
                     days_of_week = if( _habitUiState.value.frequency == Frequency.Weekly) WeekDayMapToInt( _habitUiState.value.days_of_week)
                                    else mutableListOf(0,0,0,0,0,0,0),
@@ -73,6 +76,40 @@ class AddViewModel @Inject constructor(
                 )
             )
             sendEvent("Habit Created Successfully")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    suspend fun init(id: UUID){
+        val habit = repo.getHabitById(id)
+        habit?.let {
+            _habitUiState.value = _habitUiState.value.copy(
+                habit_id = id,
+                title = habit.title,
+                description = habit.description ?: "",
+                goal_id = habit.goal_id,
+                start_date = habit.start_date,
+                frequency = habit.frequency,
+                days_of_week = IntToWeekDayMap(habit.days_of_week),
+                daysOfMonth = habit.daysOfMonth ?: emptyList(),
+                reminder_time = habit.reminder_time,
+                is_active = habit.is_active,
+                isShowReminderTime = habit.reminder_time != null,
+                colorKey = habit.colorKey,
+                countParam = habit.countParam,
+                countTarget = habit.countTarget,
+                selectedHour = habit.duration?.hour ?: 0,
+                selectedMinute = habit.duration?.minute ?: 0,
+                selectedSeconds = habit.duration?.second ?: 0,
+                paramOptions = CountParam.getParams(habit.type),
+            )
+            setType(habit.type)
+        }
+        if(habit?.goal_id != null){
+            val goal = repo.getGoalById(habit.goal_id)
+            _habitUiState.value = _habitUiState.value.copy(
+                goal_name = goal!!.title
+            )
         }
     }
 

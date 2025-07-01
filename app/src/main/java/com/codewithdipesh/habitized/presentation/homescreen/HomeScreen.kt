@@ -146,7 +146,7 @@ fun HomeScreen(
                     showAddingOptions = false
                 },
                 onAddHabitClicked = {
-                    navController.navigate(Screen.AddHabit.createRoute(state.selectedDate))
+                    navController.navigate(Screen.AddHabit.createRoute(date = state.selectedDate))
                 },
                 onAddGoalClicked = {
                     navController.navigate(Screen.AddGoal.route)

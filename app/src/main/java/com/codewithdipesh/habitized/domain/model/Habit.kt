@@ -11,7 +11,7 @@ import java.util.Date
 import java.util.UUID
 
 data class Habit(
-    val habit_id: UUID? = null,
+    val habit_id: UUID? = UUID.randomUUID(),
     val title: String,
     val description: String?= null,
     val type: HabitType = HabitType.Count,

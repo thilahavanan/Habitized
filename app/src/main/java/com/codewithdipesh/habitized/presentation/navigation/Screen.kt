@@ -5,12 +5,13 @@ import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.UUID
 
 sealed class Screen(val route : String){
     object Home : Screen("home")
-    object AddHabit : Screen("addHabit/{date}") {
-        fun createRoute(date: LocalDate = LocalDate.now()): String {
-            return "addHabit/$date"
+    object AddHabit : Screen("addHabit/{id}/{date}") {
+        fun createRoute(date: LocalDate = LocalDate.now(),id : String? = ""): String {
+            return "addHabit/$id/$date"
         }
     }
     object DurationScreen : Screen("duration/{id}/{title}/{target}/{color}") {

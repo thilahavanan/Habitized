@@ -42,7 +42,7 @@ interface HabitRepository {
     suspend fun addGoal(goal: Goal)
     suspend fun updateGoal(goal: Goal)
     suspend fun deleteGoal(goalId: UUID)
-    suspend fun getGoalById(goalId: UUID): Flow<Goal?> //sending habits also with it
+    suspend fun getGoalById(goalId: UUID): Goal? //sending habits also with it
     suspend fun getAllGoals(): List<Goal>
     suspend fun getExistingGoals(): List<Goal>
 

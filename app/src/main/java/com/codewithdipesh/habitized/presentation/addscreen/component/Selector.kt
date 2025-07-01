@@ -42,9 +42,6 @@ fun <T> Selector(
     height : Int = 44,
     shape: Shape = RoundedCornerShape(15.dp)
 ){
-    var option by remember {
-        mutableStateOf(selectedOption)
-    }
     Box(
         modifier = modifier
             .height(height.dp)
@@ -66,14 +63,13 @@ fun <T> Selector(
                         .fillMaxSize()
                         .clip(shape)
                         .background(
-                            if(it == option ) selectedOptionColor
+                            if(it == selectedOption ) selectedOptionColor
                             else nonSelectedOptionColor
                         )
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ){
-                            option = it
                             onOptionSelected(it)
                         },
                     contentAlignment = Alignment.Center
@@ -81,7 +77,7 @@ fun <T> Selector(
                     Text(
                         text = it.toString(),
                         style = TextStyle(
-                            color = if(it == option) selectedTextColor
+                            color = if(it == selectedOption) selectedTextColor
                                     else nonSelectedTextColor,
                             fontFamily = playfair,
                             fontWeight = FontWeight.Bold,

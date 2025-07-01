@@ -55,6 +55,10 @@ fun HabitizedNavHost(
         composable(
             Screen.AddHabit.route,
             arguments = listOf(
+                navArgument("id"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
                 navArgument("date"){
                     type = NavType.StringType
                     defaultValue = LocalDate.now().toString()
@@ -63,10 +67,12 @@ fun HabitizedNavHost(
         ){  entry ->
             val dateStr = entry.arguments?.getString("date")
             val date = LocalDate.parse(dateStr)
+            val id = entry.arguments?.getString("id") ?: null
             AddHabitScreen(
                 navController = navController,
                 viewmodel = addViewModel,
-                date= date
+                date= date,
+                id = if(id.isNullOrEmpty()) null else UUID.fromString(id)
             )
         }
         composable(

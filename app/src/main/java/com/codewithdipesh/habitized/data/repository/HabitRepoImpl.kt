@@ -197,8 +197,8 @@ class HabitRepoImpl(
     override suspend fun deleteGoal(goalId: UUID) {
         TODO("Not yet implemented")
     }
-    override suspend fun getGoalById(goalId: UUID): Flow<Goal?> {
-        TODO("Not yet implemented")
+    override suspend fun getGoalById(goalId: UUID): Goal? {
+        return goalDao.getGoalById(goalId)?.toGoal(emptyList())
     }
     override suspend fun getAllGoals(): List<Goal> {
        return goalDao.getAllGoals().map{

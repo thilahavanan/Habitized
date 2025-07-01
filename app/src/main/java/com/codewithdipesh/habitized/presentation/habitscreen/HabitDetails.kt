@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,7 @@ import com.codewithdipesh.habitized.presentation.habitscreen.components.Calendar
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
+import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
@@ -61,6 +63,7 @@ import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Locale
 import java.util.UUID
 
@@ -122,17 +125,35 @@ fun HabitDetails(
                     modifier = Modifier.padding(top = 40.dp)
                 )
                 //options(share,edit,delete
-                IconButton(
-                    onClick = {//todo
-                    },
-                    modifier = Modifier
-                        .padding(top = 30.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "back",
-                        tint = Color.Red
-                    )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    IconButton(
+                        onClick = {                                             //though date will not use there as id is present
+                            navController.navigate(Screen.AddHabit.createRoute(date = LocalDate.now(),id = state.id.toString()))
+                        },
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "edit",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            //todo delete
+                        },
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "delete",
+                            tint = Color.Red
+                        )
+                    }
                 }
             }
         }

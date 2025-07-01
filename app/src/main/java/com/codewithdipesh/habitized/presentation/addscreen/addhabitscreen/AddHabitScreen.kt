@@ -78,12 +78,14 @@ import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.UUID
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddHabitScreen(
     modifier: Modifier = Modifier,
+    id : UUID? = null,
     navController: NavController,
     viewmodel: AddViewModel,
     date : LocalDate
@@ -106,6 +108,9 @@ fun AddHabitScreen(
         val color = keys.random()
         viewmodel.setColor(state.colorOptions.get(color)!!)
         viewmodel.getGoals()
+        if(id != null){
+            viewmodel.init(id)
+        }
     }
 
     LaunchedEffect(viewmodel.uiEvent) {
@@ -225,7 +230,7 @@ fun AddHabitScreen(
             //heading
             Row(verticalAlignment = Alignment.CenterVertically){
                 Text(
-                    text = "Create",
+                    text = if(id == null) "Create" else "Edit",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontFamily = regular,
@@ -360,11 +365,11 @@ fun AddHabitScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     Selector(
-                        options = HabitType.getHabitTypes().map { it.displayName },
-                        selectedOption = state.type.displayName,
+                        options = HabitType.getHabitTypes().map { it },
+                        selectedOption = state.type,
                         onOptionSelected = {
                             //todo reset timer and count viewmodel.setTargetCount(0)
-                            viewmodel.setType(HabitType.fromString(it))
+                            viewmodel.setType(it)
                         },
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         selectedTextColor = MaterialTheme.colorScheme.onPrimary,
@@ -557,10 +562,10 @@ fun AddHabitScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     Selector(
-                        options = Frequency.getTypes().map { it.displayName },
-                        selectedOption = state.frequency.displayName,
+                        options = Frequency.getTypes().map { it },
+                        selectedOption = state.frequency,
                         onOptionSelected = {
-                            viewmodel.setFrequency(Frequency.fromString(it))
+                            viewmodel.setFrequency(it)
                         },
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         selectedTextColor = MaterialTheme.colorScheme.onPrimary,
