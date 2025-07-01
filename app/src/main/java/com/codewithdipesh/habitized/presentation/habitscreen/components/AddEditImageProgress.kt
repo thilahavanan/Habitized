@@ -486,7 +486,7 @@ fun DeleteAlertBox(
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
             )
@@ -497,7 +497,7 @@ fun DeleteAlertBox(
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = regular,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
             )

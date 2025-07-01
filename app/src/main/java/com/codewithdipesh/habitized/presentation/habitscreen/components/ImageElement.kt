@@ -97,7 +97,7 @@ fun ImageElement(
                 )
             )
             Text(
-                text = image.description.take(150) + if(image.description.length > 150) "..." else "",
+                text = image.description.take(87) + if(image.description.length > 87) "..." else "",
                 style = androidx.compose.ui.text.TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 14.sp,

@@ -17,7 +17,7 @@ interface ImageProgressDao {
     @Query("SELECT * FROM imageProgress WHERE id = :imageProgressId")
     suspend fun getImageProcess(imageProgressId: UUID): ImageProgressEntity
 
-    @Query("SELECT * FROM imageProgress WHERE habitId = :habitId")
+    @Query("SELECT * FROM imageProgress WHERE habitId = :habitId ORDER BY date DESC")
     suspend fun getImageProcessesForHabit(habitId: UUID): List<ImageProgressEntity>
 
     @Query("DELETE FROM imageProgress WHERE id = :imageProgressId")
