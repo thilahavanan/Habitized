@@ -33,7 +33,7 @@ fun ShowImage(
             .background(Color.Black.copy(alpha = 0.6f))
             .clickable { onDismiss() },
         contentAlignment = Alignment.Center
-    ) {
+    ){
         AsyncImage(
             model = File(imagePath), // or Uri or String URL
             contentDescription = null,

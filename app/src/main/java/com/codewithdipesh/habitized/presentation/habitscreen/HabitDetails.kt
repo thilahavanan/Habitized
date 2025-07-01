@@ -153,7 +153,10 @@ fun HabitDetails(
                     }
                 },
                 onDelete = {
-//                    viewmodel.deleteImageProgress(imageProgress!!)
+                    scope.launch {
+                        viewmodel.deleteImage(it.id)
+                        viewmodel.init(id)
+                    }
                 }
             )
         }

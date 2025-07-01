@@ -31,14 +31,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -93,7 +96,7 @@ fun AddEditImageProgress(
     color: Color,
     onSave : (UUID?,String, LocalDate, String) ->Unit,
     onCancel : ()->Unit,
-    onDelete : ()->Unit
+    onDelete : (ImageProgress)->Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -169,6 +172,8 @@ fun AddEditImageProgress(
     val painter = rememberAsyncImagePainter(model = File(image))
     val state = painter.state
 
+    var showDeleteBox by remember { mutableStateOf(false) }
+
     ModalBottomSheet(
         onDismissRequest = {
            onCancel()
@@ -200,6 +205,17 @@ fun AddEditImageProgress(
                 }
             )
         }
+        if(showDeleteBox){
+            DeleteAlertBox(
+                onConfirm = {
+                    onDelete(imageProgress!!)
+                    onCancel()
+                },
+                onCancel = {
+                    showDeleteBox = false
+                }
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -211,8 +227,7 @@ fun AddEditImageProgress(
             //heading
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
             ){
                 Text(
                     text = "Visual progress",
@@ -222,8 +237,23 @@ fun AddEditImageProgress(
                         fontFamily = playfair,
                         fontWeight = FontWeight.Bold,
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                    )
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
                 )
+                if(imageProgress != null){
+                    IconButton(
+                        onClick = {
+                            showDeleteBox = true
+                        },
+                        modifier = Modifier.align(Alignment.CenterEnd).padding(top = 16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "delete",
+                            tint = Color.Red
+                        )
+                    }
+                }
             }
             //habit name
             Text(
@@ -268,7 +298,7 @@ fun AddEditImageProgress(
                     .size(300.dp)
                     .background(MaterialTheme.colorScheme.outline)
                     .clickable {
-                        if(image.isEmpty()){
+                        if (image.isEmpty()) {
                             showOptionChooser = true
                         }
                     },
@@ -383,7 +413,7 @@ fun AddEditImageProgress(
                     .clip(RoundedCornerShape(20.dp))
                     .background(color)
                     .clickable {
-                        onSave(imageProgress?.id,image, date, description)
+                        onSave(imageProgress?.id, image, date, description)
                         onCancel()
                     },
                 contentAlignment = Alignment.Center
@@ -401,4 +431,74 @@ fun AddEditImageProgress(
         }
     }
 
+}
+
+//deleteAlertBox
+@Composable
+fun DeleteAlertBox(
+    modifier: Modifier = Modifier,
+    onConfirm : ()-> Unit,
+    onCancel : () ->Unit
+){
+    AlertDialog(
+        onDismissRequest = {
+            onCancel()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm()
+                }
+            ) {
+                Text(
+                    text = "Yes,Delete",
+                    style = TextStyle(
+                        color = Color.Red,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onConfirm()
+                }
+            ) {
+                Text(
+                    text = "Cancel",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                )
+            }
+        },
+        title = {
+            Text(
+                text = "Delete the Log",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 20.sp
+                )
+            )
+        },
+        text = {
+            Text(
+                text = "This action is permanent and cannot be undone",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            )
+        }
+    )
 }
