@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import java.io.File
 
@@ -33,13 +34,13 @@ fun ShowImage(
             .clickable { onDismiss() },
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = File(imagePath)),
+        AsyncImage(
+            model = File(imagePath), // or Uri or String URL
             contentDescription = null,
             modifier = Modifier
-                .padding(horizontal = 60.dp)
-                .fillMaxWidth(),
-            contentScale = ContentScale.Fit
+                .fillMaxWidth()
+                .padding(horizontal = 60.dp),
+            contentScale = ContentScale.FillWidth
         )
     }
 }
