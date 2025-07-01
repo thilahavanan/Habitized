@@ -113,8 +113,8 @@ fun AddEditImageProgress(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri:Uri? ->
-        showLoader = true
         uri?.let {
+            showLoader = true
             scope.launch(Dispatchers.IO) {
                 try {
                     val bitmap = if (Build.VERSION.SDK_INT < 28) {
@@ -135,6 +135,7 @@ fun AddEditImageProgress(
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    showLoader = false
                 }
             }
         }
@@ -143,8 +144,8 @@ fun AddEditImageProgress(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        showLoader = true
         if (success && capturedImageUri != null) {
+            showLoader = true
             scope.launch(Dispatchers.IO) {
                 try {
                     val bitmap = if (Build.VERSION.SDK_INT < 28) {
@@ -165,6 +166,7 @@ fun AddEditImageProgress(
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    showLoader = false
                 }
             }
         }
