@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +64,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codewithdipesh.habitized.R
@@ -68,7 +73,10 @@ import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDate
@@ -87,76 +95,79 @@ fun AddEditImageProgress(
     onCancel : ()->Unit,
     onDelete : ()->Unit
 ) {
-    var image by remember {
-        mutableStateOf(imageProgress?.imagePath ?: "")
-    }
-    var date by remember {
-        mutableStateOf(imageProgress?.date ?: LocalDate.now())
-    }
-    var description by remember {
-        mutableStateOf(imageProgress?.description ?: "")
-    }
-    var showOptionChooser by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val imageDir = File(context.filesDir, "habit_image").apply { if (!exists()) mkdirs() }
+
+    var image by remember { mutableStateOf(imageProgress?.imagePath ?: "") }
+    var date by remember { mutableStateOf(imageProgress?.date ?: LocalDate.now()) }
+    var description by remember { mutableStateOf(imageProgress?.description ?: "") }
+
+    var showOptionChooser by remember { mutableStateOf(false) }
+    var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var showLoader by remember { mutableStateOf(false) }
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri:Uri? ->
-        uri?.let{
-            val bitmap = if(Build.VERSION.SDK_INT < 28){
-                MediaStore.Images.Media.getBitmap(context.contentResolver,it)
-            }else {
-                val source = ImageDecoder.createSource(context.contentResolver,uri)
-                ImageDecoder.decodeBitmap(source)
-            }
-            val dir = File(context.filesDir, "habit_image")
-            if (!dir.exists()) {
-                dir.mkdirs() // create the folder if it doesn't exist
-            }
-            val file = File(dir, "${System.currentTimeMillis()}.png")
-            FileOutputStream(file).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-            }
+        showLoader = true
+        uri?.let {
+            scope.launch(Dispatchers.IO) {
+                try {
+                    val bitmap = if (Build.VERSION.SDK_INT < 28) {
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, it)
+                    } else {
+                        val source = ImageDecoder.createSource(context.contentResolver, it)
+                        ImageDecoder.decodeBitmap(source)
+                    }
 
-            image = file.absolutePath
+                    val file = File(imageDir, "${System.currentTimeMillis()}.png")
+                    FileOutputStream(file).use { out ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        image = file.absolutePath
+                        showLoader = false
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
-    }
-    var capturedImageUri by remember {
-        mutableStateOf<Uri?>(null)
+
     }
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
+        showLoader = true
         if (success && capturedImageUri != null) {
-            capturedImageUri?.let{
-                val bitmap = if(Build.VERSION.SDK_INT < 28){
-                    MediaStore.Images.Media.getBitmap(context.contentResolver,it)
-                }else {
-                    val source = ImageDecoder.createSource(context.contentResolver,capturedImageUri!!)
-                    ImageDecoder.decodeBitmap(source)
-                }
-                val dir = File(context.filesDir, "habit_image")
-                if (!dir.exists()) {
-                    dir.mkdirs() // create the folder if it doesn't exist
-                }
-                val file = File(dir, "${System.currentTimeMillis()}.png")
-                FileOutputStream(file).use { out ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                }
+            scope.launch(Dispatchers.IO) {
+                try {
+                    val bitmap = if (Build.VERSION.SDK_INT < 28) {
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, capturedImageUri)
+                    } else {
+                        val source = ImageDecoder.createSource(context.contentResolver, capturedImageUri!!)
+                        ImageDecoder.decodeBitmap(source)
+                    }
 
-                image = file.absolutePath
+                    val file = File(imageDir, "${System.currentTimeMillis()}.png")
+                    FileOutputStream(file).use { out ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        image = file.absolutePath
+                        showLoader = false
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-    val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(context)
-            .data(File(image)) // <- ensure it's a File or Uri
-            .crossfade(true)
-            .build()
-    )
-
+    val painter = rememberAsyncImagePainter(model = File(image))
+    val state = painter.state
 
     ModalBottomSheet(
         onDismissRequest = {
@@ -270,6 +281,14 @@ fun AddEditImageProgress(
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
+                    //loader
+                    if (showLoader || state is AsyncImagePainter.State.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(30.dp),
+                            strokeWidth = 3.dp,
+                            color = color
+                        )
+                    }
                     //edit and delete image
                     Row(modifier = Modifier
                         .padding(16.dp)

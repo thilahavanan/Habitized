@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,11 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
@@ -48,6 +52,7 @@ import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditI
 import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
+import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
@@ -74,6 +79,9 @@ fun HabitDetails(
 
     var showImageProgress by remember { mutableStateOf(false) }
     var imageProgress by remember { mutableStateOf<ImageProgress?>(null) }
+
+    var showFullImage by remember { mutableStateOf(false) }
+    var fullImage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -180,6 +188,7 @@ fun HabitDetails(
                                 fontSize = 20.sp
                             )
                         )
+
                         Text(
                             text = when(state.frequency){
                                 Frequency.Daily -> "Everyday"
@@ -412,36 +421,72 @@ fun HabitDetails(
              )
             //images
             Element {
-                Text(
-                    text = "Visual Journey",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 18.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Bold
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = "Visual Journey",
+                        style = androidx.compose.ui.text.TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 18.sp,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
-                Spacer(Modifier.height(16.dp))
-                ImageElement(
-                    image = null,
-                    onclick = {
+                    //add progress
+                    IconButton(onClick = {
                         imageProgress = null
                         showImageProgress = true
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "add progress",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
-                )
-                Spacer(Modifier.height(8.dp))
+                }
+
+                Spacer(Modifier.height(16.dp))
+                if(state.imageProgresses.isEmpty()){
+                    Text(
+                        text = "Add your today's progress",
+                        style = androidx.compose.ui.text.TextStyle(
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontSize = 20.sp,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Center
+                        ),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                    )
+                }
                 state.imageProgresses.forEach {
                     ImageElement(
                         image = it,
                         onclick = {
                             imageProgress = it
                             showImageProgress = true
+                        },
+                        onImageShowed = {
+                            fullImage = it
+                            showFullImage = true
                         }
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(16.dp))
                 }
             }
 
+        }
+        //show full image
+        if(showFullImage){
+            ShowImage(
+                imagePath = fullImage!!,
+                onDismiss = {
+                    showFullImage = false
+                }
+            )
         }
     }
 

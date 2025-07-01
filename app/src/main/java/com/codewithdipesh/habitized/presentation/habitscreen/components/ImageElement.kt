@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,28 +35,31 @@ import java.util.Locale
 
 @Composable
 fun ImageElement(
-    image: ImageProgress?,
+    image: ImageProgress,
     onclick : (ImageProgress?)->Unit = {},
+    onImageShowed : (String) ->Unit = {},
     modifier: Modifier = Modifier
 ){
     val file = File(image?.imagePath ?: "")
 
-    Row (modifier = Modifier.fillMaxWidth()
-        .clickable{
-            onclick(image)
-        },
+    val painter = rememberAsyncImagePainter(model = file)
+
+    Row (modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
     ){
         //image
         if (file.exists()) {
             Image(
-                painter = rememberAsyncImagePainter(model = file),
+                painter = painter,
                 contentDescription = "Habit image",
                 contentScale = ContentScale.Crop,
                 modifier = modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(18.dp))
+                    .clickable{
+                        onImageShowed(image.imagePath)
+                    }
             )
         } else {
             Box(
@@ -73,40 +78,33 @@ fun ImageElement(
         }
         //description
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = if(image == null) Alignment.CenterHorizontally else Alignment.Start
+            modifier = Modifier
+                .weight(.65f)
+                .clickable{
+                   onclick(image)
+                }
+                .height(100.dp),
+            verticalArrangement = if(image == null) Arrangement.Center else Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.Start
         ){
-            //date
-            if(image != null){
-                Text(
-                    text = "${image.date.dayOfMonth} ${image.date.month.name.take(3).lowercase().capitalize(Locale.ROOT)} ${image.date.year}",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontSize = 18.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Bold
-                    )
+            Text(
+                text = "${image.date.dayOfMonth} ${image.date.month.name.take(3).lowercase().capitalize(Locale.ROOT)} ${image.date.year}",
+                style = androidx.compose.ui.text.TextStyle(
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    fontSize = 18.sp,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = image.description.take(150) + if(image.description.length > 150) "..." else "",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 14.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal
-                    )
+            )
+            Text(
+                text = image.description.take(150) + if(image.description.length > 150) "..." else "",
+                style = androidx.compose.ui.text.TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 14.sp,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Normal
                 )
-            }else{
-                Text(
-                    text = "Log your image",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 16.sp,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal
-                    )
-                )
-            }
+            )
         }
 
     }
