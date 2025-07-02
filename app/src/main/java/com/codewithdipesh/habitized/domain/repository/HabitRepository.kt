@@ -34,6 +34,7 @@ interface HabitRepository {
     suspend fun onNotStartedHabitProgress(progressId: UUID)
     suspend fun onStartedHabitProgress(progressId: UUID)
     suspend fun onUpdateCounterHabitProgress(count :Int,progressId: UUID)
+    suspend fun deleteHabitProgressForHabit(habitId: UUID)
 
     suspend fun getAllCompletedDates(habitId: UUID) : List<LocalDate>
     suspend fun getAllCompletedProgress(habitId: UUID) : List<HabitProgress>

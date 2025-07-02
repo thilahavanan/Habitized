@@ -19,11 +19,13 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,12 +48,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
 import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
+import com.codewithdipesh.habitized.presentation.habitscreen.components.DeleteAlertBox
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
@@ -85,6 +90,8 @@ fun HabitDetails(
 
     var showFullImage by remember { mutableStateOf(false) }
     var fullImage by remember { mutableStateOf<String?>(null) }
+
+    var showDeleteHabitBox by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -143,7 +150,7 @@ fun HabitDetails(
                     }
                     IconButton(
                         onClick = {
-                            //todo delete
+                            showDeleteHabitBox = true
                         },
                         modifier = Modifier
                             .padding(top = 30.dp)
@@ -151,7 +158,7 @@ fun HabitDetails(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "delete",
-                            tint = Color.Red
+                            tint = colorResource(R.color.delete_red)
                         )
                     }
                 }
@@ -178,6 +185,19 @@ fun HabitDetails(
                         viewmodel.deleteImage(it.id)
                         viewmodel.init(id)
                     }
+                }
+            )
+        }
+        if(showDeleteHabitBox){
+            DeleteHabitBox(
+                onConfirm = {
+                    scope.launch {
+                        viewmodel.deleteHabit(id)
+                        navController.navigateUp()
+                    }
+                },
+                onCancel = {
+                    showDeleteHabitBox = false
                 }
             )
         }
@@ -514,4 +534,75 @@ fun HabitDetails(
         }
     }
 
+}
+
+//deleteAlertBox
+@Composable
+fun DeleteHabitBox(
+    modifier: Modifier = Modifier,
+    onConfirm : ()-> Unit,
+    onCancel : () ->Unit
+){
+    AlertDialog(
+        onDismissRequest = {
+            onCancel()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onCancel()
+                }
+            ) {
+                Text(
+                    text = "Cancel",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onConfirm()
+                    onCancel()
+                }
+            ) {
+                Text(
+                    text = "Yes,Delete",
+                    style = TextStyle(
+                        color = colorResource(R.color.delete_red),
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                )
+            }
+        },
+        title = {
+            Text(
+                text = "Delete the Habit",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            )
+        },
+        text = {
+            Text(
+                text = "This will delete all the progress and images associated with this habit also ",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = regular,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            )
+        }
+    )
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.ui.theme.regular
@@ -94,7 +96,7 @@ fun MarkAsCompleteAlertDialog(
                 Text(
                     text = "Yes,Done",
                     style = TextStyle(
-                        color = Color.Red,
+                        color = colorResource(R.color.delete_red),
                         fontFamily = regular,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp

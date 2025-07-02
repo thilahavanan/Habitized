@@ -38,6 +38,9 @@ interface HabitProgressDao {
     @Query("DELETE FROM habit_progress WHERE progressId = :progressId")
     suspend fun deleteProgress(progressId: UUID)
 
+    @Query("DELETE FROM habit_progress WHERE habitId = :habitId")
+    suspend fun deleteProgressForHabit(habitId: UUID)
+
     @Query("SELECT * FROM habit_progress WHERE progressId = :habitProgressId")
     suspend fun getHabitProgressById(habitProgressId: UUID): HabitProgressEntity
 

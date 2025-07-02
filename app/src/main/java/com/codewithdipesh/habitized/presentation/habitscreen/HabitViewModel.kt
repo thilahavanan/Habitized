@@ -86,4 +86,7 @@ class HabitViewModel @Inject constructor(
     suspend fun deleteImage(id :UUID){
         repo.deleteImageProgress(id)
     }
+    suspend fun deleteHabit(id: UUID){
+        repo.deleteHabit(id)
+    }
 }

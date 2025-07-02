@@ -179,6 +179,10 @@ class HabitRepoImpl(
         habitProgressDao.onUpdateCount(count,progressId)
     }
 
+    override suspend fun deleteHabitProgressForHabit(habitId: UUID) {
+        habitProgressDao.deleteProgressForHabit(habitId)
+    }
+
     override suspend fun getAllCompletedDates(habitId: UUID): List<LocalDate> {
         return  habitProgressDao.getCompletedHabitProgressDates(habitId)
     }

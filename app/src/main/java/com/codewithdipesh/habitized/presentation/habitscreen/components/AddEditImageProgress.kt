@@ -252,7 +252,7 @@ fun AddEditImageProgress(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "delete",
-                            tint = Color.Red
+                            tint = colorResource(R.color.delete_red)
                         )
                     }
                 }
@@ -455,7 +455,7 @@ fun DeleteAlertBox(
                 Text(
                     text = "Yes,Delete",
                     style = TextStyle(
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontFamily = regular,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
@@ -472,7 +472,7 @@ fun DeleteAlertBox(
                 Text(
                     text = "Cancel",
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = colorResource(R.color.delete_red),
                         fontFamily = regular,
                         fontWeight = FontWeight.Normal,
                         fontSize = 16.sp

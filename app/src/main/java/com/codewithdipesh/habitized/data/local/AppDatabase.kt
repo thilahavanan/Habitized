@@ -28,7 +28,7 @@ import com.codewithdipesh.habitized.data.local.entity.SubtaskEntity
         SubtaskEntity::class,
         ImageProgressEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
