@@ -15,6 +15,8 @@ import androidx.navigation.navDeepLink
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalScreen
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
+import com.codewithdipesh.habitized.presentation.goalscreen.GoalDetails
+import com.codewithdipesh.habitized.presentation.goalscreen.GoalViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitDetails
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
@@ -40,7 +42,8 @@ fun HabitizedNavHost(
     durationViewModel : DurationViewModel,
     sessionViewModel : SessionViewModel,
     progressViewModel : ProgressViewModel,
-    habitViewModel : HabitViewModel
+    habitViewModel : HabitViewModel,
+    goalViewModel : GoalViewModel
 ){
     NavHost(
         navController = navController,
@@ -195,6 +198,27 @@ fun HabitizedNavHost(
                 colorKey = color!!,
                 navController = navController,
                 viewmodel = habitViewModel
+            )
+        }
+        composable(
+            Screen.GoalScreen.route,
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.StringType
+                },
+                navArgument("title"){
+                    type = NavType.StringType
+                }
+            )
+        ) {entry->
+            val id = entry.arguments?.getString("id")
+            val title = entry.arguments?.getString("title")
+
+            GoalDetails(
+                id = if(id.isNullOrEmpty()) null else UUID.fromString(id),
+                title = title!!,
+                navController = navController,
+                viewmodel = goalViewModel
             )
         }
     }

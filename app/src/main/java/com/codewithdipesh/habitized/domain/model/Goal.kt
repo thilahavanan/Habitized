@@ -9,6 +9,7 @@ data class Goal(
     val title: String,
     val description: String? = null,
     val target_date: LocalDate? = null,
+    val start_date: LocalDate? = LocalDate.now(),
     val progress: Int? = null,
     val habits: List<Habit> = emptyList()
 )

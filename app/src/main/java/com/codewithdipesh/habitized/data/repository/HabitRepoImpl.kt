@@ -202,7 +202,8 @@ class HabitRepoImpl(
         TODO("Not yet implemented")
     }
     override suspend fun getGoalById(goalId: UUID): Goal? {
-        return goalDao.getGoalById(goalId)?.toGoal(emptyList())
+        val habits = habitDao.getHabitsByGoal(goalId)
+        return goalDao.getGoalById(goalId)?.toGoal(habits.map { it.toHabit() })
     }
     override suspend fun getAllGoals(): List<Goal> {
        return goalDao.getAllGoals().map{

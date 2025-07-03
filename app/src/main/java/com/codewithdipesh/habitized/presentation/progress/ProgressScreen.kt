@@ -194,6 +194,9 @@ fun ProgressScreen(
                         ),
                         modifier = Modifier
                             .padding(top = 30.dp, start = 16.dp)
+                            .clickable{
+                                navController.navigate(Screen.GoalScreen.createRoute(state.selectedGoal))
+                            }
                     )
 
                 }

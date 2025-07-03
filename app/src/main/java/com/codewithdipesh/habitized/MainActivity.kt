@@ -10,7 +10,9 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.rememberNavController
+import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
+import com.codewithdipesh.habitized.presentation.goalscreen.GoalViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.navigation.HabitizedNavHost
@@ -47,6 +49,7 @@ class MainActivity : ComponentActivity() {
                 val sessionViewModel by viewModels<SessionViewModel>()
                 val progressViewModel by viewModels<ProgressViewModel>()
                 val habitViewModel by viewModels<HabitViewModel>()
+                val goalViewModel by viewModels<GoalViewModel>()
                 HabitizedNavHost(
                     navController = navController,
                     homeViewModel = homeViewModel,
@@ -54,7 +57,8 @@ class MainActivity : ComponentActivity() {
                     durationViewModel = durationViewModel,
                     sessionViewModel = sessionViewModel,
                     progressViewModel = progressViewModel,
-                    habitViewModel = habitViewModel
+                    habitViewModel = habitViewModel,
+                    goalViewModel = goalViewModel
                 )
             }
         }

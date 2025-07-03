@@ -26,7 +26,7 @@ data class AddHabitUI(
     val days_of_week: Map<Days,Boolean> = DailySelected,
     val daysOfMonth: List<Int> = emptyList(),
     val reminder_time: LocalTime? = LocalTime.now(),
-    val is_active: Boolean = false,
+    val is_active: Boolean = true,
     val colorKey : String = "red",
     val countParam : CountParam? = CountParam.Glasses,
     val countTarget:Int? = null,

@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.navigation
 
+import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
@@ -54,6 +55,13 @@ sealed class Screen(val route : String){
             val title = habit.title
             val color = habit.colorKey
             return "habit_screen/$id/$title/$color"
+        }
+    }
+    object GoalScreen : Screen("goal_screen/{id}/{title}"){
+        fun createRoute(goal: Goal?): String {
+            val id = goal?.id ?: ""
+            val title = goal?.title ?: "Overall Goal"
+            return "goal_screen/$id/$title"
         }
     }
 }

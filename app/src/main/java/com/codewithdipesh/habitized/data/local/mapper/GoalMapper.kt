@@ -14,6 +14,7 @@ fun Goal.toEntity(): GoalEntity {
         title = title,
         description = description,
         target_date = target_date,
+        start_date = start_date,
         progress = progress,
     )
 }
@@ -24,6 +25,7 @@ fun GoalEntity.toGoal(habits :List<Habit>) : Goal {
         title = title,
         description = description,
         target_date = target_date,
+        start_date = start_date,
         progress = progress,
         habits = habits
     )
