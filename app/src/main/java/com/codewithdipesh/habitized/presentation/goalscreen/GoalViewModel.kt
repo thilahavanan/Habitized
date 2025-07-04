@@ -10,6 +10,7 @@ import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
+import com.codewithdipesh.habitized.presentation.goalscreen.components.GraphType
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitDetailsUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -58,6 +59,8 @@ class GoalViewModel @Inject constructor(
                 habits = habits
             )
         }
+        //set efort stats/graph
+        setEfforts(goal)
         //now others initialization
         var onTrackedHabits = mutableListOf<Habit>()
         var offTrackedHabits = mutableListOf<Habit>()
@@ -113,4 +116,67 @@ class GoalViewModel @Inject constructor(
         return (completed.size.toFloat() / total.toFloat() * 100).toInt()
 
     }
+
+    //get progress
+    private fun setEfforts(goal: Goal?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val start_date = LocalDate.now().minusDays(365)
+            val target_date = LocalDate.now()
+
+            val effortList = mutableListOf<Effort>()
+
+            for (i in 0..(target_date.toEpochDay() - start_date!!.toEpochDay())) {
+                val day = start_date.plusDays(i)
+                val habits = goal?.let {
+                    repo.getHabitsByGoalForDate(it.id, day)
+                } ?: repo.getAllHabitsForDate(day)
+                if(habits.isNotEmpty()){
+                    val progressList = habits.flatMap { habit ->
+                        listOf(repo.checkHabitDoneOrNot(habit.habit_id!!, day))
+                    }
+
+                    val average = if (progressList.isNotEmpty()) {
+                        progressList.count { it } / progressList.size.toFloat()
+                    } else 0f
+
+                    effortList += Effort(day, average * 100) // <-- Use Effort(day, effortLevel)
+                }
+            }
+
+            _state.value = _state.value.copy(effortList = effortList)
+            setShowedEfforts(_state.value.showedGraphType)
+        }
+    }
+
+    //update showed progres
+    fun setShowedEfforts(type : GraphType){
+        when(type){
+            GraphType.last_week -> {
+                val last7Days = (0..6).map { LocalDate.now().minusDays(it.toLong()) }.toSet()
+                _state.value = _state.value.copy(
+                    showedGraphType = type,
+                    showedEfforts = _state.value.effortList.filter {it.day in last7Days}
+                )
+            }
+            GraphType.last_month -> {
+                val last30Days = (0..29).map { LocalDate.now().minusDays(it.toLong()) }.toSet()
+                _state.value = _state.value.copy(
+                    showedGraphType = type,
+                    showedEfforts = _state.value.effortList.filter {it.day in last30Days}
+                )
+            }
+            GraphType.last_year -> {
+                val last365Days = (0..364).map { LocalDate.now().minusDays(it.toLong()) }.toSet()
+                _state.value = _state.value.copy(
+                    showedGraphType = type,
+                    showedEfforts = _state.value.effortList.filter {it.day in last365Days}
+                )
+            }
+        }
+    }
+
+    fun clearUi(){
+        _state.value = GoalDetailsUI()
+    }
+
 }

@@ -84,6 +84,22 @@ class HabitRepoImpl(
         return habitDao.getHabitsByGoal(goalId).map { it.toHabit() }
     }
 
+    override suspend fun getHabitsByGoalForDate(
+        goalId: UUID,
+        date: LocalDate
+    ): List<Habit> {
+        val habits = habitDao.getHabitsForTheDay(date)
+        return habits.filter { it.goal_id == goalId }.map { it.toHabit() }
+    }
+
+    override suspend fun getAllHabitsForDate(date: LocalDate): List<Habit> {
+        return habitDao.getHabitsForTheDay(date).map { it.toHabit() }
+    }
+
+    override suspend fun getOverAllStartDate(): LocalDate {
+        return habitDao.getOverAllStartDay()
+    }
+
     override suspend fun updateStreak(
         habitId: UUID,
         current: Int,
@@ -181,6 +197,13 @@ class HabitRepoImpl(
 
     override suspend fun deleteHabitProgressForHabit(habitId: UUID) {
         habitProgressDao.deleteProgressForHabit(habitId)
+    }
+
+    override suspend fun checkHabitDoneOrNot(
+        habitId: UUID,
+        date: LocalDate
+    ): Boolean {
+        return habitProgressDao.checkDoneOrNot(habitId,date)
     }
 
     override suspend fun getAllCompletedDates(habitId: UUID): List<LocalDate> {

@@ -53,5 +53,8 @@ interface HabitProgressDao {
     @Query("UPDATE habit_progress SET currentCount = :count WHERE progressId = :progressId")
     suspend fun onUpdateCount(count : Int,progressId: UUID)
 
+    @Query("SELECT EXISTS(SELECT 1 FROM habit_progress WHERE habitId = :habitId AND date = :date AND status = :status)")
+    suspend fun checkDoneOrNot(habitId: UUID,date: LocalDate,status: String = Status.Done.displayName) : Boolean
+
 
 }

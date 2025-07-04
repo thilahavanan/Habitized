@@ -20,6 +20,9 @@ interface HabitRepository {
     suspend fun deleteHabit(habitId: UUID)
     suspend fun getHabitById(habitId: UUID): Habit?
     suspend fun getHabitsByGoal(goalId: UUID): List<Habit>
+    suspend fun getHabitsByGoalForDate(goalId: UUID,date: LocalDate): List<Habit>
+    suspend fun getAllHabitsForDate(date: LocalDate): List<Habit>
+    suspend fun getOverAllStartDate() : LocalDate
     suspend fun updateStreak(habitId: UUID,current : Int,max: Int)
 
     // Habit Progress
@@ -35,6 +38,7 @@ interface HabitRepository {
     suspend fun onStartedHabitProgress(progressId: UUID)
     suspend fun onUpdateCounterHabitProgress(count :Int,progressId: UUID)
     suspend fun deleteHabitProgressForHabit(habitId: UUID)
+    suspend fun checkHabitDoneOrNot(habitId: UUID,date: LocalDate) : Boolean
 
     suspend fun getAllCompletedDates(habitId: UUID) : List<LocalDate>
     suspend fun getAllCompletedProgress(habitId: UUID) : List<HabitProgress>

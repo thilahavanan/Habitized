@@ -1,7 +1,10 @@
 package com.codewithdipesh.habitized.presentation.goalscreen
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.LocalAutofillHighlightColor
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -26,15 +30,19 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,6 +71,10 @@ import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
+import com.codewithdipesh.habitized.presentation.addscreen.component.Button
+import com.codewithdipesh.habitized.presentation.goalscreen.components.CustomChart
+import com.codewithdipesh.habitized.presentation.goalscreen.components.GraphType
+import com.codewithdipesh.habitized.presentation.goalscreen.components.toName
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
 import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
@@ -78,11 +90,20 @@ import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
 import java.util.UUID
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalDetails(
     id : UUID?,
@@ -94,6 +115,16 @@ fun GoalDetails(
     val state by viewmodel.state.collectAsState()
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val sheetState = rememberModalBottomSheetState()
+    LaunchedEffect(state.effortList) {
+        Log.d("stats",state.effortList.toString())
+    }
+
+    BackHandler {
+        navController.navigateUp()
+        viewmodel.clearUi()
+    }
+
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -101,17 +132,23 @@ fun GoalDetails(
         }
     }
 
+    var showGraphTypeChoose by remember { mutableStateOf(false) }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(80.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 //left icon
                 IconButton(
-                    onClick = {navController.navigateUp()},
+                    onClick = {
+                        navController.navigateUp()
+                        viewmodel.clearUi()
+                    },
                     modifier = Modifier
                         .padding(top = 30.dp)
                 ) {
@@ -167,6 +204,20 @@ fun GoalDetails(
             }
         }
     ) { innerPadding ->
+        //choose graph type
+        if(showGraphTypeChoose){
+            ChooseGraphType(
+                types = GraphType.entries.toList(),
+                selected = state.showedGraphType,
+                onSelected = {
+                  viewmodel.setShowedEfforts(it)
+                },
+                onDismiss = {
+                    showGraphTypeChoose = false
+                },
+                sheetState = sheetState
+            )
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -272,7 +323,8 @@ fun GoalDetails(
                         )
                     }
                 }
-            }else{
+            }
+            else{
                 Element{
                     Text(
                         text = "${state.habits.size}",
@@ -436,80 +488,117 @@ fun GoalDetails(
                     }
                 }
             }
+            //efforts stat
+            Element{
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(
+                            text = "My Efforts",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .clickable {
+                                    showGraphTypeChoose = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = state.showedGraphType.toName(),
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                ),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+                    CustomChart(
+                        graphColor = MaterialTheme.colorScheme.primary,
+//                        infos = state.showedEfforts
+                        infos = state.showedEfforts
+                    )
+                }
+            }
 
         }
 
     }
 
 }
-//
-////deleteAlertBox
-//@Composable
-//fun DeleteHabitBox(
-//    modifier: Modifier = Modifier,
-//    onConfirm : ()-> Unit,
-//    onCancel : () ->Unit
-//){
-//    AlertDialog(
-//        onDismissRequest = {
-//            onCancel()
-//        },
-//        confirmButton = {
-//            TextButton(
-//                onClick = {
-//                    onCancel()
-//                }
-//            ) {
-//                Text(
-//                    text = "Cancel",
-//                    style = TextStyle(
-//                        color = MaterialTheme.colorScheme.onPrimary,
-//                        fontFamily = regular,
-//                        fontWeight = FontWeight.Bold,
-//                        fontSize = 16.sp
-//                    )
-//                )
-//            }
-//        },
-//        dismissButton = {
-//            TextButton(
-//                onClick = {
-//                    onConfirm()
-//                    onCancel()
-//                }
-//            ) {
-//                Text(
-//                    text = "Yes,Delete",
-//                    style = TextStyle(
-//                        color = colorResource(R.color.delete_red),
-//                        fontFamily = regular,
-//                        fontWeight = FontWeight.Normal,
-//                        fontSize = 16.sp
-//                    )
-//                )
-//            }
-//        },
-//        title = {
-//            Text(
-//                text = "Delete the Habit",
-//                style = TextStyle(
-//                    color = MaterialTheme.colorScheme.onPrimary,
-//                    fontFamily = regular,
-//                    fontWeight = FontWeight.Bold,
-//                    fontSize = 20.sp
-//                )
-//            )
-//        },
-//        text = {
-//            Text(
-//                text = "This will delete all the progress and images associated with this habit also ",
-//                style = TextStyle(
-//                    color = MaterialTheme.colorScheme.onPrimary,
-//                    fontFamily = regular,
-//                    fontWeight = FontWeight.Normal,
-//                    fontSize = 16.sp
-//                )
-//            )
-//        }
-//    )
-//}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChooseGraphType(
+    types : List<GraphType> = emptyList(),
+    onSelected : (GraphType) -> Unit,
+    selected : GraphType,
+    onDismiss : () -> Unit,
+    sheetState: SheetState,
+    modifier: Modifier = Modifier
+) {
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            onDismiss()
+        },
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 70.dp,top = 30.dp)
+                .wrapContentHeight(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            types.forEach {
+                Box(
+                    Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(
+                            if(selected == it) MaterialTheme.colorScheme.primary
+                            else Color.Transparent
+                        )
+                        .clickable{
+                            onSelected(it)
+                            onDismiss()
+                        },
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = it.toName(),
+                        style = TextStyle(
+                            color = if(selected == it) MaterialTheme.colorScheme.inverseOnSurface
+                            else MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+
+}
