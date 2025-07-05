@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -67,12 +68,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Frequency
+import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.addscreen.component.Button
 import com.codewithdipesh.habitized.presentation.goalscreen.components.CustomChart
 import com.codewithdipesh.habitized.presentation.goalscreen.components.GraphType
+import com.codewithdipesh.habitized.presentation.goalscreen.components.HabitsShowcase
 import com.codewithdipesh.habitized.presentation.goalscreen.components.toName
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
@@ -107,24 +110,25 @@ fun GoalDetails(
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val sheetState = rememberModalBottomSheetState()
+
+    var showGraphTypeChoose by remember { mutableStateOf(false) }
+
+    var showHabits by remember { mutableStateOf(false) }
+    var showHabitSubTitle by remember { mutableStateOf("") }
+    var showingHabitList by remember { mutableStateOf(emptyList<Habit>()) }
+
     LaunchedEffect(state.effortList) {
         Log.d("stats",state.effortList.toString())
     }
-
     BackHandler {
         navController.navigateUp()
         viewmodel.clearUi()
     }
-
-
     LaunchedEffect(Unit) {
         scope.launch {
             viewmodel.init(id)
         }
     }
-
-    var showGraphTypeChoose by remember { mutableStateOf(false) }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -209,6 +213,19 @@ fun GoalDetails(
                 sheetState = sheetState
             )
         }
+        if(showHabits){
+            HabitsShowcase(
+                title = state.title,
+                subtitle = showHabitSubTitle,
+                habits = showingHabitList,
+                onHabitClick = {
+                    navController.navigate(Screen.HabitScreen.createRoute(it))
+                },
+                onDismiss = {
+                    showHabits = false
+                }
+            )
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -261,15 +278,41 @@ fun GoalDetails(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ){
                     Element(Modifier.weight(1f)){
-                        Text(
-                            text = "${state.habits.size}",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 24.sp
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            Text(
+                                text = "${state.habits.size}",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 24.sp
+                                )
                             )
-                        )
+                            Box(
+                                Modifier.wrapContentWidth()
+                                    .height(20.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable {
+                                        showHabits = true
+                                        showingHabitList = state.habits
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "see all",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Light,
+                                        fontSize = 12.sp
+                                    ),
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                            }
+                        }
                         Spacer(Modifier.height(8.dp))
                         Text(
                             text = "Total Habits",
@@ -317,15 +360,41 @@ fun GoalDetails(
             }
             else{
                 Element{
-                    Text(
-                        text = "${state.habits.size}",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ){
+                        Text(
+                            text = "${state.habits.size}",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
+                            )
                         )
-                    )
+                        Box(
+                            Modifier.wrapContentWidth()
+                                .height(20.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable{
+                                    showHabits = true
+                                    showingHabitList = state.habits
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "see all",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Light,
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = "Total Habits",
@@ -345,15 +414,42 @@ fun GoalDetails(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Element(Modifier.weight(1f)) {
-                    Text(
-                        text = "${state.onTrack.size}",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ){
+                        Text(
+                            text = "${state.onTrack.size}",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
                         )
-                    )
+                        Box(
+                            Modifier.wrapContentWidth()
+                                .height(20.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable{
+                                    showHabits = true
+                                    showHabitSubTitle = "On Track"
+                                    showingHabitList = state.onTrack
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "see details",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Light,
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -377,15 +473,43 @@ fun GoalDetails(
                     }
                 }
                 Element(Modifier.weight(1f)) {
-                    Text(
-                        text = "${state.offTrack.size}",
-                        style = TextStyle(
-                            color = colorResource(R.color.yellow),
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ){
+                        Text(
+                            text = "${state.offTrack.size}",
+                            style = TextStyle(
+                                color = colorResource(R.color.yellow),
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
                         )
-                    )
+                        Box(
+                            Modifier.wrapContentWidth()
+                                .height(20.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable{
+                                    showHabits = true
+                                    showHabitSubTitle = "Off Track"
+                                    showingHabitList = state.offTrack
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "see details",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Light,
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -415,15 +539,42 @@ fun GoalDetails(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Element(Modifier.weight(1f)) {
-                    Text(
-                        text = "${state.AtRisk.size}",
-                        style = TextStyle(
-                            color = colorResource(R.color.delete_red),
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ){
+                        Text(
+                            text = "${state.AtRisk.size}",
+                            style = TextStyle(
+                                color = colorResource(R.color.delete_red),
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
                         )
-                    )
+                        Box(
+                            Modifier.wrapContentWidth()
+                                .height(20.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable{
+                                    showHabits = true
+                                    showHabitSubTitle = "At Risk"
+                                    showingHabitList = state.AtRisk
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "see details",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Light,
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -447,15 +598,42 @@ fun GoalDetails(
                     }
                 }
                 Element(Modifier.weight(1f)) {
-                    Text(
-                        text = "${state.closed.size}",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ){
+                        Text(
+                            text = "${state.closed.size}",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
                         )
-                    )
+                        Box(
+                            Modifier.wrapContentWidth()
+                                .height(20.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable{
+                                    showHabits = true
+                                    showHabitSubTitle = "Closed"
+                                    showingHabitList = state.closed
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "see details",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Light,
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

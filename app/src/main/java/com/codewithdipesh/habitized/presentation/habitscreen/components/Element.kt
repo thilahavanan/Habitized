@@ -2,6 +2,7 @@ package com.codewithdipesh.habitized.presentation.habitscreen.components
 
 import android.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,14 +28,22 @@ import com.codewithdipesh.habitized.ui.theme.regular
 @Composable
 fun Element(
     modifier: Modifier = Modifier,
+    clickable : Boolean = false,
+    onClick : () -> Unit = {},
+    backgroundColor : androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondary,
     element : @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(15.dp))
-            .background(MaterialTheme.colorScheme.secondary)
-            .padding(16.dp),
+            .background(backgroundColor)
+            .padding(16.dp)
+            .then(
+                if(clickable) Modifier.clickable{
+                    onClick()
+                }else Modifier
+            ),
         contentAlignment = Alignment.Center
     ){
         Column(modifier = Modifier.fillMaxWidth(),
