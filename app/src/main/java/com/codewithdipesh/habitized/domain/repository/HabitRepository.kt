@@ -15,7 +15,7 @@ interface HabitRepository {
 
     // Habits
     suspend fun getAllHabits(): List<Habit>
-    suspend fun getAllExistingHabits() : List<Habit>
+    suspend fun getAllExistingHabits(goalId: UUID? = null) : List<Habit> //so include teh habits having the id as goalid
     suspend fun addOrUpdateHabit(habit: Habit)
     suspend fun deleteHabit(habitId: UUID)
     suspend fun getHabitById(habitId: UUID): Habit?

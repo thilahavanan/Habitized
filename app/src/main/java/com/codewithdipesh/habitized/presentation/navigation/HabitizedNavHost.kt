@@ -120,8 +120,18 @@ fun HabitizedNavHost(
                 viewmodel = durationViewModel
             )
         }
-        composable(Screen.AddGoal.route){
+        composable(
+            Screen.AddGoal.route,
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ){entry->
+            val id = entry.arguments?.getString("id")
             AddGoalScreen(
+                id = if(id.isNullOrEmpty()) null else UUID.fromString(id),
                 navController = navController,
                 viewmodel = addViewModel
             )

@@ -63,12 +63,14 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.TargetDateP
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun AddGoalScreen(
     modifier: Modifier = Modifier,
+    id : UUID? = null,
     navController: NavController,
     viewmodel: AddViewModel
 ) {
@@ -102,7 +104,10 @@ fun AddGoalScreen(
         }
     }
     LaunchedEffect(Unit) {
-        viewmodel.getExistingHabits()
+        if(id != null){
+            viewmodel.initGoal(id)
+        }
+        viewmodel.getExistingHabits(id)
     }
 
     Scaffold(

@@ -48,9 +48,9 @@ class HabitRepoImpl(
         return habits
     }
 
-    override suspend fun getAllExistingHabits(): List<Habit>{
+    override suspend fun getAllExistingHabits(goalId:UUID?): List<Habit>{
         val habits =  habitDao.getAllHabits()
-            .filter { it.goal_id == null }
+            .filter { it.goal_id == null || it.goal_id == goalId }
             .map { it.toHabit() }
 
         return habits

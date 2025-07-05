@@ -47,7 +47,11 @@ sealed class Screen(val route : String){
             return "session_screen/$id/$title/$target/$color"
         }
     }
-    object AddGoal : Screen("addGoal")
+    object AddGoal : Screen("addGoal/{id}"){
+        fun createRoute(id : String = ""): String {
+            return "addGoal/$id"
+        }
+    }
     object Progress : Screen("progress")
     object HabitScreen : Screen("habit_screen/{id}/{title}/{color}"){
         fun createRoute(habit: Habit): String {

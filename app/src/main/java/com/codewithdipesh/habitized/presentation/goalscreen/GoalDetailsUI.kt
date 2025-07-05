@@ -31,37 +31,9 @@ data class GoalDetailsUI(
 )
 data class Effort(val day: LocalDate, val effortLevel: Float)
 
-
-val dummyEffortList = listOf(
-    Effort(LocalDate.now(),20f),
-    Effort(LocalDate.now().minusDays(1),100f),
-    Effort(LocalDate.now().minusDays(2),20f),
-    Effort(LocalDate.now().minusDays(3),100f),
-    Effort(LocalDate.now().minusDays(4),0f),
-    Effort(LocalDate.now().minusDays(5),45f),
-    Effort(LocalDate.now().minusDays(6),20f),
-    Effort(LocalDate.now().minusDays(7),60f),
-    Effort(LocalDate.now().minusDays(8),80f),
-    Effort(LocalDate.now().minusDays(9),100f),
-    Effort(LocalDate.now().minusDays(10),60f),
-    Effort(LocalDate.now().minusDays(11),60f),
-    Effort(LocalDate.now().minusDays(12),40f),
-    Effort(LocalDate.now().minusDays(13),60f),
-    Effort(LocalDate.now().minusDays(14),70f),
-    Effort(LocalDate.now().minusDays(15),90f),
-    Effort(LocalDate.now().minusDays(16),100f),
-    Effort(LocalDate.now().minusDays(17),40f),
-    Effort(LocalDate.now().minusDays(18),60f),
-    Effort(LocalDate.now().minusDays(19),80f),
-    Effort(LocalDate.now().minusDays(20),100f),
-    Effort(LocalDate.now().minusDays(21),60f),
-    Effort(LocalDate.now().minusDays(22),60f),
-    Effort(LocalDate.now().minusDays(23),40f),
-    Effort(LocalDate.now().minusDays(24),60f),
-    Effort(LocalDate.now().minusDays(25),70f),
-    Effort(LocalDate.now().minusDays(26),90f),
-    Effort(LocalDate.now().minusDays(27),100f),
-    Effort(LocalDate.now().minusDays(28),60f),
-    Effort(LocalDate.now().minusDays(29),60f)
-
-)
+val dummyEffortList = (0 until 200).map { dayOffset ->
+    Effort(
+        LocalDate.now().minusDays(dayOffset.toLong()),
+        (0..100).random().toFloat()
+    )
+}

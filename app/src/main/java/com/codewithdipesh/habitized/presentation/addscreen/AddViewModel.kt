@@ -311,6 +311,24 @@ class AddViewModel @Inject constructor(
     }
 
     //goal
+    suspend fun initGoal(id :UUID){
+        val goal = repo.getGoalById(id)
+        goal?.let{
+            val habits = repo.getHabitsByGoal(goal.id)
+            _goalUiState.value = _goalUiState.value.copy(
+                goal_id = goal.id,
+                title = goal.title,
+                description = goal.description ?: "",
+                target_date = goal.target_date,
+                start_date = goal.start_date!!,
+                isTargetDateVisible = goal.target_date != null,
+                habits = habits,
+                prevHabits = habits
+            )
+
+        }
+
+    }
     fun setGoalTitle(title : String){
         _goalUiState.value = _goalUiState.value.copy(
             title = title
@@ -326,13 +344,14 @@ class AddViewModel @Inject constructor(
             isTargetDateVisible = !_goalUiState.value.isTargetDateVisible
         )
     }
-    suspend fun getExistingHabits(){
-        val habits = repo.getAllExistingHabits()
+    suspend fun getExistingHabits(id : UUID? = null){
+        val habits = repo.getAllExistingHabits(id)
         _goalUiState.value =_goalUiState.value.copy(
             availableHabits = habits
         )
     }
     fun setHabitsAttachedWithGoal(newHabits : List<Habit>){
+        Log.d("goal","$newHabits")
         val updatedHabits = newHabits.map {
             it.copy(
                 goal_id = _goalUiState.value.goal_id
@@ -352,18 +371,27 @@ class AddViewModel @Inject constructor(
             sendEvent("Title cannot be empty")
             return
         }
+        Log.d("goal","${_goalUiState.value.habits}")
         repo.addGoal(
             Goal(
                 id = _goalUiState.value.goal_id,
                 title = _goalUiState.value.title,
                 description = _goalUiState.value.description,
                 target_date = _goalUiState.value.target_date,
+                start_date = _goalUiState.value.start_date,
                 habits = _goalUiState.value.habits
             )
         )
         _goalUiState.value.habits.forEach {
             repo.addOrUpdateHabit(it)
         }
+        _goalUiState.value.prevHabits //for removing any habit from goal
+            .filter { !_goalUiState.value.habits.contains(it) }
+            .forEach {
+                repo.addOrUpdateHabit(it.copy(
+                    goal_id = null
+                ))
+            }
         sendEvent("Goal Created Successfully")
     }
     fun clearGoalUI(){

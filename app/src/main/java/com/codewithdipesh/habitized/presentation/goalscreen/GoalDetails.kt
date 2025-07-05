@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -169,19 +170,21 @@ fun GoalDetails(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    IconButton(
-                        onClick = {
-                           //todo edit
-                        },
-                        modifier = Modifier
-                            .padding(top = 30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "edit",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
+                    if(id != null){
+                       IconButton(
+                           onClick = {
+                               navController.navigate(Screen.AddGoal.createRoute(state.id.toString()))
+                           },
+                           modifier = Modifier
+                               .padding(top = 30.dp)
+                       ) {
+                           Icon(
+                               imageVector = Icons.Default.Edit,
+                               contentDescription = "edit",
+                               tint = MaterialTheme.colorScheme.onPrimary
+                           )
+                       }
+                   }
                     IconButton(
                         onClick = {
                             //todo delete
@@ -190,9 +193,9 @@ fun GoalDetails(
                             .padding(top = 30.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
+                            imageVector = Icons.Default.MoreVert,
                             contentDescription = "delete",
-                            tint = colorResource(R.color.delete_red)
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
