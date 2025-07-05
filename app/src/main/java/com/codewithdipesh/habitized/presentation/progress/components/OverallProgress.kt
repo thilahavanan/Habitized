@@ -62,7 +62,7 @@ fun OverallProgress(
 ) {
     Progress(
         habit = habit,
-        color = getThemedColorFromKey(habit.colorKey),
+        color = MaterialTheme.colorScheme.secondary,
         onClick = {onClick()},
         progress = {
             Row(
@@ -112,11 +112,13 @@ fun OverAllCell(
     Box(
         modifier = Modifier
             .size(16.dp)
-            .clip(CircleShape)
+            .padding(1.5.dp)
+            .clip(RoundedCornerShape(4.dp))
             .background(
-                if (!isActive) MaterialTheme.colorScheme.surfaceContainerLow.copy(0.3f)
+                if (!isActive) color.copy(0.15f)
                 else if (isSelect) color
-                else MaterialTheme.colorScheme.surfaceContainerLow.copy(0.5f)
+                else color.copy(0.5f)
             )
+
     )
 }
