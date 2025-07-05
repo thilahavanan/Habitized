@@ -495,7 +495,7 @@ fun HabitDetails(
                 Spacer(Modifier.height(16.dp))
                 if(state.imageProgresses.isEmpty()){
                     Text(
-                        text = "Add your today's progress",
+                        text = "\uD83D\uDDBC\uFE0F Add your today's progress",
                         style = androidx.compose.ui.text.TextStyle(
                             color = MaterialTheme.colorScheme.onSecondary,
                             fontSize = 20.sp,

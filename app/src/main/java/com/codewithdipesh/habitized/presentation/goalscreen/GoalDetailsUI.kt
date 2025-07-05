@@ -50,5 +50,18 @@ val dummyEffortList = listOf(
     Effort(LocalDate.now().minusDays(14),70f),
     Effort(LocalDate.now().minusDays(15),90f),
     Effort(LocalDate.now().minusDays(16),100f),
-    Effort(LocalDate.now().minusDays(17),40f)
+    Effort(LocalDate.now().minusDays(17),40f),
+    Effort(LocalDate.now().minusDays(18),60f),
+    Effort(LocalDate.now().minusDays(19),80f),
+    Effort(LocalDate.now().minusDays(20),100f),
+    Effort(LocalDate.now().minusDays(21),60f),
+    Effort(LocalDate.now().minusDays(22),60f),
+    Effort(LocalDate.now().minusDays(23),40f),
+    Effort(LocalDate.now().minusDays(24),60f),
+    Effort(LocalDate.now().minusDays(25),70f),
+    Effort(LocalDate.now().minusDays(26),90f),
+    Effort(LocalDate.now().minusDays(27),100f),
+    Effort(LocalDate.now().minusDays(28),60f),
+    Effort(LocalDate.now().minusDays(29),60f)
+
 )

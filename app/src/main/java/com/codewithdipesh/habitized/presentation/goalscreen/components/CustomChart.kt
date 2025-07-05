@@ -5,14 +5,30 @@ import android.graphics.Paint
 import android.graphics.Paint.Cap.ROUND
 import android.graphics.Path
 import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -26,11 +42,15 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.presentation.goalscreen.Effort
 import com.codewithdipesh.habitized.presentation.util.toInt
+import kotlinx.coroutines.delay
 import java.util.Locale
 import kotlin.io.path.Path
+import kotlin.math.min
+
 @Composable
 fun CustomChart(
     infos : List<Effort> = emptyList(),
@@ -40,9 +60,6 @@ fun CustomChart(
 ) {
 
     val spacing = 100f
-    val transparentGraphColor = remember {
-        graphColor.copy(alpha = 0.5f)
-    }
     val upperValue = 100
     val lowerValue = 0
 
@@ -54,100 +71,91 @@ fun CustomChart(
             textSize = with(density) { 12.sp.toPx() }
         }
     }
+    LaunchedEffect(infos) {
+        Log.d("infos",infos.toString())
+    }
 
-    Canvas(
+    Box(
         modifier = modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(vertical = 16.dp, horizontal = 8.dp)
-    ) {
-        val spacePerday = (size.width - spacing) / (infos.size)
+        .fillMaxWidth()
+        .height(200.dp),
+        contentAlignment = Alignment.Center
+    ){
+        Canvas(
+            modifier = Modifier.fillMaxSize()
+                .padding(vertical = 16.dp, horizontal = 8.dp)
+        ) {
+            val spacePerday = min((size.width - spacing) / infos.size,108f)
+            val barWidth = kotlin.math.min(spacePerday * 0.6f,65f)
+            Log.d("CustomChart", "barWidth: $barWidth")
+            Log.d("CustomChart", "spacePerday: $spacePerday")
+            val chartHeight = size.height - spacing
 
-        // Draw X-axis labels (dates)
-        val maxLabels = 5
-        val indiceInterval = if (infos.size <= maxLabels) 1 else {
-            kotlin.math.max(2, (infos.size - 1) / (maxLabels - 1))
-        }
-        val indices = if (infos.size <= maxLabels) {
-            infos.indices
-        } else {
-            (0 until infos.size step indiceInterval)// ensure last item is included
-        }
-        indices.forEach { i ->
-            val info = infos[i]
-            val date = "${info.day.dayOfMonth} ${
-                info.day.month.name.lowercase().capitalize(Locale.ROOT).take(3)
-            }"
-            drawContext.canvas.nativeCanvas.apply {
-                drawText(
-                    date,
-                    spacing + i * spacePerday,
-                    size.height - 5,
-                    textPaint
-                )
+            // Draw X-axis labels (dates)
+            val maxLabels = 5
+            val indiceInterval = if (infos.size <= maxLabels) 1 else {
+                kotlin.math.max(2, (infos.size - 1) / (maxLabels - 1))
             }
-        }
-
-        // Draw Y-axis labels (effort levels)
-        val effortSteps = (upperValue - lowerValue) / 5f
-        val chartHeight = size.height - spacing
-        (0..5).forEach { step ->
-            val yPos = chartHeight - (step * chartHeight / 5f) + 20f
-            drawContext.canvas.nativeCanvas.apply {
-                drawText(
-                    "${(lowerValue + effortSteps * step).toInt()}%",
-                    30f,
-                    yPos,
-                    textPaint
-                )
+            val indices = if (infos.size <= maxLabels) {
+                infos.indices
+            } else {
+                (0 until infos.size step indiceInterval)// ensure last item is included
             }
-        }
-
-        // Draw the chart line and fill (moved outside the Y-axis loop)
-        if (infos.isNotEmpty()) {
-            var lastX = 0f
-            val strokePath = androidx.compose.ui.graphics.Path().apply {
-                for (i in infos.indices) {
-                    val info = infos[i]
-                    val leftRatio = (info.effortLevel - lowerValue) / (upperValue - lowerValue)
-
-                    val x1 = if(infos.lastIndex == i ) size.width else spacing + i * spacePerday
-                    val y1 = chartHeight - (leftRatio * chartHeight).toFloat()
-
-                    if (i == 0) {
-                        moveTo(x1, y1)
-                    }
-                    lineTo(x1,y1)
-                    lastX = x1
+            indices.forEach { i ->
+                val info = infos[i]
+                val date = "${info.day.dayOfMonth} ${
+                    info.day.month.name.lowercase().capitalize(Locale.ROOT).take(3)
+                }"
+                drawContext.canvas.nativeCanvas.apply {
+                    drawText(
+                        date,
+                        spacing + i * spacePerday + barWidth/2f + 20f,
+                        size.height - 5,
+                        textPaint
+                    )
                 }
             }
 
-            val fillPath = Path(strokePath.asAndroidPath())
-                .asComposePath()
-                .apply {
-                    lineTo(lastX, size.height - spacing)
-                    lineTo(spacing, size.height - spacing)
-                    close()
-                }
+            // Draw Y-axis labels (effort levels)
+            val effortSteps = (upperValue - lowerValue) / 5f
 
-            drawPath(
-                path = fillPath,
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        transparentGraphColor,
-                        Color.Transparent
-                    ),
-                    endY = size.height - spacing
+            (0..5).forEach { step ->
+                val yPos = chartHeight - (step * chartHeight / 5f) + 20f
+                drawContext.canvas.nativeCanvas.apply {
+                    drawText(
+                        "${(lowerValue + effortSteps * step).toInt()}%",
+                        30f,
+                        yPos,
+                        textPaint
+                    )
+                }
+            }
+
+            // Draw the chart line and fill (moved outside the Y-axis loop)
+            infos.forEachIndexed { index, info ->
+                val ratio = (info.effortLevel - lowerValue) / (upperValue - lowerValue)
+                val barHeight = ratio * chartHeight
+
+                val barX = spacing + index * spacePerday + (spacePerday - barWidth) / 2f
+                val barY = chartHeight - barHeight
+
+                // Draw bar bg
+                drawRoundRect(
+                    color = graphColor.copy(0.3f),
+                    topLeft = Offset(barX, 0f),
+                    size = Size(barWidth, chartHeight),
+                    cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
                 )
-            )
-            drawPath(
-                path = strokePath,
-                color = graphColor,
-                style = Stroke(
-                    width = 3.dp.toPx(),
-                    cap = StrokeCap.Round
+                //actual progress
+                drawRoundRect(
+                    color = graphColor,
+                    topLeft = Offset(barX, barY),
+                    size = Size(barWidth, barHeight),
+                    cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
                 )
-            )
+            }
         }
+        //loader
+
     }
 }

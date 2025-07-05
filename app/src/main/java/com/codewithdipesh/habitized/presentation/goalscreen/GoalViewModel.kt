@@ -59,8 +59,15 @@ class GoalViewModel @Inject constructor(
                 habits = habits
             )
         }
-        //set efort stats/graph
-        setEfforts(goal)
+        //set efforts
+        //so for calculating 365 days it takes time so theres a slight delay in UI
+        //calling 7 days first os it shows on UI instantly and calculate rest 364 days in background
+        viewModelScope.launch(Dispatchers.IO){
+            setEfforts(goal)
+        }
+        viewModelScope.launch(Dispatchers.IO){
+            setEfforts(goal,364)
+        }
         //now others initialization
         var onTrackedHabits = mutableListOf<Habit>()
         var offTrackedHabits = mutableListOf<Habit>()
@@ -117,10 +124,10 @@ class GoalViewModel @Inject constructor(
 
     }
 
-    //get progress
-    private fun setEfforts(goal: Goal?) {
+    //get progress efforts
+    private fun setEfforts(goal: Goal?,days : Int = 6) {
         viewModelScope.launch(Dispatchers.IO) {
-            val start_date = LocalDate.now().minusDays(365)
+            val start_date = LocalDate.now().minusDays(days.toLong())
             val target_date = LocalDate.now()
 
             val effortList = mutableListOf<Effort>()
@@ -143,7 +150,7 @@ class GoalViewModel @Inject constructor(
                 }
             }
 
-            _state.value = _state.value.copy(effortList = effortList)
+            _state.value = _state.value.copy(effortList = dummyEffortList)
             setShowedEfforts(_state.value.showedGraphType)
         }
     }
