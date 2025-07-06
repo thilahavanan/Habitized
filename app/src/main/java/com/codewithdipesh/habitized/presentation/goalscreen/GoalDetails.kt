@@ -70,10 +70,6 @@ import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
-import com.codewithdipesh.habitized.domain.model.HabitType
-import com.codewithdipesh.habitized.domain.model.ImageProgress
-import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
-import com.codewithdipesh.habitized.presentation.addscreen.component.Button
 import com.codewithdipesh.habitized.presentation.goalscreen.components.CustomChart
 import com.codewithdipesh.habitized.presentation.goalscreen.components.GraphType
 import com.codewithdipesh.habitized.presentation.goalscreen.components.HabitsShowcase
@@ -239,28 +235,32 @@ fun GoalDetails(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            //title  and target
-            Element(){
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    //title
+            //title, probability and date
+            //title and prob
+            Element{
+                //title
+                Text(
+                    text = title,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                )
+            }
+            //description
+            if(state.description != ""){
+                Element{
                     Text(
-                        text = title,
+                        text = "description",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                            fontSize = 18.sp
                         )
                     )
-                    //target date
-                    //todo
-
-                }
-                if(state.description != ""){
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = "${state.description}",
@@ -273,142 +273,53 @@ fun GoalDetails(
                     )
                 }
             }
-
             //habits
-            if(id != null){
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Element{
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
                 ){
-                    Element(Modifier.weight(1f)){
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Top
-                        ) {
-                            Text(
-                                text = "${state.habits.size}",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 24.sp
-                                )
-                            )
-                            Box(
-                                Modifier.wrapContentWidth()
-                                    .height(20.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable {
-                                        showHabits = true
-                                        showingHabitList = state.habits
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "see all",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontFamily = regular,
-                                        fontWeight = FontWeight.Light,
-                                        fontSize = 12.sp
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = "Total Habits",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                        )
-                    }
-                    Element (Modifier.weight(1f)){
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                            Text(
-                                text = "${LocalDate.now().toEpochDay() - state.startDate!!.toEpochDay()}",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 20.sp
-                                )
-                            )
-                            Text(
-                                text = "days",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.scrim,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 20.sp
-                                )
-                            )
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = "Passed",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Light,
-                                fontSize = 16.sp
-                            )
-                        )
-                    }
-                }
-            }
-            else{
-                Element{
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
-                    ){
-                        Text(
-                            text = "${state.habits.size}",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 24.sp
-                            )
-                        )
-                        Box(
-                            Modifier.wrapContentWidth()
-                                .height(20.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable{
-                                    showHabits = true
-                                    showingHabitList = state.habits
-                                },
-                            contentAlignment = Alignment.Center
-                        ){
-                            Text(
-                                text = "see all",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Light,
-                                    fontSize = 12.sp
-                                ),
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Total Habits",
+                        text = "${state.habits.size}",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 24.sp
                         )
                     )
+                    Box(
+                        Modifier.wrapContentWidth()
+                            .height(20.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable{
+                                showHabits = true
+                                showingHabitList = state.habits
+                            },
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "see all",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 12.sp
+                            ),
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    }
                 }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "Total Habits",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = regular,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                )
             }
 
             //on track and off track

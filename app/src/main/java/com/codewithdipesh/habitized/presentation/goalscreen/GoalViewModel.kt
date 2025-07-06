@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.String
 
@@ -48,7 +49,8 @@ class GoalViewModel @Inject constructor(
                 )
                 habits = goal.habits
             }
-        }else{
+        }
+        else{
             //else all habits
             goal = null
             habits = repo.getAllHabits()
@@ -150,7 +152,7 @@ class GoalViewModel @Inject constructor(
                 }
             }
 
-            _state.value = _state.value.copy(effortList = dummyEffortList)
+            _state.value = _state.value.copy(effortList = effortList)
             setShowedEfforts(_state.value.showedGraphType)
         }
     }

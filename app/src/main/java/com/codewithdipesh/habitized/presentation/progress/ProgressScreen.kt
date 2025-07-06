@@ -86,7 +86,7 @@ fun ProgressScreen(
                         fontSize = 24.sp
                     ),
                     modifier = Modifier
-                        .padding(top = 30.dp, start = 16.dp)
+                        .padding(top = 30.dp, start = 32.dp)
                 )
             }
         }
@@ -107,12 +107,13 @@ fun ProgressScreen(
                     item {
                         Box(
                             modifier = Modifier
-                                .size(300.dp,56.dp)
-                                .clip(RoundedCornerShape(15.dp))
+                                .size(250.dp,56.dp)
+                                .padding(start = 8.dp)
+                                .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     color = if(state.selectedGoal == null) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(15.dp)
+                                    shape = RoundedCornerShape(20.dp)
                                 )
                                 .clickable{
                                     viewmodel.selectGoal(null)
@@ -135,12 +136,12 @@ fun ProgressScreen(
                     items(state.goals){goal->
                         Box(
                             modifier = Modifier
-                                .size(300.dp,56.dp)
-                                .clip(RoundedCornerShape(15.dp))
+                                .size(250.dp,56.dp)
+                                .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     color = if(goal.id == state.selectedGoal?.id) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(15.dp)
+                                    shape = RoundedCornerShape(20.dp)
                                 )
                                 .clickable{
                                     viewmodel.selectGoal(goal)
@@ -188,12 +189,13 @@ fun ProgressScreen(
                         text = "Analytics >",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.primary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
                             fontSize = 14.sp
                         ),
                         modifier = Modifier
-                            .padding(top = 30.dp, start = 16.dp)
+                            .padding(top = 30.dp, end = 16.dp)
                             .clickable{
                                 navController.navigate(Screen.GoalScreen.createRoute(state.selectedGoal))
                             }

@@ -26,7 +26,7 @@ data class GoalDetailsUI(
     val onTrack : List<Habit> = emptyList(),
     val offTrack : List<Habit> = emptyList(),
     val AtRisk : List<Habit> = emptyList(),
-    val closed : List<Habit> = emptyList(),
+    val closed : List<Habit> = emptyList()
 
 )
 data class Effort(val day: LocalDate, val effortLevel: Float)
