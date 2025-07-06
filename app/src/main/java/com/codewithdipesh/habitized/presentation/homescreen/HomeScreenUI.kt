@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 data class HomeScreenUI(
     val habitWithProgressList: List<HabitWithProgress> = emptyList(),
-    val tasks : List<OneTimeTask> = emptyList(),
+    val todos : List<OneTimeTask> = emptyList(),
     val selectedOption : HomeScreenOption = HomeScreenOption.Habits,
     val selectedDate : LocalDate = LocalDate.now(),
 

@@ -55,6 +55,7 @@ interface HabitRepository {
     suspend fun addOneTimeTask(task: OneTimeTask)
     suspend fun updateOneTimeTask(task: OneTimeTask)
     suspend fun deleteOneTimeTask(taskId: UUID)
+    suspend fun toggleOneTimeTask(taskId: UUID)
 
 
     // Subtasks

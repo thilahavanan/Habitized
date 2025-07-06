@@ -8,6 +8,7 @@ import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.OneTimeTask
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
@@ -43,7 +44,7 @@ class HomeViewModel @Inject constructor(
     fun loadHomePage(date: LocalDate){
         viewModelScope.launch(Dispatchers.IO){
             val habits = repo.getHabitsForDay(date)
-            val tasks = repo.getTasksForDay(date)
+            val todos = repo.getTasksForDay(date)
             //checking for ongoing duration or session habit
             val ongoingHabit = habits
                 .asSequence()
@@ -57,7 +58,7 @@ class HomeViewModel @Inject constructor(
             ongoingHabit?.let { addOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
                 habitWithProgressList = habits,
-                tasks = tasks,
+                todos = todos,
                 ongoingHabit = ongoingHabit
             )
         }
@@ -277,6 +278,54 @@ class HomeViewModel @Inject constructor(
             }
             date = date.minusDays(1)
         }
+    }
+
+    fun addTodo(){
+        if(_uiState.value.todos.find { it.title == "" } == null){
+            val todoList = _uiState.value.todos.toMutableList()
+            val newTodo = OneTimeTask(
+                taskId = UUID.randomUUID(),
+                title = "",
+                isCompleted = false,
+                date = _uiState.value.selectedDate,
+                reminder_time = null
+            )
+            _uiState.value = _uiState.value.copy(
+                todos = todoList + newTodo
+            )
+        }
+    }
+    fun updateTodo(title : String,id : UUID){
+        val todoList = _uiState.value.todos.toMutableList()
+        val updatedList = todoList
+            .map { if(it.taskId == id) it.copy(title = title) else it }
+        _uiState.value = _uiState.value.copy(
+            todos = updatedList
+        )
+        //update repo
+        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.todos.find { it.taskId == id }!!) }
+    }
+    fun deleteTodo(id : UUID){
+        val todoList = _uiState.value.todos.toMutableList()
+        val updatedList = todoList.filter { it.taskId != id }
+        _uiState.value = _uiState.value.copy(
+            todos = updatedList
+        )
+        //update repo
+        viewModelScope.launch { repo.deleteOneTimeTask(id) }
+    }
+    fun toggleTodo(id : UUID){
+        val todoList = _uiState.value.todos.toMutableList()
+        val updatedList = todoList
+            .map {
+                if(it.taskId == id) it.copy(isCompleted = !it.isCompleted)
+                else it
+            }
+        _uiState.value = _uiState.value.copy(
+            todos = updatedList
+        )
+        //update repo
+        viewModelScope.launch { repo.toggleOneTimeTask(id) }
     }
 
 

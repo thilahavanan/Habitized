@@ -240,15 +240,18 @@ class HabitRepoImpl(
 
 
     override suspend fun addOneTimeTask(task: OneTimeTask) {
-        TODO("Not yet implemented")
+        oneTimeTaskDao.insertTask(task.toEntity())
     }
     override suspend fun updateOneTimeTask(task: OneTimeTask) {
-        TODO("Not yet implemented")
+        oneTimeTaskDao.insertTask(task.toEntity())
     }
     override suspend fun deleteOneTimeTask(taskId: UUID) {
-        TODO("Not yet implemented")
+        oneTimeTaskDao.deleteTask(taskId)
     }
 
+    override suspend fun toggleOneTimeTask(taskId: UUID) {
+        oneTimeTaskDao.updateTaskCompletion(taskId)
+    }
 
 
     override suspend fun insertSubtask(subtask: SubTask) {

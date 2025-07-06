@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -8,6 +9,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,8 +59,10 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
 import com.codewithdipesh.habitized.presentation.homescreen.component.RunningTimer
 import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertDialog
+import com.codewithdipesh.habitized.presentation.homescreen.component.TodoEditor
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -257,98 +261,133 @@ fun HomeScreen(
                 flingBehavior = ScrollableDefaults.flingBehavior()
             )
             ) {
-                //no started / ongoing
-                state.habitWithProgressList
-                    .filter { it.progress.status == Status.NotStarted }
-                    .forEach{ habit->
-                         key(habit.habit.habit_id){
-                             HabitCard(
-                                 habitWithProgress = habit,
-                                 onSubTaskAdding = {
-                                     showingSubtaskAdding = true
-                                     habitForSubTaskAdding = it
-                                 },
-                                 onToggle = {
-                                     viewmodel.toggleSubtask(it)
-                                 },
-                                 onSkip = {
-                                     showingSkipAlert = true
-                                     habitForShowingAlert = it
-                                 },
-                                 onDone = {
-                                     scope.launch {
-                                         viewmodel.onDoneHabit(it)
-                                         viewmodel.loadHomePage(state.selectedDate)
-                                     }
-                                 },
-                                 onAddCounter = {
-                                     showingCounter = true
-                                     habitForCounter = it
-                                 },
-                                 onStartDuration = {
-                                     if(state.ongoingHabit != null && it != state.ongoingHabit ){
-                                         scope.launch {
-                                             Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
-                                         }
-                                     }else{
-                                         navController.navigate(Screen.DurationScreen.createRoute(it))
-                                     }
-                                 },
-                                 onStartSession = {
-                                     if(state.ongoingHabit != null && it != state.ongoingHabit ){
-                                         scope.launch {
-                                             Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
-                                         }
-                                     }else{
-                                         navController.navigate(Screen.SessionScreen.createRoute(it))
-                                     }
-                                 },
-                                 onFutureTaskStateChange = {
-                                     scope.launch {
-                                         Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
-                                     }
-                                 }
-                             )
-                             Spacer(Modifier.height(16.dp))
-                         }
+                if(state.selectedOption == HomeScreenOption.Habits){
+                    //no started / ongoing
+                    state.habitWithProgressList
+                        .filter { it.progress.status == Status.NotStarted }
+                        .forEach{ habit->
+                            key(habit.habit.habit_id){
+                                HabitCard(
+                                    habitWithProgress = habit,
+                                    onSubTaskAdding = {
+                                        showingSubtaskAdding = true
+                                        habitForSubTaskAdding = it
+                                    },
+                                    onToggle = {
+                                        viewmodel.toggleSubtask(it)
+                                    },
+                                    onSkip = {
+                                        showingSkipAlert = true
+                                        habitForShowingAlert = it
+                                    },
+                                    onDone = {
+                                        scope.launch {
+                                            viewmodel.onDoneHabit(it)
+                                            viewmodel.loadHomePage(state.selectedDate)
+                                        }
+                                    },
+                                    onAddCounter = {
+                                        showingCounter = true
+                                        habitForCounter = it
+                                    },
+                                    onStartDuration = {
+                                        if(state.ongoingHabit != null && it != state.ongoingHabit ){
+                                            scope.launch {
+                                                Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }else{
+                                            navController.navigate(Screen.DurationScreen.createRoute(it))
+                                        }
+                                    },
+                                    onStartSession = {
+                                        if(state.ongoingHabit != null && it != state.ongoingHabit ){
+                                            scope.launch {
+                                                Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }else{
+                                            navController.navigate(Screen.SessionScreen.createRoute(it))
+                                        }
+                                    },
+                                    onFutureTaskStateChange = {
+                                        scope.launch {
+                                            Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                )
+                                Spacer(Modifier.height(16.dp))
+                            }
+                        }
+                    //finished or skipped //todo
+                    state.habitWithProgressList
+                        .filter { it.progress.status != Status.NotStarted }
+                        .forEach{ habit->
+                            key(habit.habit.habit_id){
+                                HabitCard(
+                                    habitWithProgress = habit,
+                                    onSubTaskAdding = {
+                                        showingSubtaskAdding = true
+                                        habitForSubTaskAdding = it
+                                    },
+                                    onToggle = {
+                                        viewmodel.toggleSubtask(it)
+                                    },
+                                    onUnSkip = {
+                                        scope.launch {
+                                            viewmodel.onUnSkipDoneHabit(it)
+                                            viewmodel.loadHomePage(state.selectedDate)
+                                        }
+                                    },
+                                    onAddCounter = {
+                                        showingCounter = true
+                                        habitForCounter = it
+                                    },
+                                    onFutureTaskStateChange = {
+                                        scope.launch {
+                                            Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                )
+                                Spacer(Modifier.height(16.dp))
+                            }
+                        }
+
+                    //if showing ongoing timer then padding
+                    if(state.ongoingHabit != null){
+                        Spacer(Modifier.height(150.dp))
+                    }
                 }
-                //finished or skipped //todo
-                state.habitWithProgressList
-                    .filter { it.progress.status != Status.NotStarted }
-                    .forEach{ habit->
-                        key(habit.habit.habit_id){
-                            HabitCard(
-                                habitWithProgress = habit,
-                                onSubTaskAdding = {
-                                    showingSubtaskAdding = true
-                                    habitForSubTaskAdding = it
+                else{//todos
+                    Spacer(Modifier.height(16.dp))
+                    state.todos
+                        .forEach { todo->
+                            TodoEditor(
+                                todo = todo,
+                                onChange = {
+                                    viewmodel.updateTodo(it,todo.taskId)
                                 },
                                 onToggle = {
-                                    viewmodel.toggleSubtask(it)
+                                    viewmodel.toggleTodo(todo.taskId)
                                 },
-                                onUnSkip = {
-                                    scope.launch {
-                                        viewmodel.onUnSkipDoneHabit(it)
-                                        viewmodel.loadHomePage(state.selectedDate)
-                                    }
-                                },
-                                onAddCounter = {
-                                    showingCounter = true
-                                    habitForCounter = it
-                                },
-                                onFutureTaskStateChange = {
-                                    scope.launch {
-                                        Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
-                                    }
+                                onDelete = {
+                                    viewmodel.deleteTodo(it)
                                 }
                             )
-                            Spacer(Modifier.height(16.dp))
+                            Spacer(Modifier.height(10.dp))
                         }
-                    }
-
-                //if showing ongoing timer then padding
-                if(state.ongoingHabit != null){
-                    Spacer(Modifier.height(150.dp))
+                    Text(
+                        text = "+ Add Todos",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.scrim,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable{
+                                viewmodel.addTodo()
+                            }
+                    )
                 }
             }
 
