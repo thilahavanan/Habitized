@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.data.TIMER_NOTIFICATION_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -141,7 +142,7 @@ class TimerService : Service() {
                 Log.d("timerservicw","$currentTime,$elapsedMs,$remainingMs")
 
                 if (remainingMs <= 0) {
-                    notificationManager.notify(1, showAlarmNotification())
+                    notificationManager.notify(TIMER_NOTIFICATION_ID, showAlarmNotification())
                     _timerState.value = _timerState.value.copy(
                         isPaused = false,
                         isFinished = true
@@ -172,7 +173,7 @@ class TimerService : Service() {
                     second=second
                 )
                 timerCallback?.onTimerUpdate(hour, minute, second)
-                notificationManager.notify(1, notification)
+                notificationManager.notify(TIMER_NOTIFICATION_ID, notification)
 
                 val nextUpdateTime = startTime + ((elapsedMs / 1000 + 1) * 1000)
                 val delayMs = nextUpdateTime - System.currentTimeMillis()

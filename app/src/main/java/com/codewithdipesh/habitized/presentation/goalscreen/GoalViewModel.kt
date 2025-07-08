@@ -130,7 +130,7 @@ class GoalViewModel @Inject constructor(
     private fun setEfforts(goal: Goal?,days : Int = 6) {
         viewModelScope.launch(Dispatchers.IO) {
             val start_date = LocalDate.now().minusDays(days.toLong())
-            val target_date = LocalDate.now()
+            val target_date = LocalDate.now() 
 
             val effortList = mutableListOf<Effort>()
 
@@ -152,7 +152,7 @@ class GoalViewModel @Inject constructor(
                 }
             }
 
-            _state.value = _state.value.copy(effortList = effortList)
+            _state.value = _state.value.copy(effortList = dummyEffortList)
             setShowedEfforts(_state.value.showedGraphType)
         }
     }

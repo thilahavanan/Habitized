@@ -4,7 +4,6 @@ sealed class Frequency(val displayName: String) {
     object Daily : Frequency("Daily")
     object Weekly : Frequency("Weekly")
     object Monthly : Frequency("Monthly")
-    object Custom : Frequency("Custom")
 
     override fun toString(): String = displayName
 
@@ -14,7 +13,6 @@ sealed class Frequency(val displayName: String) {
                 "daily" -> Daily
                 "weekly" -> Weekly
                 "monthly" -> Monthly
-                "custom" -> Custom
                 else -> Daily
             }
         }

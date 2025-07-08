@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.di
 
 import android.content.Context
+import com.codewithdipesh.habitized.data.alarmManager.AndroidAlarmScheduler
 import com.codewithdipesh.habitized.data.local.AppDatabase
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
 import com.codewithdipesh.habitized.data.local.dao.HabitDao
@@ -10,6 +11,7 @@ import com.codewithdipesh.habitized.data.local.dao.OneTimeTaskDao
 import com.codewithdipesh.habitized.data.local.dao.SubTaskDao
 import com.codewithdipesh.habitized.data.repository.HabitRepoImpl
 import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
+import com.codewithdipesh.habitized.domain.alarmManager.AlarmScheduler
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.Module
 import dagger.Provides
@@ -78,4 +80,10 @@ object Module {
     fun provideHabitPreference(@ApplicationContext context: Context): HabitPreference {
         return HabitPreference(context)
     }
+    @Provides
+    @Singleton
+    fun provideAlarmScheduler(@ApplicationContext context: Context): AlarmScheduler {
+        return AndroidAlarmScheduler(context)
+    }
+
 }
