@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codewithdipesh.habitized.domain.alarmManager.AlarmItem
+import com.codewithdipesh.habitized.domain.alarmManager.AlarmScheduler
 import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Goal
@@ -16,6 +18,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHab
 import com.codewithdipesh.habitized.presentation.util.Days
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.WeekDayMapToInt
+import com.codewithdipesh.habitized.presentation.util.toDaysOfWeek
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Job
@@ -26,13 +29,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.DateTimeException
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 import java.util.UUID
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
-    private val repo : HabitRepository
+    private val repo : HabitRepository,
+    private val alarmScheduler: AlarmScheduler
 ) : ViewModel(){
 
     private val _habitUiState = MutableStateFlow(AddHabitUI())
@@ -50,32 +58,115 @@ class AddViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     suspend fun addHabit(date : LocalDate){
         if(checkSavability()){
-            repo.addOrUpdateHabit(
-                Habit(
-                    habit_id = _habitUiState.value.habit_id,
-                    title = _habitUiState.value.title,
-                    description = _habitUiState.value.description,
-                    type = _habitUiState.value.type,
-                    goal_id = _habitUiState.value.goal_id,
-                    start_date = if(_habitUiState.value.habit_id != null) _habitUiState.value.start_date else date,
-                    frequency = _habitUiState.value.frequency,
-                    days_of_week = if( _habitUiState.value.frequency == Frequency.Weekly) WeekDayMapToInt( _habitUiState.value.days_of_week)
-                                   else mutableListOf(0,0,0,0,0,0,0),
-                    daysOfMonth = _habitUiState.value.daysOfMonth,
-                    reminder_time = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminder_time else null,
-                    is_active = _habitUiState.value.is_active,
-                    colorKey = _habitUiState.value.colorKey,
-                    countParam = _habitUiState.value.countParam,
-                    countTarget = _habitUiState.value.countTarget,
-                    duration = LocalTime.of(
-                        _habitUiState.value.selectedHour,
-                        _habitUiState.value.selectedMinute,
-                        _habitUiState.value.selectedSeconds,
+            //save habit in database
+            val habit = Habit(
+                habit_id = _habitUiState.value.habit_id,
+                title = _habitUiState.value.title,
+                description = _habitUiState.value.description,
+                type = _habitUiState.value.type,
+                goal_id = _habitUiState.value.goal_id,
+                start_date = if(_habitUiState.value.habit_id != null) _habitUiState.value.start_date else date,
+                frequency = _habitUiState.value.frequency,
+                days_of_week = if( _habitUiState.value.frequency == Frequency.Weekly) WeekDayMapToInt( _habitUiState.value.days_of_week)
+                else mutableListOf(0,0,0,0,0,0,0),
+                daysOfMonth = _habitUiState.value.daysOfMonth,
+                reminder_time = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminder_time else null,
+                is_active = _habitUiState.value.is_active,
+                colorKey = _habitUiState.value.colorKey,
+                countParam = _habitUiState.value.countParam,
+                countTarget = _habitUiState.value.countTarget,
+                duration = LocalTime.of(
+                    _habitUiState.value.selectedHour,
+                    _habitUiState.value.selectedMinute,
+                    _habitUiState.value.selectedSeconds,
 
                     )
-                )
             )
+            repo.addOrUpdateHabit(habit)
             sendEvent("Habit Created Successfully")
+
+
+            //schedule alarm
+            if(_habitUiState.value.reminder_time != null){
+                val now = LocalDateTime.of(date, LocalTime.now()) //actually now means when the habit is created
+                val reminderTime = _habitUiState.value.reminder_time // LocalTime
+
+                var nextDateTime : LocalDateTime = LocalDateTime.now()
+                var error = false
+                when (_habitUiState.value.frequency) {
+                    Frequency.Daily -> {
+                        var nextDateTime = LocalDateTime.of(date, reminderTime)
+                        if (nextDateTime.isBefore(now)) {
+                            nextDateTime = nextDateTime.plusDays(1)
+                        }
+                    }
+                    Frequency.Weekly -> {
+                        val selectedDays = _habitUiState.value.days_of_week // Map<Days, Boolean>
+                        var foundNextDay = false
+
+                        Days.entries.forEach { day ->
+                            if (selectedDays[day] == true && !foundNextDay) {
+                                val nextDate = date.with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
+                                val potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
+
+                                if (!potentialDateTime.isBefore(now)) {
+                                    nextDateTime = potentialDateTime
+                                    foundNextDay = true
+                                }
+                            }
+                        }
+
+                        // If no suitable day found this week, find the first day next week
+                        if (!foundNextDay) {
+                            Days.entries.forEach { day ->
+                                if (selectedDays[day] == true && !foundNextDay) {
+                                    val nextDate = date.plusWeeks(1).with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
+                                    nextDateTime = LocalDateTime.of(nextDate, reminderTime)
+                                    foundNextDay = true
+                                }
+                            }
+                        }
+                    }
+                    Frequency.Monthly -> {
+                        val selectedDays = _habitUiState.value.daysOfMonth // List<Int>
+                        var earliestDateTime: LocalDateTime? = null
+
+                        selectedDays.forEach { dayOfMonth ->
+                            try {
+                                var nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
+
+                                // If the date has passed this month, move to next month
+                                if (nextDate.isBefore(now.toLocalDate()) ||
+                                    (nextDate.isEqual(now.toLocalDate()) && reminderTime!!.isBefore(now.toLocalTime()))) {
+                                    nextDate = nextDate.plusMonths(1).withDayOfMonth(dayOfMonth)
+                                }
+
+                                val potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
+
+                                // Keep the earliest valid date
+                                if (earliestDateTime == null || potentialDateTime.isBefore(earliestDateTime)) {
+                                    earliestDateTime = potentialDateTime
+                                }
+                            } catch (e: DateTimeException) {
+                                // Handle invalid dates (e.g., Feb 30th)
+                                // Skip this day of month
+                                error = true
+                            }
+                        }
+
+                        earliestDateTime?.let { nextDateTime = it }
+                    }
+                }
+                if(!error){
+                    val alarmItem = AlarmItem(
+                        time = nextDateTime,
+                        text = "Its time to do ${_habitUiState.value.title}",
+                        title = getRandomNotificationMessage()
+                    )
+                    alarmScheduler.schedule(alarmItem)
+                }
+            }
+
         }
     }
 
@@ -396,6 +487,18 @@ class AddViewModel @Inject constructor(
     }
     fun clearGoalUI(){
         _goalUiState.value = AddGoalUI()
+    }
+
+    private fun getRandomNotificationMessage() : String{
+        val messages = listOf(
+            "🔥 Streak check! Don’t break it now",
+            "One more tap to greatness 📊",
+            "Another day, another step closer 🪜",
+            "You’re on a roll! Don’t stop the momentum 🌀",
+            "Finish strong, legend 💥"
+        )
+
+        return messages.random()
     }
 
 

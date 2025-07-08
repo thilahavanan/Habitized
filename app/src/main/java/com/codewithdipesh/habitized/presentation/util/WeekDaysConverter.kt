@@ -56,6 +56,18 @@ fun DayOfWeek.toDays(): Days {
 
 }
 
+fun Days.toDaysOfWeek(): DayOfWeek {
+    return when(this){
+        Days.MONDAY -> DayOfWeek.MONDAY
+        Days.TUESDAY -> DayOfWeek.TUESDAY
+        Days.WEDNESDAY -> DayOfWeek.WEDNESDAY
+        Days.THURSDAY -> DayOfWeek.THURSDAY
+        Days.FRIDAY -> DayOfWeek.FRIDAY
+        Days.SATURDAY -> DayOfWeek.SATURDAY
+        Days.SUNDAY -> DayOfWeek.SUNDAY
+    }
+}
+
 val daystoIndex: Map<Int, Days> = mapOf(
      0 to Days.MONDAY,
      1 to Days.TUESDAY,
