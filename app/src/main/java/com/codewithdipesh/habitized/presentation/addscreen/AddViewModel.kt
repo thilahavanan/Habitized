@@ -95,10 +95,14 @@ class AddViewModel @Inject constructor(
                 var error = false
                 when (_habitUiState.value.frequency) {
                     Frequency.Daily -> {
-                        var nextDateTime = LocalDateTime.of(date, reminderTime)
+                        nextDateTime = LocalDateTime.of(date,reminderTime )
+                        Log.d("alarm","init : $nextDateTime")
+                        Log.d("alarm","compare : $nextDateTime && now : $now")
                         if (nextDateTime.isBefore(now)) {
                             nextDateTime = nextDateTime.plusDays(1)
+                            Log.d("alarm","yes nextDateTime is Before")
                         }
+                        Log.d("alarm","final : $nextDateTime")
                     }
                     Frequency.Weekly -> {
                         val selectedDays = _habitUiState.value.days_of_week // Map<Days, Boolean>
@@ -160,8 +164,11 @@ class AddViewModel @Inject constructor(
                 if(!error){
                     val alarmItem = AlarmItem(
                         time = nextDateTime,
-                        text = "Its time to do ${_habitUiState.value.title}",
-                        title = getRandomNotificationMessage()
+                        text = getRandomNotificationMessage(),
+                        title = "Its time to do ${_habitUiState.value.title}",
+                        frequency = _habitUiState.value.frequency,
+                        daysOfWeek = WeekDayMapToInt( _habitUiState.value.days_of_week),
+                        daysOfMonth = _habitUiState.value.daysOfMonth
                     )
                     alarmScheduler.schedule(alarmItem)
                 }

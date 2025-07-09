@@ -36,7 +36,9 @@
             </intent-filter>
 
         </activity>
-        <receiver android:name=".data.alarmManager.AlarmReceiver"/>
+        <receiver android:name=".data.alarmManager.AlarmReceiver"
+            android:enabled="true"
+            android:exported="false"/>
         <provider
             android:authorities="${applicationId}.provider"
             android:name="androidx.core.content.FileProvider"
