@@ -95,70 +95,55 @@ class AddViewModel @Inject constructor(
                 var error = false
                 when (_habitUiState.value.frequency) {
                     Frequency.Daily -> {
-                        nextDateTime = LocalDateTime.of(date,reminderTime )
-                        Log.d("alarm","init : $nextDateTime")
-                        Log.d("alarm","compare : $nextDateTime && now : $now")
+                        nextDateTime = LocalDateTime.of(date,reminderTime ) //exact time of today
                         if (nextDateTime.isBefore(now)) {
-                            nextDateTime = nextDateTime.plusDays(1)
-                            Log.d("alarm","yes nextDateTime is Before")
+                            nextDateTime = nextDateTime.plusDays(1) //if it already passed then next day
                         }
-                        Log.d("alarm","final : $nextDateTime")
                     }
                     Frequency.Weekly -> {
                         val selectedDays = _habitUiState.value.days_of_week // Map<Days, Boolean>
-                        var foundNextDay = false
-
+                        nextDateTime = LocalDateTime.MAX //initializing with max for calculating the min among days
                         Days.entries.forEach { day ->
-                            if (selectedDays[day] == true && !foundNextDay) {
+                            if (selectedDays[day] == true) {
+                                //get the next mon...sat day
+                                //(date.with) it will get the next __ day from $date
                                 val nextDate = date.with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
-                                val potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-
-                                if (!potentialDateTime.isBefore(now)) {
-                                    nextDateTime = potentialDateTime
-                                    foundNextDay = true
+                                var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
+                                //if the day is today and passed then next week dame day else today only
+                                if(potentialDateTime.isBefore(now)){
+                                    potentialDateTime = potentialDateTime.plusWeeks(1)
                                 }
-                            }
-                        }
-
-                        // If no suitable day found this week, find the first day next week
-                        if (!foundNextDay) {
-                            Days.entries.forEach { day ->
-                                if (selectedDays[day] == true && !foundNextDay) {
-                                    val nextDate = date.plusWeeks(1).with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
-                                    nextDateTime = LocalDateTime.of(nextDate, reminderTime)
-                                    foundNextDay = true
-                                }
+                                nextDateTime = minOf(potentialDateTime,nextDateTime) //minimum of all potential days
                             }
                         }
                     }
                     Frequency.Monthly -> {
                         val selectedDays = _habitUiState.value.daysOfMonth // List<Int>
-                        var earliestDateTime: LocalDateTime? = null
-
+                        nextDateTime = LocalDateTime.MAX
                         selectedDays.forEach { dayOfMonth ->
                             try {
-                                var nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
-
-                                // If the date has passed this month, move to next month
-                                if (nextDate.isBefore(now.toLocalDate()) ||
-                                    (nextDate.isEqual(now.toLocalDate()) && reminderTime!!.isBefore(now.toLocalTime()))) {
-                                    nextDate = nextDate.plusMonths(1).withDayOfMonth(dayOfMonth)
+                                //same as month
+                                val nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
+                                var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
+                                //the date has passed already s0 -> next month same date
+                                if(potentialDateTime.isBefore(now) || potentialDateTime.isEqual(now)){
+                                    try {
+                                        val nextMonthDate = now.toLocalDate().plusMonths(1).withDayOfMonth(dayOfMonth)
+                                        potentialDateTime = LocalDateTime.of(nextMonthDate, reminderTime)
+                                    } catch (e: DateTimeException) {
+                                        //for  exceptional like Feb 31
+                                        // If next month doesn't have this day, skip to the month after
+                                        val monthAfterNext = now.toLocalDate().plusMonths(2).withDayOfMonth(dayOfMonth)
+                                        potentialDateTime = LocalDateTime.of(monthAfterNext, reminderTime)
+                                    }
                                 }
-
-                                val potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-
-                                // Keep the earliest valid date
-                                if (earliestDateTime == null || potentialDateTime.isBefore(earliestDateTime)) {
-                                    earliestDateTime = potentialDateTime
-                                }
+                                nextDateTime = minOf(potentialDateTime,nextDateTime)
                             } catch (e: DateTimeException) {
                                 // Handle invalid dates (e.g., Feb 30th)
                                 // Skip this day of month
                                 error = true
                             }
                         }
-
-                        earliestDateTime?.let { nextDateTime = it }
                     }
                 }
                 if(!error){

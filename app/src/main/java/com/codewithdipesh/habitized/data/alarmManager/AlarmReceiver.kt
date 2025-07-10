@@ -43,9 +43,7 @@ class AlarmReceiver : BroadcastReceiver() {
         showNotification(context,title,text)
 
         //schedule next alarm
-        if(frequency.isNotEmpty() && reminderTime.isNotEmpty()
-            && daysOfWeek.isNotEmpty() && daysOfMonth.isNotEmpty()
-        ){
+        if(frequency.isNotEmpty() && reminderTime.isNotEmpty()){
             scheduleNextAlarm(
                 context,
                 title,
@@ -57,8 +55,6 @@ class AlarmReceiver : BroadcastReceiver() {
                 daysOfMonth
             )
         }
-
-
     }
 
     private fun showNotification(context: Context,title : String ,text : String){
@@ -115,64 +111,44 @@ class AlarmReceiver : BroadcastReceiver() {
         var error = false
         when (frequency) {
             Frequency.Daily -> {
+                //reschedule for just next day only
                 nextDateTime = nextDateTime.plusDays(1)
             }
             Frequency.Weekly -> {
-                var foundNextDay = false
-
+                //logic is same as AddViewModel ->addHabit func -> schedule alarm
+                nextDateTime = LocalDateTime.MAX
                 Days.entries.forEach { day ->
-                    if (selectedDays[day] == true && !foundNextDay) {
-                        val nextDate =
-                            now.toLocalDate().with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
-                        val potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-
-                        if (!potentialDateTime.isBefore(now)) {
-                            nextDateTime = potentialDateTime
-                            foundNextDay = true
+                    if (selectedDays[day] == true) {
+                        val nextDate = now.toLocalDate().with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
+                        var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
+                        if(potentialDateTime.isBefore(now)){
+                            potentialDateTime = potentialDateTime.plusWeeks(1)
                         }
-                    }
-                }
-                // If no suitable day found this week, find the first day next week
-                if (!foundNextDay) {
-                    Days.entries.forEach { day ->
-                        if (selectedDays[day] == true && !foundNextDay) {
-                            val nextDate = now.toLocalDate().plusWeeks(1)
-                                .with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
-                            nextDateTime = LocalDateTime.of(nextDate, reminderTime)
-                            foundNextDay = true
-                        }
+                        nextDateTime = minOf(potentialDateTime,nextDateTime)
                     }
                 }
             }
             Frequency.Monthly -> {
-                val selectedDays = daysOfMonth // List<Int>
-                var earliestDateTime: LocalDateTime? = null
-
-                selectedDays.forEach { dayOfMonth ->
+                //logic is same as AddViewModel ->addHabit func -> schedule alarm
+                nextDateTime = LocalDateTime.MAX
+                daysOfMonth.forEach { dayOfMonth ->
                     try {
-                        var nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
-
-                        // If the date has passed this month, move to next month
-                        if (nextDate.isBefore(now.toLocalDate()) ||
-                            (nextDate.isEqual(now.toLocalDate()) && reminderTime!!.isBefore(now.toLocalTime()))
-                        ) {
-                            nextDate = nextDate.plusMonths(1).withDayOfMonth(dayOfMonth)
+                        val nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
+                        var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
+                        if(potentialDateTime.isBefore(now) || potentialDateTime.isEqual(now)){
+                            try {
+                                val nextMonthDate = now.toLocalDate().plusMonths(1).withDayOfMonth(dayOfMonth)
+                                potentialDateTime = LocalDateTime.of(nextMonthDate, reminderTime)
+                            } catch (e: DateTimeException) {
+                                val monthAfterNext = now.toLocalDate().plusMonths(2).withDayOfMonth(dayOfMonth)
+                                potentialDateTime = LocalDateTime.of(monthAfterNext, reminderTime)
+                            }
                         }
-
-                        val potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-
-                        // Keep the earliest valid date
-                        if (earliestDateTime == null || potentialDateTime.isBefore(earliestDateTime)) {
-                            earliestDateTime = potentialDateTime
-                        }
+                        nextDateTime = minOf(potentialDateTime,nextDateTime)
                     } catch (e: DateTimeException) {
-                        // Handle invalid dates (e.g., Feb 30th)
-                        // Skip this day of month
                         error = true
                     }
                 }
-
-                earliestDateTime?.let { nextDateTime = it }
             }
         }
         Log.d("alarm", "next schedule : $nextDateTime")
