@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.progress
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +68,7 @@ fun ProgressScreen(
             viewmodel.getHabitProgresses()
         }
     }
+    var selectedOption by rememberSaveable { mutableStateOf(state.selectedOption) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -224,7 +227,7 @@ fun ProgressScreen(
                 Spacer(Modifier.height(8.dp))
             }
             item {
-                AnimatedContent(
+                Crossfade(
                     targetState = state.selectedOption,
                     label = "ProgressSwitcher"
                 ) { option ->

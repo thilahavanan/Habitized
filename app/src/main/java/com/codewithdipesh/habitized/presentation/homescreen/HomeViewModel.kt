@@ -1,5 +1,9 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
+import android.R.attr.phoneNumber
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +28,7 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.max
+import androidx.core.net.toUri
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -326,6 +331,72 @@ class HomeViewModel @Inject constructor(
         )
         //update repo
         viewModelScope.launch { repo.toggleOneTimeTask(id) }
+    }
+
+
+    fun sendFeedback(context : Context){
+        try {
+            val message = "Hi Dipesh,I've just used Habitized , I wanted to tell.."
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = "https://wa.me/917602154121?text=${Uri.encode(message)}".toUri()
+                `package` = "com.whatsapp"
+            }
+            if(intent.resolveActivity(context.packageManager) != null){
+                //it means whatsapp is installed
+                context.startActivity(intent)
+            }else{
+                // WhatsApp not installed, open in browser
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://wa.me/917602154121?text=${Uri.encode(message)}".toUri()
+                )
+                context.startActivity(browserIntent)
+            }
+        }catch (e: Exception){
+            Log.e("opening whatsapp error",e.message ?: "")
+        }
+    }
+    fun onFollow(context : Context){
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = "https://x.com/diprssn".toUri()
+                `package` = "com.twitter.android"
+            }
+            if(intent.resolveActivity(context.packageManager) != null){
+                //it means x is installed
+                context.startActivity(intent)
+            }else{
+                // x not installed, open in browser
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://x.com/diprssn".toUri()
+                )
+                context.startActivity(browserIntent)
+            }
+        }catch (e: Exception){
+            Log.e("opening x error",e.message ?: "")
+        }
+    }
+    fun onCodeBase(context : Context){
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = "https://github.com/codewithdipesh/Habitized".toUri()
+                `package` = "com.github.android"
+            }
+            if(intent.resolveActivity(context.packageManager) != null){
+                //it means x is installed
+                context.startActivity(intent)
+            }else{
+                // x not installed, open in browser
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://github.com/codewithdipesh/Habitized".toUri()
+                )
+                context.startActivity(browserIntent)
+            }
+        }catch (e: Exception){
+            Log.e("opening github error",e.message ?: "")
+        }
     }
 
 

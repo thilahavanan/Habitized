@@ -32,7 +32,9 @@ private val DarkColors = darkColorScheme(
     surfaceContainerLow = Color(0XFF7C7878),
     surfaceDim = Color.White,
     outlineVariant = Color.Black,
-    scrim = Color(0XFF7C7878)
+    scrim = Color(0XFF7C7878),
+    surfaceBright = Color(0XFF1B1B1D),
+    surfaceContainerLowest = Color(0xFF141313)
 )
 
 private val LightColors = lightColorScheme(
@@ -52,7 +54,10 @@ private val LightColors = lightColorScheme(
     surfaceContainerLow = Color(0xFFD9D9D9),
     surfaceDim = Color(0xFF7C7878),
     outlineVariant = Color.Black,
-    scrim = Color(0XFF969696)
+    scrim = Color(0XFF969696),
+    surfaceBright = Color(0XFFFFFFFF),
+    surfaceContainerLowest = Color(0XFFEAEAEA)
+
 )
 
 @Composable

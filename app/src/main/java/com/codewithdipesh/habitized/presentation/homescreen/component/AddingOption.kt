@@ -57,8 +57,7 @@ fun AddingOption(
     modifier: Modifier = Modifier,
     onDismiss : () -> Unit = {},
     onAddHabitClicked : () -> Unit = {},
-    onAddGoalClicked : () ->Unit = {},
-    onAddTaskClicked : () ->Unit = {}
+    onAddGoalClicked : () ->Unit = {}
 ){
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -95,15 +94,6 @@ fun AddingOption(
                     onAddHabitClicked()
                     onDismiss()
                 }
-            )
-            HorizontalDivider(
-                thickness = 0.5.dp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            AddOptionButton(
-                title = "New Task",
-                subtitle = "One time task"
             )
         }
     }
