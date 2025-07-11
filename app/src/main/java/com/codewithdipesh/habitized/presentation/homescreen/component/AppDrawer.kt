@@ -200,7 +200,7 @@ fun AppDrawer(
                                         )
                                     )
                                 )
-                                .clickable{ onGithubClick()},
+                                .clickable{ onGithubClick() },
                                 contentAlignment = Alignment.Center
                             ){
                                 Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),

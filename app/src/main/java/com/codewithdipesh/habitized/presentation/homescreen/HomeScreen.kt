@@ -36,6 +36,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,22 +81,22 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var previousScrollOffset by remember { mutableStateOf(0) }
+    var previousScrollOffset by rememberSaveable { mutableStateOf(0) }
 
     val state by viewmodel.uiState.collectAsState()
-    var showAddingOptions by remember { mutableStateOf(false) }
+    var showAddingOptions by rememberSaveable { mutableStateOf(false) }
 
-    var showingOptionSelector by remember { mutableStateOf(true) }
-    var showingDateTitle by remember { mutableStateOf(true) }
+    var showingOptionSelector by rememberSaveable { mutableStateOf(true) }
+    var showingDateTitle by rememberSaveable { mutableStateOf(true) }
 
-    var showingSubtaskAdding by remember { mutableStateOf(false) }
-    var habitForSubTaskAdding by remember { mutableStateOf<HabitWithProgress?>(null) }
+    var showingSubtaskAdding by rememberSaveable { mutableStateOf(false) }
+    var habitForSubTaskAdding by rememberSaveable { mutableStateOf<HabitWithProgress?>(null) }
 
-    var showingCounter by remember { mutableStateOf(false) }
-    var habitForCounter by remember { mutableStateOf<HabitWithProgress?>(null) }
+    var showingCounter by rememberSaveable { mutableStateOf(false) }
+    var habitForCounter by rememberSaveable { mutableStateOf<HabitWithProgress?>(null) }
 
-    var showingSkipAlert by remember { mutableStateOf(false) }
-    var habitForShowingAlert by remember { mutableStateOf<HabitWithProgress?>(null) }
+    var showingSkipAlert by rememberSaveable { mutableStateOf(false) }
+    var habitForShowingAlert by rememberSaveable { mutableStateOf<HabitWithProgress?>(null) }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -124,8 +125,10 @@ fun HomeScreen(
     }
 
     val SecondSectionItems = listOf(
-        DrawerItem(R.drawable.report_bug,"Report a bug"),
-        DrawerItem(R.drawable.feedback,"Send Feedback"){
+        DrawerItem(R.drawable.report_bug,"Report a bug"){
+            viewmodel.openMail(context)
+        },
+        DrawerItem(R.drawable.feedback,"Suggest Improvement"){
             viewmodel.sendFeedback(context)
         },
     )
@@ -219,6 +222,7 @@ fun HomeScreen(
                     }
                 )
             }
+
 
             Column(modifier = Modifier
                 .fillMaxSize()

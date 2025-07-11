@@ -4,7 +4,9 @@ import android.R.attr.phoneNumber
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.Frequency
@@ -29,6 +31,8 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.max
 import androidx.core.net.toUri
+import com.codewithdipesh.habitized.EMAIL_TO
+import com.codewithdipesh.habitized.R
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -334,9 +338,10 @@ class HomeViewModel @Inject constructor(
     }
 
 
+    //feedback ,follow and github
     fun sendFeedback(context : Context){
         try {
-            val message = "Hi Dipesh,I've just used Habitized , I wanted to tell.."
+            val message = "Hi Dipesh,I've just used Habitized , I wanted to suggest you.."
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = "https://wa.me/917602154121?text=${Uri.encode(message)}".toUri()
                 `package` = "com.whatsapp"
@@ -396,6 +401,38 @@ class HomeViewModel @Inject constructor(
             }
         }catch (e: Exception){
             Log.e("opening github error",e.message ?: "")
+        }
+    }
+
+    //report bug
+    fun openMail(context: Context) {
+        val subject = "Bug Report - ${context.getString(R.string.app_name)}"
+
+        val bodyText = buildString {
+            append("Report Description:\n\n")
+            append("Device Info:\n")
+            append("Device: ${Build.MANUFACTURER} ${Build.MODEL}\n")
+            append("Android Version: ${Build.VERSION.RELEASE}\n")
+            append("App Version: ${getAppVersion(context)}\n")
+            append("Timestamp: ${System.currentTimeMillis()}\n\n")
+            append("Describe the Bug :")
+        }
+
+        val uriString = buildString {
+            append("mailto:").append(Uri.encode(EMAIL_TO))
+            append("?subject=").append(Uri.encode(subject))
+            append("&body=").append(Uri.encode(bodyText))   // ← add body
+        }
+
+        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(uriString))
+        context.startActivity(Intent.createChooser(intent, "Send bug report"))
+    }
+    private fun getAppVersion(context: Context): String {
+        return try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.versionName ?: "Unknown"
+        } catch (e: Exception) {
+            "Unknown"
         }
     }
 

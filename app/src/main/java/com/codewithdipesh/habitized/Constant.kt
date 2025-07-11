@@ -1,4 +1,4 @@
-package com.codewithdipesh.habitized.data
+package com.codewithdipesh.habitized
 
 // TimerService
 const val TIMER_NOTIFICATION_ID = 1
@@ -8,3 +8,6 @@ const val ALARM_NOTIFICATION_ID = 100
 
 //Database
 const val DATABASE_VERSION = 9
+
+//email
+const val EMAIL_TO = "diprssn@gmail.com"

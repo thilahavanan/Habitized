@@ -12,7 +12,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.data.TIMER_NOTIFICATION_ID
+import com.codewithdipesh.habitized.TIMER_NOTIFICATION_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
