@@ -434,7 +434,6 @@ class AddViewModel @Inject constructor(
         )
     }
     fun setHabitsAttachedWithGoal(newHabits : List<Habit>){
-        Log.d("goal","$newHabits")
         val updatedHabits = newHabits.map {
             it.copy(
                 goal_id = _goalUiState.value.goal_id
@@ -454,7 +453,6 @@ class AddViewModel @Inject constructor(
             sendEvent("Title cannot be empty")
             return
         }
-        Log.d("goal","${_goalUiState.value.habits}")
         repo.addGoal(
             Goal(
                 id = _goalUiState.value.goal_id,

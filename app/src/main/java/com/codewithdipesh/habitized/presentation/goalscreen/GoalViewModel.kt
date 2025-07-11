@@ -1,6 +1,5 @@
 package com.codewithdipesh.habitized.presentation.goalscreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.Frequency
@@ -38,7 +37,6 @@ class GoalViewModel @Inject constructor(
         if(id != null){
             goal = repo.getGoalById(id)
             goal?.let {
-                Log.d("goal",goal.start_date.toString())
                 _state.value = _state.value.copy(
                     id = id,
                     title = goal.title,

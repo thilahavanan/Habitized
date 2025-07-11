@@ -8,7 +8,6 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.codewithdipesh.habitized.R
@@ -68,7 +67,6 @@ class TimerService : Service() {
         title = intent?.getStringExtra("habit") ?: "Habit Timer"
         color = intent?.getStringExtra("color") ?: "yellow"
         screen = intent?.getStringExtra("screen") ?: "duration"
-        Log.d("TimerService","$id,$title,$color,$screen")
         startForegroundService(durationSeconds = totalSeconds,title = title,id = id, color = color, screen = screen)
         return START_STICKY
     }
@@ -111,7 +109,6 @@ class TimerService : Service() {
         startTime = System.currentTimeMillis()
         totalDurationMs = durationSeconds * 1000L
 
-        Log.d("TimerServiceForeground","$id,$title,$color" )
         //intent for deeplinking
         val intent = Intent(
             Intent.ACTION_VIEW,
@@ -138,8 +135,6 @@ class TimerService : Service() {
                 val currentTime = System.currentTimeMillis()
                 val elapsedMs = currentTime - startTime - totalPausedDurationMs
                 val remainingMs = totalDurationMs - elapsedMs
-
-                Log.d("timerservicw","$currentTime,$elapsedMs,$remainingMs")
 
                 if (remainingMs <= 0) {
                     notificationManager.notify(TIMER_NOTIFICATION_ID, showAlarmNotification())
@@ -219,7 +214,6 @@ class TimerService : Service() {
 
     fun setTimerCallback(callback: TimerCallback?) {
         this.timerCallback = callback
-        Log.d("TimerService", "Timer callback set: ${callback != null}")
     }
 
     private fun showAlarmNotification() : Notification {

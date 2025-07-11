@@ -359,7 +359,6 @@ fun SessionScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
-                        Log.d("SubTask","${state.habitWithProgress?.subtasks}")
                         state.habitWithProgress?.subtasks?.forEachIndexed { index, subTask ->
                             SubTaskEditor(
                                 subTask = subTask,

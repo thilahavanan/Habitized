@@ -62,7 +62,6 @@ class HomeViewModel @Inject constructor(
                             habit.progress.status == Status.Ongoing
                 }
                 .firstOrNull()
-            Log.d("Ongoing",ongoingHabit.toString())
             // Update ongoing timer if habit exists
             ongoingHabit?.let { addOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
@@ -239,7 +238,6 @@ class HomeViewModel @Inject constructor(
     suspend fun updateStreak(habitWithProgress: HabitWithProgress,isSkipped : Boolean = false){
         val completedDates = repo.getAllCompletedDates(habitWithProgress.habit.habit_id!!)
         val streak = calculateCurrentStreak(habitWithProgress.habit,completedDates)
-        Log.d("streak",streak.toString())
         repo.updateStreak(
             habitId = habitWithProgress.habit.habit_id,
             current = streak,
@@ -358,7 +356,6 @@ class HomeViewModel @Inject constructor(
                 context.startActivity(browserIntent)
             }
         }catch (e: Exception){
-            Log.e("opening whatsapp error",e.message ?: "")
         }
     }
     fun onFollow(context : Context){
@@ -379,7 +376,6 @@ class HomeViewModel @Inject constructor(
                 context.startActivity(browserIntent)
             }
         }catch (e: Exception){
-            Log.e("opening x error",e.message ?: "")
         }
     }
     fun onCodeBase(context : Context){
@@ -400,7 +396,6 @@ class HomeViewModel @Inject constructor(
                 context.startActivity(browserIntent)
             }
         }catch (e: Exception){
-            Log.e("opening github error",e.message ?: "")
         }
     }
 

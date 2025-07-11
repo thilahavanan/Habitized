@@ -2,7 +2,6 @@ package com.codewithdipesh.habitized.presentation.timerscreen.durationScreen
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.codewithdipesh.habitized.data.services.timerService.TimerService
 import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
@@ -91,7 +90,6 @@ class DurationViewModel @Inject constructor(
             timerState = TimerState.Resumed
         )
         val intent = Intent(context, TimerService::class.java).apply {
-            Log.d("timerservicw-viewmodel","$totalSeconds")
             putExtra("duration_seconds",totalSeconds)
             putExtra("habit",_state.value.habitWithProgress!!.habit.title)
             putExtra("id",_state.value.progressId.toString())
@@ -128,7 +126,6 @@ class DurationViewModel @Inject constructor(
     suspend fun updateStreak(habitWithProgress: HabitWithProgress,isSkipped : Boolean = false){
         val completedDates = repo.getAllCompletedDates(habitWithProgress.habit.habit_id!!)
         val streak = calculateCurrentStreak(habitWithProgress.habit,completedDates)
-        Log.d("streak",streak.toString())
         repo.updateStreak(
             habitId = habitWithProgress.habit.habit_id,
             current = streak,

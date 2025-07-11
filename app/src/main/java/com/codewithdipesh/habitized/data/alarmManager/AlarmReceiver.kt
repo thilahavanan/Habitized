@@ -103,7 +103,6 @@ class AlarmReceiver : BroadcastReceiver() {
         daysOfWeek: List<Int>,
         daysOfMonth: List<Int>
     ) {
-        Log.d("alarm", "next schedule called")
         val selectedDays = IntToWeekDayMap(daysOfWeek)
         var nextDateTime: LocalDateTime = LocalDateTime.now()
         var error = false
@@ -149,7 +148,6 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
             }
         }
-        Log.d("alarm", "next schedule : $nextDateTime")
         val alarmManager = AndroidAlarmScheduler(context)
         val alarmItem = AlarmItem(
             time = nextDateTime,

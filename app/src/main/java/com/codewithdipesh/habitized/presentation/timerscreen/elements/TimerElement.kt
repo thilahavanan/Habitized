@@ -92,7 +92,6 @@ fun TimerElement(
         }
     }
     LaunchedEffect(start && timerState.isPaused) {
-        Log.d("timerPaused","$timerState")
         if(timerState.isPaused){
             resumed = false
         }else{
@@ -101,8 +100,6 @@ fun TimerElement(
     }
     LaunchedEffect(start && timerState.isFinished) {
         if(timerState.isFinished){
-            Log.d("timerFinished","finished")
-            Log.d("timerFinished","$timerState")
             onTimerFinished()
         }
     }
@@ -228,7 +225,6 @@ fun TimerElement(
                     .background(Color.White.copy(alpha = 0.3f))
                     .clickable{
                         if(!start && !finished){
-                            Log.d("timerservicw-timerelement","$secondTimes")
                             onStart(secondTimes)
                         }else{
                             if(start && !finished){

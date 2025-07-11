@@ -72,7 +72,6 @@ fun CustomChart(
         }
     }
     LaunchedEffect(infos) {
-        Log.d("infos",infos.toString())
     }
 
     Box(
@@ -87,8 +86,6 @@ fun CustomChart(
         ) {
             val spacePerday = min((size.width - spacing) / infos.size,108f)
             val barWidth = kotlin.math.min(spacePerday * 0.6f,65f)
-            Log.d("CustomChart", "barWidth: $barWidth")
-            Log.d("CustomChart", "spacePerday: $spacePerday")
             val chartHeight = size.height - spacing
 
             // Draw X-axis labels (dates)

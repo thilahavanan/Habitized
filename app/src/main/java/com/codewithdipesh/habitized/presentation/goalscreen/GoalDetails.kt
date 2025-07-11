@@ -115,7 +115,6 @@ fun GoalDetails(
     var showingHabitList by remember { mutableStateOf(emptyList<Habit>()) }
 
     LaunchedEffect(state.effortList) {
-        Log.d("stats",state.effortList.toString())
     }
     BackHandler {
         navController.navigateUp()

@@ -1,6 +1,5 @@
 package com.codewithdipesh.habitized.data.repository
 
-import android.util.Log
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
 import com.codewithdipesh.habitized.data.local.dao.HabitDao
 import com.codewithdipesh.habitized.data.local.dao.HabitProgressDao
@@ -163,7 +162,6 @@ class HabitRepoImpl(
     }
 
     override suspend fun onDoneHabitProgress(progressId: UUID) {
-        Log.d("ONDONE","called $progressId")
         habitProgressDao.onUpdateStatus(
             status = Status.Done.toString(),
             progressId = progressId
