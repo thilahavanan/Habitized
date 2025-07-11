@@ -20,13 +20,19 @@ import com.codewithdipesh.habitized.presentation.progress.ProgressViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionViewModel
 import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import dagger.hilt.android.AndroidEntryPoint
 
  @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        firebaseAnalytics = Firebase.analytics
         enableEdgeToEdge()
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
             ActivityCompat.requestPermissions(

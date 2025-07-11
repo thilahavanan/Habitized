@@ -150,7 +150,7 @@ class GoalViewModel @Inject constructor(
                 }
             }
 
-            _state.value = _state.value.copy(effortList = dummyEffortList)
+            _state.value = _state.value.copy(effortList = effortList)
             setShowedEfforts(_state.value.showedGraphType)
         }
     }

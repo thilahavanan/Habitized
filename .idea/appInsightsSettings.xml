@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.codewithdipesh.habitized" />
+                  <option name="mobileSdkAppId" value="1:620301209825:android:d8b802f827ed821e41a7a0" />
+                  <option name="projectId" value="nikesignin" />
+                  <option name="projectNumber" value="620301209825" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

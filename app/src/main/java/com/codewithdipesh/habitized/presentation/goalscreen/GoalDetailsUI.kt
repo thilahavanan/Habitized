@@ -31,9 +31,3 @@ data class GoalDetailsUI(
 )
 data class Effort(val day: LocalDate, val effortLevel: Float)
 
-val dummyEffortList = (0 until 200).map { dayOffset ->
-    Effort(
-        LocalDate.now().minusDays(dayOffset.toLong()),
-        (0..100).random().toFloat()
-    )
-}
