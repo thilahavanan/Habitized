@@ -467,6 +467,17 @@ fun HomeScreen(
 
                     }
                 }
+                Box(modifier.align(Alignment.BottomCenter)){
+                    if(state.habitWithProgressList.isEmpty()){
+                        Icon(
+                            painter = painterResource(R.drawable.empty_habit_icon),
+                            contentDescription = "empty habit",
+                            tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(bottom = 90.dp)
+                        )
+                    }
+                }
                 //ongoing timer
                 Box(
                     modifier = Modifier.align(Alignment.BottomCenter),
