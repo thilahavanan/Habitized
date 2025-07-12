@@ -5,6 +5,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -88,5 +89,6 @@ dependencies {
     //firebase analytics
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics-ndk")
 
 }

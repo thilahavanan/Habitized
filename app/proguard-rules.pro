@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Suppress warnings for AWT classes not available on Android
+-dontwarn java.awt.Component
+-dontwarn java.awt.GraphicsEnvironment
+-dontwarn java.awt.HeadlessException
+-dontwarn java.awt.Window

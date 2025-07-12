@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +21,8 @@ import java.time.LocalDate
 fun DatePicker(
     currentDate: LocalDate,
     onChange: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScrollChanged: ((Boolean) -> Unit)? = null
 ) {
     val startDate = remember { currentDate.minusDays(100) }
     val endDate = remember { currentDate.plusDays(100) }
@@ -32,6 +34,12 @@ fun DatePicker(
     )
 
     var selectedDay by remember { mutableStateOf<LocalDate>(currentDate) }
+
+    //notify when scroll is in progress
+    LaunchedEffect(weekState.isScrollInProgress) {
+        onScrollChanged?.invoke(weekState.isScrollInProgress)
+
+    }
 
     WeekCalendar(
         state = weekState,

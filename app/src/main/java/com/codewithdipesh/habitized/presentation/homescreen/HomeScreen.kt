@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,6 +69,8 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.TodoEditor
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -81,31 +84,33 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var previousScrollOffset by rememberSaveable { mutableStateOf(0) }
+    var previousScrollOffset by remember { mutableStateOf(0) }
 
     val state by viewmodel.uiState.collectAsState()
-    var showAddingOptions by rememberSaveable { mutableStateOf(false) }
+    var showAddingOptions by remember { mutableStateOf(false) }
 
-    var showingOptionSelector by rememberSaveable { mutableStateOf(true) }
-    var showingDateTitle by rememberSaveable { mutableStateOf(true) }
+    var showingOptionSelector by remember { mutableStateOf(true) }
+    var showingDateTitle by remember { mutableStateOf(true) }
 
-    var showingSubtaskAdding by rememberSaveable { mutableStateOf(false) }
-    var habitForSubTaskAdding by rememberSaveable { mutableStateOf<HabitWithProgress?>(null) }
+    var showingSubtaskAdding by remember { mutableStateOf(false) }
+    var habitForSubTaskAdding by remember { mutableStateOf<HabitWithProgress?>(null) }
 
-    var showingCounter by rememberSaveable { mutableStateOf(false) }
-    var habitForCounter by rememberSaveable { mutableStateOf<HabitWithProgress?>(null) }
+    var showingCounter by remember { mutableStateOf(false) }
+    var habitForCounter by remember { mutableStateOf<HabitWithProgress?>(null) }
 
-    var showingSkipAlert by rememberSaveable { mutableStateOf(false) }
-    var habitForShowingAlert by rememberSaveable { mutableStateOf<HabitWithProgress?>(null) }
+    var showingSkipAlert by remember { mutableStateOf(false) }
+    var habitForShowingAlert by remember { mutableStateOf<HabitWithProgress?>(null) }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    var hideJob by remember { mutableStateOf<Job?>(null) }
 
     LaunchedEffect(state.selectedDate) {
         viewmodel.loadHomePage(state.selectedDate)
     }
     LaunchedEffect(scrollState.isScrollInProgress) {
         if(state.isShowingDatePicker && scrollState.isScrollInProgress){
-            viewmodel.toggleDatePicker()
+            viewmodel.closeDatePicker()
         }
     }
     LaunchedEffect(scrollState.value) {
@@ -122,6 +127,16 @@ fun HomeScreen(
             }
         }
         previousScrollOffset = currentOffset
+    }
+    LaunchedEffect(state.isShowingDatePicker){
+        if(state.isShowingDatePicker && hideJob == null){
+            scope.launch {
+                delay(1700)
+                if(hideJob == null) {
+                    viewmodel.closeDatePicker()
+                }
+            }
+        }
     }
 
     val SecondSectionItems = listOf(
@@ -254,7 +269,11 @@ fun HomeScreen(
                         IconButton(
                             onClick = {
                                 //date picker
-                                viewmodel.toggleDatePicker()
+                                if(state.isShowingDatePicker){
+                                    viewmodel.closeDatePicker()
+                                }else{
+                                    viewmodel.openDatePicker()
+                                }
                             }
                         ) {
                             val rotation by animateFloatAsState(
@@ -281,7 +300,6 @@ fun HomeScreen(
                 }
                 Spacer(Modifier.height(16.dp))
                 //habits
-
                 Column(modifier = Modifier.verticalScroll(
                     scrollState,
                     flingBehavior = ScrollableDefaults.flingBehavior()
@@ -434,7 +452,16 @@ fun HomeScreen(
                             currentDate = state.selectedDate,
                             onChange = {
                                 viewmodel.onDateSelected(it)
-                                viewmodel.toggleDatePicker()
+                                viewmodel.closeDatePicker()
+                            },
+                            onScrollChanged = {
+                                hideJob?.cancel()
+                                if(!it){
+                                    hideJob = scope.launch {
+                                        delay(2000)
+                                        viewmodel.closeDatePicker()
+                                    }
+                                }
                             }
                         )
 
