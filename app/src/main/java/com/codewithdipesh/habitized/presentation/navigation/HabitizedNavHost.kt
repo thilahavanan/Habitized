@@ -3,7 +3,10 @@ package com.codewithdipesh.habitized.presentation.navigation
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -43,16 +46,30 @@ fun HabitizedNavHost(
     sessionViewModel : SessionViewModel,
     progressViewModel : ProgressViewModel,
     habitViewModel : HabitViewModel,
-    goalViewModel : GoalViewModel
+    goalViewModel : GoalViewModel,
+    drawerState : DrawerState
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Home.route,
+        enterTransition = {
+            EnterTransition.None
+        },
+        exitTransition = {
+            ExitTransition.None
+        },
+        popEnterTransition = {
+            EnterTransition.None
+        },
+        popExitTransition = {
+            ExitTransition.None
+        },
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
                 navController = navController,
-                viewmodel = homeViewModel
+                viewmodel = homeViewModel,
+                drawerState = drawerState
             )
         }
         composable(

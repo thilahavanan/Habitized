@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.rememberNavController
 import com.codewithdipesh.habitized.domain.model.Goal
@@ -15,6 +17,8 @@ import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.goalscreen.GoalViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
+import com.codewithdipesh.habitized.presentation.homescreen.component.AppDrawer
+import com.codewithdipesh.habitized.presentation.homescreen.component.DrawerItem
 import com.codewithdipesh.habitized.presentation.navigation.HabitizedNavHost
 import com.codewithdipesh.habitized.presentation.progress.ProgressViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
@@ -56,16 +60,36 @@ class MainActivity : ComponentActivity() {
                 val progressViewModel by viewModels<ProgressViewModel>()
                 val habitViewModel by viewModels<HabitViewModel>()
                 val goalViewModel by viewModels<GoalViewModel>()
-                HabitizedNavHost(
-                    navController = navController,
-                    homeViewModel = homeViewModel,
-                    addViewModel = addViewModel,
-                    durationViewModel = durationViewModel,
-                    sessionViewModel = sessionViewModel,
-                    progressViewModel = progressViewModel,
-                    habitViewModel = habitViewModel,
-                    goalViewModel = goalViewModel
+
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+                val SecondSectionItems = listOf(
+                    DrawerItem(R.drawable.report_bug,"Report a bug"){
+                        homeViewModel.openMail(this)
+                    },
+                    DrawerItem(R.drawable.feedback,"Suggest Improvement"){
+                        homeViewModel.sendFeedback(this)
+                    },
                 )
+
+                AppDrawer(
+                    state = drawerState,
+                    secondSectionItems = SecondSectionItems,
+                    onFollowClick = {homeViewModel.onFollow(this)},
+                    onGithubClick = { homeViewModel.onCodeBase(this)}
+                ) {
+                    HabitizedNavHost(
+                        navController = navController,
+                        homeViewModel = homeViewModel,
+                        addViewModel = addViewModel,
+                        durationViewModel = durationViewModel,
+                        sessionViewModel = sessionViewModel,
+                        progressViewModel = progressViewModel,
+                        habitViewModel = habitViewModel,
+                        goalViewModel = goalViewModel,
+                        drawerState = drawerState
+                    )
+                }
             }
         }
     }

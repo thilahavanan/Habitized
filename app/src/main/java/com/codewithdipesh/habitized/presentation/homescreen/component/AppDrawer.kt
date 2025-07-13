@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.ui.theme.playfair
 import com.codewithdipesh.habitized.ui.theme.regular
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,6 +60,7 @@ fun AppDrawer(
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = state,
+        gesturesEnabled = state.currentValue == DrawerValue.Open,
         drawerContent = {
             ModalDrawerSheet(
                 drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest
@@ -139,8 +142,9 @@ fun AppDrawer(
                                         selected = false,
                                         onClick = {
                                             scope.launch{
-                                                it.onclick()
                                                 state.close()
+                                                delay(300)
+                                                it.onclick()
                                             }
                                         }
                                     )

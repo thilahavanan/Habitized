@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -79,7 +80,8 @@ import java.time.format.DateTimeFormatter
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewmodel: HomeViewModel
+    viewmodel: HomeViewModel,
+    drawerState :DrawerState
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -100,8 +102,6 @@ fun HomeScreen(
 
     var showingSkipAlert by remember { mutableStateOf(false) }
     var habitForShowingAlert by remember { mutableStateOf<HabitWithProgress?>(null) }
-
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     var hideJob by remember { mutableStateOf<Job?>(null) }
 
@@ -139,398 +139,397 @@ fun HomeScreen(
         }
     }
 
-    val SecondSectionItems = listOf(
-        DrawerItem(R.drawable.report_bug,"Report a bug"){
-            viewmodel.openMail(context)
-        },
-        DrawerItem(R.drawable.feedback,"Suggest Improvement"){
-            viewmodel.sendFeedback(context)
-        },
-    )
-
-
-    AppDrawer(
-        state = drawerState,
-        secondSectionItems = SecondSectionItems,
-        onFollowClick = {viewmodel.onFollow(context)},
-        onGithubClick = { viewmodel.onCodeBase(context)}
-    ) {
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            topBar = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp),
-                    contentAlignment = Alignment.Center
-                ){
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                drawerState.open()
-                            }
-                        },
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .padding(top = 30.dp, start = 16.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.three_dots),
-                            contentDescription = "menu",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-            }
-        ){innerPadding->
-            //adding option
-            if(showAddingOptions){
-                AddingOption(
-                    onDismiss = {
-                        showAddingOptions = false
-                    },
-                    onAddHabitClicked = {
-                        navController.navigate(Screen.AddHabit.createRoute(date = state.selectedDate))
-                    },
-                    onAddGoalClicked = {
-                        navController.navigate(Screen.AddGoal.createRoute())
-                    }
-                )
-            }
-            //session habit
-            if(showingSubtaskAdding && habitForSubTaskAdding != null){
-                AddSubTask(
-                    habitWithProgress = habitForSubTaskAdding!!,
-                    onUpdateSubTask = {
-                        scope.launch{
-                            viewmodel.addUpdateSubTasks(it,habitForSubTaskAdding!!.progress.progressId)
-                            showingSubtaskAdding = false
-                        }
-
-                    }
-                )
-            }
-
-            //counter habit
-            if(showingCounter && habitForCounter != null){
-                CountUpdater(
-                    habitWithProgress = habitForCounter!!,
-                    onUpdateCounter = {
-                        scope.launch{
-                            viewmodel.onUpdateCounter(it,habitForCounter!!)
-                            showingCounter = false
-                        }
-
-                    }
-                )
-            }
-            //for skipping alert of one time ha it
-            if(showingSkipAlert && habitForShowingAlert != null){
-                SkipAlertDialog(
-                    habitWithProgress = habitForShowingAlert!!,
-                    onDismiss = {
-                        showingSkipAlert = false
-                    },
-                    onConfirm = {
-                        viewmodel.onSkipHabit(it.progress)
-                        viewmodel.loadHomePage(state.selectedDate)
-                    }
-                )
-            }
-
-
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 80.dp)
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                contentAlignment = Alignment.Center
             ){
-                val date = state.selectedDate.format(
-                    DateTimeFormatter.ofPattern("dd MMM")
-                )
-
-                AnimatedVisibility(showingDateTitle) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    ){
-                        Text(
-                            text = if(state.selectedDate == LocalDate.now()) "Today,$date" else "$date",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = playfair,
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic,
-                                fontSize = 24.sp
-                            ),
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                        )
-                        IconButton(
-                            onClick = {
-                                //date picker
-                                if(state.isShowingDatePicker){
-                                    viewmodel.closeDatePicker()
-                                }else{
-                                    viewmodel.openDatePicker()
-                                }
-                            }
-                        ) {
-                            val rotation by animateFloatAsState(
-                                targetValue = if(state.isShowingDatePicker) 180f else 0f,
-                                animationSpec = tween(300),
-                                label = "datePicker"
-                            )
-                            Icon(
-                                painter = painterResource(R.drawable.toggle),
-                                contentDescription = "select date",
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier =Modifier.graphicsLayer(
-                                    rotationZ = rotation
-                                )
-                            )
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            drawerState.open()
                         }
-                    }
-                }
-                AnimatedVisibility(showingOptionSelector) {
-                    OptionSelector(
-                        selectedOption = state.selectedOption,
-                        onOptionSelected = {viewmodel.onOptionSelected(it)}
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(top = 30.dp, start = 16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.three_dots),
+                        contentDescription = "menu",
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
-                Spacer(Modifier.height(16.dp))
-                //habits
-                Column(modifier = Modifier.verticalScroll(
-                    scrollState,
-                    flingBehavior = ScrollableDefaults.flingBehavior()
-                )
-                ) {
-                    if(state.selectedOption == HomeScreenOption.Habits){
-                        //no started / ongoing
-                        state.habitWithProgressList
-                            .filter { it.progress.status == Status.NotStarted }
-                            .forEach{ habit->
-                                key(habit.habit.habit_id){
-                                    HabitCard(
-                                        habitWithProgress = habit,
-                                        onSubTaskAdding = {
-                                            showingSubtaskAdding = true
-                                            habitForSubTaskAdding = it
-                                        },
-                                        onToggle = {
-                                            viewmodel.toggleSubtask(it)
-                                        },
-                                        onSkip = {
-                                            showingSkipAlert = true
-                                            habitForShowingAlert = it
-                                        },
-                                        onDone = {
-                                            scope.launch {
-                                                viewmodel.onDoneHabit(it)
-                                                viewmodel.loadHomePage(state.selectedDate)
-                                            }
-                                        },
-                                        onAddCounter = {
-                                            showingCounter = true
-                                            habitForCounter = it
-                                        },
-                                        onStartDuration = {
-                                            if(state.ongoingHabit != null && it != state.ongoingHabit ){
-                                                scope.launch {
-                                                    Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
-                                                }
-                                            }else{
-                                                navController.navigate(Screen.DurationScreen.createRoute(it))
-                                            }
-                                        },
-                                        onStartSession = {
-                                            if(state.ongoingHabit != null && it != state.ongoingHabit ){
-                                                scope.launch {
-                                                    Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
-                                                }
-                                            }else{
-                                                navController.navigate(Screen.SessionScreen.createRoute(it))
-                                            }
-                                        },
-                                        onFutureTaskStateChange = {
-                                            scope.launch {
-                                                Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
-                                    )
-                                    Spacer(Modifier.height(16.dp))
-                                }
-                            }
-                        //finished or skipped //todo
-                        state.habitWithProgressList
-                            .filter { it.progress.status != Status.NotStarted }
-                            .forEach{ habit->
-                                key(habit.habit.habit_id){
-                                    HabitCard(
-                                        habitWithProgress = habit,
-                                        onSubTaskAdding = {
-                                            showingSubtaskAdding = true
-                                            habitForSubTaskAdding = it
-                                        },
-                                        onToggle = {
-                                            viewmodel.toggleSubtask(it)
-                                        },
-                                        onUnSkip = {
-                                            scope.launch {
-                                                viewmodel.onUnSkipDoneHabit(it)
-                                                viewmodel.loadHomePage(state.selectedDate)
-                                            }
-                                        },
-                                        onAddCounter = {
-                                            showingCounter = true
-                                            habitForCounter = it
-                                        },
-                                        onFutureTaskStateChange = {
-                                            scope.launch {
-                                                Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
-                                    )
-                                    Spacer(Modifier.height(16.dp))
-                                }
-                            }
-
-                        //if showing ongoing timer then padding
-                        if(state.ongoingHabit != null){
-                            Spacer(Modifier.height(150.dp))
-                        }
+            }
+        }
+    ){innerPadding->
+        //adding option
+        if(showAddingOptions){
+            AddingOption(
+                onDismiss = {
+                    showAddingOptions = false
+                },
+                onAddHabitClicked = {
+                    navController.navigate(Screen.AddHabit.createRoute(date = state.selectedDate))
+                },
+                onAddGoalClicked = {
+                    navController.navigate(Screen.AddGoal.createRoute())
+                }
+            )
+        }
+        //session habit
+        if(showingSubtaskAdding && habitForSubTaskAdding != null){
+            AddSubTask(
+                habitWithProgress = habitForSubTaskAdding!!,
+                onUpdateSubTask = {
+                    scope.launch{
+                        viewmodel.addUpdateSubTasks(it,habitForSubTaskAdding!!.progress.progressId)
+                        showingSubtaskAdding = false
                     }
-                    else{//todos
-                        Spacer(Modifier.height(16.dp))
-                        state.todos
-                            .forEach { todo->
-                                TodoEditor(
-                                    todo = todo,
-                                    onChange = {
-                                        viewmodel.updateTodo(it,todo.taskId)
+
+                }
+            )
+        }
+
+        //counter habit
+        if(showingCounter && habitForCounter != null){
+            CountUpdater(
+                habitWithProgress = habitForCounter!!,
+                onUpdateCounter = {
+                    scope.launch{
+                        viewmodel.onUpdateCounter(it,habitForCounter!!)
+                        showingCounter = false
+                    }
+
+                }
+            )
+        }
+        //for skipping alert of one time ha it
+        if(showingSkipAlert && habitForShowingAlert != null){
+            SkipAlertDialog(
+                habitWithProgress = habitForShowingAlert!!,
+                onDismiss = {
+                    showingSkipAlert = false
+                },
+                onConfirm = {
+                    viewmodel.onSkipHabit(it.progress)
+                    viewmodel.loadHomePage(state.selectedDate)
+                }
+            )
+        }
+
+
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 80.dp)
+        ){
+            val date = state.selectedDate.format(
+                DateTimeFormatter.ofPattern("dd MMM")
+            )
+
+            AnimatedVisibility(showingDateTitle) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ){
+                    Text(
+                        text = if(state.selectedDate == LocalDate.now()) "Today,$date" else "$date",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 24.sp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                    )
+                    IconButton(
+                        onClick = {
+                            //date picker
+                            if(state.isShowingDatePicker){
+                                viewmodel.closeDatePicker()
+                            }else{
+                                viewmodel.openDatePicker()
+                            }
+                        }
+                    ) {
+                        val rotation by animateFloatAsState(
+                            targetValue = if(state.isShowingDatePicker) 180f else 0f,
+                            animationSpec = tween(300),
+                            label = "datePicker"
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.toggle),
+                            contentDescription = "select date",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier =Modifier.graphicsLayer(
+                                rotationZ = rotation
+                            )
+                        )
+                    }
+                }
+            }
+            AnimatedVisibility(showingOptionSelector) {
+                OptionSelector(
+                    selectedOption = state.selectedOption,
+                    onOptionSelected = {viewmodel.onOptionSelected(it)}
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            //habits
+            Column(modifier = Modifier.verticalScroll(
+                scrollState,
+                flingBehavior = ScrollableDefaults.flingBehavior()
+            )
+            ) {
+                if(state.selectedOption == HomeScreenOption.Habits){
+                    //no started / ongoing
+                    state.habitWithProgressList
+                        .filter { it.progress.status == Status.NotStarted }
+                        .forEach{ habit->
+                            key(habit.habit.habit_id){
+                                HabitCard(
+                                    habitWithProgress = habit,
+                                    onSubTaskAdding = {
+                                        showingSubtaskAdding = true
+                                        habitForSubTaskAdding = it
                                     },
                                     onToggle = {
-                                        viewmodel.toggleTodo(todo.taskId)
+                                        viewmodel.toggleSubtask(it)
                                     },
-                                    onDelete = {
-                                        viewmodel.deleteTodo(it)
+                                    onSkip = {
+                                        showingSkipAlert = true
+                                        habitForShowingAlert = it
+                                    },
+                                    onDone = {
+                                        scope.launch {
+                                            viewmodel.onDoneHabit(it)
+                                            viewmodel.loadHomePage(state.selectedDate)
+                                        }
+                                    },
+                                    onAddCounter = {
+                                        showingCounter = true
+                                        habitForCounter = it
+                                    },
+                                    onStartDuration = {
+                                        if(state.ongoingHabit != null && it != state.ongoingHabit ){
+                                            scope.launch {
+                                                Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }else{
+                                            navController.navigate(Screen.DurationScreen.createRoute(it))
+                                        }
+                                    },
+                                    onStartSession = {
+                                        if(state.ongoingHabit != null && it != state.ongoingHabit ){
+                                            scope.launch {
+                                                Toast.makeText(context,"Already Habit Running", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }else{
+                                            navController.navigate(Screen.SessionScreen.createRoute(it))
+                                        }
+                                    },
+                                    onFutureTaskStateChange = {
+                                        scope.launch {
+                                            Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    onHabitClick = {
+                                        navController.navigate(Screen.HabitScreen.createRoute(it))
                                     }
                                 )
-                                Spacer(Modifier.height(10.dp))
+                                Spacer(Modifier.height(16.dp))
                             }
-                        Text(
-                            text = "+ Add Todos",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.scrim,
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
-                            ),
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .clickable{
-                                    viewmodel.addTodo()
-                                }
-                        )
-                    }
-                }
-
-            }
-
-            Box(modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopStart
-            ){  //date picker
-                Box(
-                    modifier =  Modifier.padding(top = 120.dp)
-                ){
-                    AnimatedVisibility(
-                        visible = state.isShowingDatePicker,
-                        enter = expandVertically(),
-                        exit = shrinkVertically(animationSpec = tween(100))
-                    ) {
-                        DatePicker(
-                            currentDate = state.selectedDate,
-                            onChange = {
-                                viewmodel.onDateSelected(it)
-                                viewmodel.closeDatePicker()
-                            },
-                            onScrollChanged = {
-                                hideJob?.cancel()
-                                if(!it){
-                                    hideJob = scope.launch {
-                                        delay(2000)
-                                        viewmodel.closeDatePicker()
-                                    }
-                                }
-                            }
-                        )
-
-                    }
-                }
-                Box(modifier.align(Alignment.BottomCenter)){
-                    if(state.habitWithProgressList.isEmpty()){
-                        Icon(
-                            painter = painterResource(R.drawable.empty_habit_icon),
-                            contentDescription = "empty habit",
-                            tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(bottom = 90.dp)
-                        )
-                    }
-                }
-                //ongoing timer
-                Box(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    contentAlignment = Alignment.Center
-                ){
-                    AnimatedVisibility(
-                        visible = state.ongoingHabit != null,
-                        enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                    ) {
-                        state.ongoingHabit?.let {
-                            RunningTimer(
-                                habitWithProgress = state.ongoingHabit!!,
-                                hour = state.ongoingHour,
-                                minute = state.ongoingMinute,
-                                second = state.ongoingSecond,
-                                onUpdateTimer = {h,m,s->
-                                    viewmodel.updateOngoingTimer(h,m,s)
-                                },
-                                onClick = {
-                                    if(state.ongoingHabit!!.habit.type == HabitType.Session){
-                                        navController.navigate(Screen.SessionScreen.createRoute(it))
-                                    }else{
-                                        navController.navigate(Screen.DurationScreen.createRoute(it))
-                                    }
-                                },
-                                onTimerFinished = {
-                                    scope.launch{
-                                        viewmodel.finishTimer()
-                                        viewmodel.loadHomePage(state.selectedDate)
-                                    }
-                                },
-                                modifier = Modifier
-                                    .padding(bottom= 90.dp)
-                            )
                         }
+                    //finished or skipped //todo
+                    state.habitWithProgressList
+                        .filter { it.progress.status != Status.NotStarted }
+                        .forEach{ habit->
+                            key(habit.habit.habit_id){
+                                HabitCard(
+                                    habitWithProgress = habit,
+                                    onSubTaskAdding = {
+                                        showingSubtaskAdding = true
+                                        habitForSubTaskAdding = it
+                                    },
+                                    onToggle = {
+                                        viewmodel.toggleSubtask(it)
+                                    },
+                                    onUnSkip = {
+                                        scope.launch {
+                                            viewmodel.onUnSkipDoneHabit(it)
+                                            viewmodel.loadHomePage(state.selectedDate)
+                                        }
+                                    },
+                                    onAddCounter = {
+                                        showingCounter = true
+                                        habitForCounter = it
+                                    },
+                                    onFutureTaskStateChange = {
+                                        scope.launch {
+                                            Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    onHabitClick = {
+                                        navController.navigate(Screen.HabitScreen.createRoute(it))
+                                    }
+                                )
+                                Spacer(Modifier.height(16.dp))
+                            }
+                        }
+
+                    //if showing ongoing timer then padding
+                    if(state.ongoingHabit != null){
+                        Spacer(Modifier.height(150.dp))
                     }
                 }
-                //BottomNavBar
-                Box(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    contentAlignment = Alignment.Center
-                ){
-                    BottomNavBar(
-                        selectedScreen = Screen.Home,
-                        onAddClick = {showAddingOptions= !showAddingOptions},
-                        onNavigate = { navController.navigate(it.route) }
+                else{//todos
+                    Spacer(Modifier.height(16.dp))
+                    state.todos
+                        .forEach { todo->
+                            TodoEditor(
+                                todo = todo,
+                                onChange = {
+                                    viewmodel.updateTodo(it,todo.taskId)
+                                },
+                                onToggle = {
+                                    viewmodel.toggleTodo(todo.taskId)
+                                },
+                                onDelete = {
+                                    viewmodel.deleteTodo(it)
+                                }
+                            )
+                            Spacer(Modifier.height(10.dp))
+                        }
+                    Text(
+                        text = "+ Add Todos",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.scrim,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable{
+                                viewmodel.addTodo()
+                            }
                     )
                 }
             }
 
         }
+
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopStart
+        ){  //date picker
+            Box(
+                modifier =  Modifier.padding(top = 120.dp)
+            ){
+                AnimatedVisibility(
+                    visible = state.isShowingDatePicker,
+                    enter = expandVertically(),
+                    exit = shrinkVertically(animationSpec = tween(100))
+                ) {
+                    DatePicker(
+                        currentDate = state.selectedDate,
+                        onChange = {
+                            viewmodel.onDateSelected(it)
+                            viewmodel.closeDatePicker()
+                        },
+                        onScrollChanged = {
+                            hideJob?.cancel()
+                            if(!it){
+                                hideJob = scope.launch {
+                                    delay(2000)
+                                    viewmodel.closeDatePicker()
+                                }
+                            }
+                        }
+                    )
+
+                }
+            }
+            Box(modifier.align(Alignment.BottomCenter)){
+                if(state.habitWithProgressList.isEmpty() && state.selectedOption == HomeScreenOption.Habits ){
+                    Icon(
+                        painter = painterResource(R.drawable.empty_habit_icon),
+                        contentDescription = "empty habit",
+                        tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 90.dp)
+                    )
+                }
+            }
+            //ongoing timer
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                contentAlignment = Alignment.Center
+            ){
+                AnimatedVisibility(
+                    visible = state.ongoingHabit != null,
+                    enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                ) {
+                    state.ongoingHabit?.let {
+                        RunningTimer(
+                            habitWithProgress = state.ongoingHabit!!,
+                            hour = state.ongoingHour,
+                            minute = state.ongoingMinute,
+                            second = state.ongoingSecond,
+                            onUpdateTimer = {h,m,s->
+                                viewmodel.updateOngoingTimer(h,m,s)
+                            },
+                            onClick = {
+                                if(state.ongoingHabit!!.habit.type == HabitType.Session){
+                                    navController.navigate(Screen.SessionScreen.createRoute(it))
+                                }else{
+                                    navController.navigate(Screen.DurationScreen.createRoute(it))
+                                }
+                            },
+                            onTimerFinished = {
+                                scope.launch{
+                                    viewmodel.finishTimer()
+                                    viewmodel.loadHomePage(state.selectedDate)
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(bottom= 90.dp)
+                        )
+                    }
+                }
+            }
+            //BottomNavBar
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                contentAlignment = Alignment.Center
+            ){
+                BottomNavBar(
+                    selectedScreen = Screen.Home,
+                    onAddClick = {showAddingOptions= !showAddingOptions},
+                    onNavigate = {
+                        if(it == Screen.Home){
+                            navController.navigate(it.route){
+                                popUpTo(0)
+                                launchSingleTop = true
+                            }
+                        }else{
+                            navController.navigate(it.route)
+                        }
+                    }
+                )
+            }
+        }
+
     }
+
 }
 
 
