@@ -24,6 +24,7 @@ interface HabitRepository {
     suspend fun getAllHabitsForDate(date: LocalDate): List<Habit>
     suspend fun getOverAllStartDate() : LocalDate
     suspend fun updateStreak(habitId: UUID,current : Int,max: Int)
+    suspend fun unLinkGoalFromHabit(habitId: UUID)
 
     // Habit Progress
     suspend fun addHabitProgresses()

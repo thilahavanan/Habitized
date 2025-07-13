@@ -72,8 +72,10 @@ import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.presentation.goalscreen.components.CustomChart
+import com.codewithdipesh.habitized.presentation.goalscreen.components.DeleteGoalAlert
 import com.codewithdipesh.habitized.presentation.goalscreen.components.GraphType
 import com.codewithdipesh.habitized.presentation.goalscreen.components.HabitsShowcase
+import com.codewithdipesh.habitized.presentation.goalscreen.components.ShowDeleteOption
 import com.codewithdipesh.habitized.presentation.goalscreen.components.toName
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
@@ -115,6 +117,11 @@ fun GoalDetails(
     var showHabitSubTitle by remember { mutableStateOf("") }
     var showingHabitList by remember { mutableStateOf(emptyList<Habit>()) }
 
+    //show the delete option and warning
+    var showDeleteOptions by remember { mutableStateOf(false) }
+    var showDeleteWarning by remember { mutableStateOf(false) }
+    var DeletingHabitAlso by remember { mutableStateOf(false) }
+
     DisposableEffect(Unit) {
         onDispose {
             viewmodel.clearUi()
@@ -128,11 +135,10 @@ fun GoalDetails(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
             ){
                 //left icon
                 IconButton(
@@ -140,6 +146,7 @@ fun GoalDetails(
                         navController.navigateUp()
                     },
                     modifier = Modifier
+                        .align(Alignment.CenterStart)
                         .padding(top = 30.dp)
                 ) {
                     Icon(
@@ -158,10 +165,12 @@ fun GoalDetails(
                         fontStyle = FontStyle.Italic,
                         fontSize = 20.sp
                     ),
-                    modifier = Modifier.padding(top = 40.dp)
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 40.dp)
                 )
                 //options(share,edit,delete
-                Row(
+                Row(modifier = Modifier.align(Alignment.CenterEnd) ,
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     if(id != null){
@@ -178,20 +187,20 @@ fun GoalDetails(
                                tint = MaterialTheme.colorScheme.onPrimary
                            )
                        }
+                        IconButton(
+                            onClick = {
+                                showDeleteOptions = true
+                            },
+                            modifier = Modifier
+                                .padding(top = 30.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "delete",
+                                tint = colorResource(R.color.delete_red)
+                            )
+                        }
                    }
-                    IconButton(
-                        onClick = {
-                            //todo delete
-                        },
-                        modifier = Modifier
-                            .padding(top = 30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "delete",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
                 }
             }
         }
@@ -220,6 +229,35 @@ fun GoalDetails(
                 },
                 onDismiss = {
                     showHabits = false
+                }
+            )
+        }
+        //delete options
+        if(showDeleteOptions){
+            ShowDeleteOption(
+                onDismiss = { showDeleteOptions = false},
+                onDeleteGoalOnly = {
+                    showDeleteWarning = true
+                    DeletingHabitAlso = false
+                },
+                onDeleteHabitAlso = {
+                    showDeleteWarning = true
+                    DeletingHabitAlso = true
+                }
+            )
+        }
+        //delete warning
+        if(showDeleteWarning) {
+            DeleteGoalAlert(
+                onConfirm = {
+                    scope.launch {
+                        if(DeletingHabitAlso) viewmodel.deleteGoal(id!!,true) else viewmodel.deleteGoal(id!!,false)
+                        navController.navigateUp()
+                    }
+                },
+                isDeleteHabits = DeletingHabitAlso == true,
+                onCancel = {
+                    showDeleteWarning = false
                 }
             )
         }

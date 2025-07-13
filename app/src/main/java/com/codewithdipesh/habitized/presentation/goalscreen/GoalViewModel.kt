@@ -1,5 +1,6 @@
 package com.codewithdipesh.habitized.presentation.goalscreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.Frequency
@@ -178,6 +179,19 @@ class GoalViewModel @Inject constructor(
                     showedGraphType = type,
                     showedEfforts = _state.value.effortList.filter {it.day in last365Days}
                 )
+            }
+        }
+    }
+
+    suspend fun deleteGoal(id: UUID,isDeleteHabits : Boolean){
+        repo.deleteGoal(id)
+        Log.d("deleting habit","$isDeleteHabits")
+        _state.value.habits.forEach {
+            if(isDeleteHabits){
+                Log.d("deleting habit","${_state.value.habits}")
+                repo.deleteHabit(it.habit_id!!)
+            }else{
+                repo.unLinkGoalFromHabit(it.habit_id!!)
             }
         }
     }
