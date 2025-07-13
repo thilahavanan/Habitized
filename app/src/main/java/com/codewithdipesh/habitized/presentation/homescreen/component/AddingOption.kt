@@ -73,6 +73,7 @@ fun AddingOption(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 90.dp)
         ){
             AddOptionButton(
                 title = "New Goal",
