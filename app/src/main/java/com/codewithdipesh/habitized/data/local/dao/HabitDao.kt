@@ -50,4 +50,7 @@ interface HabitDao {
 
     @Query("SELECT MIN(start_date) FROM habits")
     suspend fun getOverAllStartDay(): LocalDate
+
+    @Query("UPDATE habits SET goal_id = NULL WHERE habit_id = :habitId")
+    suspend fun removeGoalFromHabit(habitId: UUID)
 }

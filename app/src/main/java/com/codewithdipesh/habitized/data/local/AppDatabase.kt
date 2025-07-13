@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.codewithdipesh.habitized.DATABASE_VERSION
 import com.codewithdipesh.habitized.data.local.converter.Converters
 import com.codewithdipesh.habitized.data.local.dao.GoalDao
@@ -54,6 +55,13 @@ abstract class AppDatabase : RoomDatabase() {
                     "habit_tracker_db"
                 )
                     .fallbackToDestructiveMigration(false)  // Handles DB version upgrades
+                    .addCallback(object : RoomDatabase.Callback() {
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
+                            //Enable foreign key constarints
+                            db.execSQL("PRAGMA foreign_keys=ON")
+                        }
+                    })
                     .build()
                 INSTANCE = instance
                 instance

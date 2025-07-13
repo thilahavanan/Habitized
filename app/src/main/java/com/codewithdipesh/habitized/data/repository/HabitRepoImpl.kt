@@ -59,16 +59,7 @@ class HabitRepoImpl(
         habitDao.insertHabit(habit.toEntity())
     }
     override suspend fun deleteHabit(habitId: UUID) {
-        //delete habit with habit progress and subtasks
-        //get all habit progress
-        val habitProgress = habitProgressDao.getHabitProgress(habitId)
-        habitProgress.forEach {
-                subtaskDao.deleteSubtaskByHabitId(it.progressId)
-                habitProgressDao.deleteProgress(it.progressId)
-        }
-        //delete habit
         habitDao.deleteHabit(habitId)
-
     }
     override suspend fun getHabitById(habitId: UUID): Habit? {
         val habit = habitDao.getHabitById(habitId)
@@ -105,6 +96,10 @@ class HabitRepoImpl(
         max: Int
     ) {
         habitDao.updateStreak(habitId,current,max)
+    }
+
+    override suspend fun unLinkGoalFromHabit(habitId: UUID) {
+        habitDao.removeGoalFromHabit(habitId)
     }
 
 
@@ -220,7 +215,7 @@ class HabitRepoImpl(
         TODO("Not yet implemented")
     }
     override suspend fun deleteGoal(goalId: UUID) {
-        TODO("Not yet implemented")
+        goalDao.deleteGoal(goalId)
     }
     override suspend fun getGoalById(goalId: UUID): Goal? {
         val habits = habitDao.getHabitsByGoal(goalId)

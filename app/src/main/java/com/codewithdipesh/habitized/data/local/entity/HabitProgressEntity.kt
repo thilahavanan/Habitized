@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.Status
@@ -8,7 +9,17 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 
-@Entity(tableName = "habit_progress")
+@Entity(
+    tableName = "habit_progress",
+    foreignKeys = [
+        ForeignKey(
+            entity = HabitEntity::class,
+            parentColumns = ["habit_id"],
+            childColumns = ["habitId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class HabitProgressEntity(
     @PrimaryKey val progressId: UUID = UUID.randomUUID(),
     val habitId: UUID,
