@@ -66,6 +66,8 @@ fun ProgressScreen(
         scope.launch {
             viewmodel.getAllGoals()
             viewmodel.getHabitProgresses()
+            //when deleting goal it will still save the prev goal //todo think another good approach
+            viewmodel.selectGoal(null)
         }
     }
 
@@ -105,62 +107,64 @@ fun ProgressScreen(
         ){
             //goals
             item{
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .size(250.dp,56.dp)
-                                .padding(start = 8.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(
-                                    color = if(state.selectedGoal == null) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(20.dp)
+                if(state.goals.size > 0){
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .size(250.dp,56.dp)
+                                    .padding(start = 8.dp)
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(
+                                        color = if(state.selectedGoal == null) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = RoundedCornerShape(20.dp)
+                                    )
+                                    .clickable{
+                                        viewmodel.selectGoal(null)
+                                    },
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text = "All Habits",
+                                    style = TextStyle(
+                                        color = if(state.selectedGoal == null) MaterialTheme.colorScheme.inverseOnSurface
+                                        else MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = playfair,
+                                        fontWeight = FontWeight.Bold,
+                                        fontStyle = FontStyle.Italic,
+                                        fontSize = 13.sp
+                                    )
                                 )
-                                .clickable{
-                                    viewmodel.selectGoal(null)
-                                },
-                            contentAlignment = Alignment.Center
-                        ){
-                            Text(
-                                text = "All Habits",
-                                style = TextStyle(
-                                    color = if(state.selectedGoal == null) MaterialTheme.colorScheme.inverseOnSurface
-                                    else MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = playfair,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Italic,
-                                    fontSize = 13.sp
-                                )
-                            )
+                            }
                         }
-                    }
-                    items(state.goals){goal->
-                        Box(
-                            modifier = Modifier
-                                .size(250.dp,56.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(
-                                    color = if(goal.id == state.selectedGoal?.id) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(20.dp)
+                        items(state.goals){goal->
+                            Box(
+                                modifier = Modifier
+                                    .size(250.dp,56.dp)
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(
+                                        color = if(goal.id == state.selectedGoal?.id) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = RoundedCornerShape(20.dp)
+                                    )
+                                    .clickable{
+                                        viewmodel.selectGoal(goal)
+                                    },
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text = goal.title,
+                                    style = TextStyle(
+                                        color = if(state.selectedGoal == goal) MaterialTheme.colorScheme.inverseOnSurface
+                                        else MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = playfair,
+                                        fontWeight = FontWeight.Bold,
+                                        fontStyle = FontStyle.Italic,
+                                        fontSize = 13.sp
+                                    )
                                 )
-                                .clickable{
-                                    viewmodel.selectGoal(goal)
-                                },
-                            contentAlignment = Alignment.Center
-                        ){ 
-                            Text(
-                                text = goal.title,
-                                style = TextStyle(
-                                    color = if(state.selectedGoal == goal) MaterialTheme.colorScheme.inverseOnSurface
-                                    else MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = playfair,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Italic,
-                                    fontSize = 13.sp
-                                )
-                            )
+                            }
                         }
                     }
                 }
@@ -175,7 +179,7 @@ fun ProgressScreen(
                 ){
                     //heading
                     Text(
-                        text = "Habits related to the Goal",
+                        text = if(state.selectedGoal != null ) "Habits related to the Goal" else "All Habits",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = playfair,
