@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
@@ -53,7 +54,8 @@ fun HabitCard(
     onStartSession : (HabitWithProgress)-> Unit = {},
     onFutureTaskStateChange : () ->Unit = {},
     onSubTaskAdding : (HabitWithProgress)->Unit,
-    onToggle : (SubTask)-> Unit
+    onToggle : (SubTask)-> Unit,
+    onHabitClick : (Habit) -> Unit,
 ){
     when(habitWithProgress.habit.type){
         HabitType.Count -> {
@@ -62,7 +64,10 @@ fun HabitCard(
                 onAddCounter = {
                     onAddCounter(habitWithProgress)
                 },
-                onDeny = onFutureTaskStateChange
+                onDeny = onFutureTaskStateChange,
+                onClick = {
+                    onHabitClick(habitWithProgress.habit)
+                }
             )
         }
         HabitType.Duration -> {
@@ -71,7 +76,10 @@ fun HabitCard(
                 onStart = {
                     onStartDuration(it)
                 },
-                onDeny = onFutureTaskStateChange
+                onDeny = onFutureTaskStateChange,
+                onClick = {
+                    onHabitClick(habitWithProgress.habit)
+                }
             )
         }
         HabitType.OneTime ->{
@@ -81,7 +89,12 @@ fun HabitCard(
                 onSkip = { onSkip(it)},
                 onUnSkipDone = {onUnSkip(it)},
                 content = {
-                    OneTimeHabit(habitWithProgress = habitWithProgress)
+                    OneTimeHabit(
+                        habitWithProgress = habitWithProgress,
+                        onClick = {
+                            onHabitClick(habitWithProgress.habit)
+                        }
+                    )
                 },
                 swipable = habitWithProgress.progress.date == LocalDate.now(),
                 onDeny = onFutureTaskStateChange,
@@ -99,7 +112,10 @@ fun HabitCard(
                     onSubTaskAdding(habitWithProgress)
                 },
                 onToggle = {onToggle(it)},
-                onDeny = onFutureTaskStateChange
+                onDeny = onFutureTaskStateChange,
+                onClick = {
+                    onHabitClick(habitWithProgress.habit)
+                }
             )
         }
     }
@@ -108,12 +124,15 @@ fun HabitCard(
 @Composable
 fun OneTimeHabit(
     modifier: Modifier = Modifier,
-    habitWithProgress: HabitWithProgress
+    habitWithProgress: HabitWithProgress,
+    onClick: () -> Unit
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        isDone = habitWithProgress.progress.status != Status.NotStarted,
+        clickable = true,
+        onClick = onClick
     ){
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -140,12 +159,15 @@ fun CountHabit(
     modifier: Modifier = Modifier,
     habitWithProgress: HabitWithProgress,
     onAddCounter : ()->Unit,
-    onDeny : ()->Unit
+    onDeny : ()->Unit,
+    onClick : () -> Unit
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        isDone = habitWithProgress.progress.status != Status.NotStarted,
+        clickable = true,
+        onClick = onClick
     ){
         Row(modifier = Modifier
             .fillMaxWidth(),
@@ -239,12 +261,15 @@ fun DurationHabit(
     modifier: Modifier = Modifier,
     habitWithProgress: HabitWithProgress,
     onStart : (HabitWithProgress) ->Unit,
-    onDeny: () -> Unit
+    onDeny: () -> Unit,
+    onClick: () -> Unit
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        isDone = habitWithProgress.progress.status != Status.NotStarted,
+        clickable = true,
+        onClick = onClick
     ){
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -349,12 +374,15 @@ fun SessionHabit(
     onStartSession: (HabitWithProgress) -> Unit,
     onAddSubTask : () -> Unit = {},
     onToggle : (SubTask)->Unit = {},
-    onDeny: () -> Unit
+    onDeny: () -> Unit,
+    onClick: () -> Unit
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
         reminder = habitWithProgress.habit.reminder_time,
-        isDone = habitWithProgress.progress.status != Status.NotStarted
+        isDone = habitWithProgress.progress.status != Status.NotStarted,
+        clickable = true,
+        onClick = onClick
     ){
         Column(
             modifier = Modifier.fillMaxWidth(),

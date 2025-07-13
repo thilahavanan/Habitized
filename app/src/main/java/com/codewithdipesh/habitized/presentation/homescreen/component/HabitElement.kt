@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,9 @@ fun HabitElement(
     reminder : LocalTime? = null,
     color : androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondary,
     isDone : Boolean = false,
-    element : @Composable () -> Unit,
+    clickable : Boolean = false,
+    onClick : () -> Unit = {},
+    element : @Composable () -> Unit
 ) {
 
 
@@ -83,6 +86,9 @@ fun HabitElement(
                     if(isDone) Modifier.background(MaterialTheme.colorScheme.background.copy(0.3f))
                     else Modifier
                 )
+                .clickable {
+                    if (clickable) onClick()
+                }
                 .padding(20.dp),
             contentAlignment = Alignment.Center
         ){
