@@ -67,7 +67,7 @@ fun ProgressScreen(
             viewmodel.getAllGoals()
             viewmodel.getHabitProgresses()
             //when deleting goal it will still save the prev goal //todo think another good approach
-            viewmodel.selectGoal(null)
+            viewmodel.checkGoal()
         }
     }
 

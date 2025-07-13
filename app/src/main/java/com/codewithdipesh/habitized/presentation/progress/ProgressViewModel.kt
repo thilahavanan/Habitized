@@ -113,7 +113,20 @@ class ProgressViewModel @Inject constructor(
         )
 
     }
-
+    //whenever deleting any goal so while return back no empty habits will be shown
+    fun checkGoal(){
+        if(_state.value.selectedGoal != null){
+            viewModelScope.launch (Dispatchers.IO){
+                val goal = repo.getGoalById(_state.value.selectedGoal!!.id)
+                if(goal ==  null){
+                    _state.value = _state.value.copy(
+                        selectedGoal = null,
+                        showedHabits = _state.value.habits
+                    )
+                }
+            }
+        }
+    }
 
 
 }
