@@ -3,13 +3,16 @@ package com.codewithdipesh.habitized.presentation.progress
 import android.util.Log
 import androidx.core.util.toRange
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.UUID
@@ -25,6 +28,10 @@ class ProgressViewModel @Inject constructor(
     init {
         getWeekDateRange()
         getMonthDateRange()
+        viewModelScope.launch (Dispatchers.IO){
+            getAllGoals()
+            getHabitProgresses()
+        }
     }
     suspend fun getHabitProgresses(){
         //all habits

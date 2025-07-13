@@ -68,7 +68,6 @@ fun ProgressScreen(
             viewmodel.getHabitProgresses()
         }
     }
-    var selectedOption by rememberSaveable { mutableStateOf(state.selectedOption) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -265,6 +264,20 @@ fun ProgressScreen(
                     }
                 }
             }
+            item {
+                if(state.habits.isEmpty()){
+                    Text(
+                        text = "Create a habit to see progress here",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        ),
+                        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp)
+                    )
+                }
+            }
 
         }
 
@@ -278,7 +291,16 @@ fun ProgressScreen(
             ){
                 BottomNavBar(
                     selectedScreen = Screen.Progress,
-                    onNavigate = { navController.navigate(it.route) }
+                    onNavigate = {
+                        if(it == Screen.Home){
+                            navController.navigate(it.route){
+                                popUpTo(0)
+                                launchSingleTop = true
+                            }
+                        }else{
+                            navController.navigate(it.route)
+                        }
+                    }
                 )
             }
         }
