@@ -1,5 +1,8 @@
 package com.codewithdipesh.habitized.presentation.addscreen.component
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,9 +10,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,51 +42,74 @@ fun <T> Selector(
     options: List<T>,
     selectedOption: T,
     onOptionSelected: (T) -> Unit,
-    backgroundColor : Color,
-    selectedTextColor : Color,
-    nonSelectedTextColor : Color,
-    selectedOptionColor : Color,
-    nonSelectedOptionColor : Color,
-    height : Int = 44,
+    backgroundColor: Color,
+    selectedTextColor: Color,
+    selectedOptionColor: Color,
+    height: Int = 44,
     shape: Shape = RoundedCornerShape(15.dp)
-){
+) {
+    // Remember the width of the Selector container
+    var containerWidth by remember { mutableStateOf(0) }
+
+    // Calculate the width of each option dynamically
+    val optionWidth = if (options.isNotEmpty() && containerWidth > 0) {
+        containerWidth / options.size
+    } else 0
+
+    // Find the index of the selected option
+    val selectedIndex = options.indexOf(selectedOption).coerceAtLeast(0)
+
+    // Animate the offset (in pixels) of the sliding background
+    val animatedOffset by animateDpAsState(
+        targetValue = with(LocalDensity.current) { (optionWidth * selectedIndex).toDp() },
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+    )
+
     Box(
         modifier = modifier
             .height(height.dp)
             .clip(shape)
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center
-    ){
-        Row (
+            .background(backgroundColor)
+            .onSizeChanged { containerWidth = it.width },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        // Sliding background
+        if (optionWidth > 0) {
+            Box(
+                modifier = Modifier
+                    .offset(x = animatedOffset)
+                    .width(with(LocalDensity.current) { optionWidth.toDp() })
+                    .fillMaxHeight()
+                    .padding((height/10).dp)
+                    .clip(shape)
+                    .background(selectedOptionColor.copy(0.6f))
+            )
+        }
+
+        Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ){
-            options.forEach {
+        ) {
+            options.forEach { option ->
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxSize()
-                        .clip(shape)
-                        .background(
-                            if(it == selectedOption ) selectedOptionColor
-                            else nonSelectedOptionColor
-                        )
+                        .fillMaxHeight()
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ){
-                            onOptionSelected(it)
+                        ) {
+                            onOptionSelected(option)
                         },
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Text(
-                        text = it.toString(),
+                        text = option.toString(),
                         style = TextStyle(
-                            color = if(it == selectedOption) selectedTextColor
-                                    else nonSelectedTextColor,
+                            color = if (option == selectedOption) selectedTextColor else selectedTextColor.copy(0.8f),
                             fontFamily = playfair,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
