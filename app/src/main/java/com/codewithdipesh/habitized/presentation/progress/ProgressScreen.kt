@@ -216,9 +216,7 @@ fun ProgressScreen(
                     },
                     backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                     selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    nonSelectedTextColor = MaterialTheme.colorScheme.tertiary,
                     selectedOptionColor = MaterialTheme.colorScheme.tertiary,
-                    nonSelectedOptionColor = MaterialTheme.colorScheme.surfaceVariant,
                     height = 50,
                     shape = RoundedCornerShape(25.dp)
 

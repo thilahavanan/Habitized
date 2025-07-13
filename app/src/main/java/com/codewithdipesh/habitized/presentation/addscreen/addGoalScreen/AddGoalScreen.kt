@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -86,9 +87,10 @@ fun AddGoalScreen(
     var isShowingExistingHabits by remember { mutableStateOf(false) }
     var isShowingLinkedHabits by remember { mutableStateOf(false) }
 
-    BackHandler {
-        navController.navigateUp()
-        viewmodel.clearGoalUI()
+    DisposableEffect(Unit) {
+        onDispose {
+            viewmodel.clearGoalUI()
+        }
     }
     LaunchedEffect(viewmodel.uiEvent) {
         viewmodel.uiEvent.collect {
@@ -96,7 +98,6 @@ fun AddGoalScreen(
                 if(it == "Goal Created Successfully"){
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     navController.navigateUp()
-                    viewmodel.clearGoalUI()
                 }else{
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }

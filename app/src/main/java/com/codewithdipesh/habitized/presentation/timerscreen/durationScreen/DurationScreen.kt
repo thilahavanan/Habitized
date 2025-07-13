@@ -22,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -105,18 +106,18 @@ fun DurationScreen(
             }
         }
     }
-
-    BackHandler {
-        when(state.timerState){
-            TimerState.Finished -> {
-                viewmodel.clearUi()
+    DisposableEffect(Unit) {
+        onDispose {
+            when(state.timerState){
+                TimerState.Finished -> {
+                    viewmodel.clearUi()
+                }
+                TimerState.Not_Started -> {
+                    viewmodel.clearUi()
+                }
+                else -> {}
             }
-            TimerState.Not_Started -> {
-                viewmodel.clearUi()
-            }
-            else -> {}
         }
-        navController.navigateUp()
     }
 
     LaunchedEffect(Unit) {
@@ -131,9 +132,6 @@ fun DurationScreen(
                 leftIcon = {
                     IconButton(
                         onClick = {
-                            if(state.timerState == TimerState.Finished || state.timerState == TimerState.Not_Started){
-                                viewmodel.clearUi()
-                            }
                             navController.navigateUp()
                         },
                         modifier = Modifier

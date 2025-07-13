@@ -45,6 +45,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -114,11 +115,10 @@ fun GoalDetails(
     var showHabitSubTitle by remember { mutableStateOf("") }
     var showingHabitList by remember { mutableStateOf(emptyList<Habit>()) }
 
-    LaunchedEffect(state.effortList) {
-    }
-    BackHandler {
-        navController.navigateUp()
-        viewmodel.clearUi()
+    DisposableEffect(Unit) {
+        onDispose {
+            viewmodel.clearUi()
+        }
     }
     LaunchedEffect(Unit) {
         scope.launch {
@@ -138,7 +138,6 @@ fun GoalDetails(
                 IconButton(
                     onClick = {
                         navController.navigateUp()
-                        viewmodel.clearUi()
                     },
                     modifier = Modifier
                         .padding(top = 30.dp)

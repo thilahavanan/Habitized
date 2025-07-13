@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -98,9 +99,10 @@ fun AddHabitScreen(
 
     var isShowingGoals by remember { mutableStateOf(false) }
 
-    BackHandler {
-        navController.navigateUp()
-        viewmodel.clearHabitUI()
+    DisposableEffect(Unit) {
+        onDispose {
+            viewmodel.clearHabitUI()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -119,7 +121,6 @@ fun AddHabitScreen(
                 if(it == "Habit Created Successfully"){
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     navController.navigateUp()
-                    viewmodel.clearHabitUI()
                 }else{
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
@@ -373,9 +374,7 @@ fun AddHabitScreen(
                         },
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        nonSelectedTextColor = MaterialTheme.colorScheme.tertiary,
                         selectedOptionColor = MaterialTheme.colorScheme.tertiary,
-                        nonSelectedOptionColor = MaterialTheme.colorScheme.surfaceVariant,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -569,9 +568,7 @@ fun AddHabitScreen(
                         },
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        nonSelectedTextColor = MaterialTheme.colorScheme.tertiary,
                         selectedOptionColor = MaterialTheme.colorScheme.tertiary,
-                        nonSelectedOptionColor = MaterialTheme.colorScheme.surfaceVariant,
                         modifier = Modifier.fillMaxWidth()
                     )
                     if(state.frequency == Frequency.Weekly){

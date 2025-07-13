@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +62,7 @@ import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageEle
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
+import com.codewithdipesh.habitized.presentation.timerscreen.TimerState
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
 import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
@@ -98,6 +100,12 @@ fun HabitDetails(
             viewmodel.init(id)
         }
     }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewmodel.clearUi()
+        }
+    }
+
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

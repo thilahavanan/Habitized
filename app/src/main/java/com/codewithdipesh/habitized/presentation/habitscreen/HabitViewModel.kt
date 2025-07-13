@@ -89,4 +89,8 @@ class HabitViewModel @Inject constructor(
     suspend fun deleteHabit(id: UUID){
         repo.deleteHabit(id)
     }
+
+    fun clearUi(){
+        _state.value = HabitDetailsUI()
+    }
 }
