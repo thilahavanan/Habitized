@@ -62,6 +62,7 @@ fun CustomChart(
     val spacing = 100f
     val upperValue = 100
     val lowerValue = 0
+    val dummyBarColor = MaterialTheme.colorScheme.scrim.copy(0.5f)
 
     val density = LocalDensity.current
     val textPaint = remember(density) {
@@ -129,6 +130,18 @@ fun CustomChart(
             }
 
             // Draw the chart line and fill (moved outside the Y-axis loop)
+            //showing dummy if less than 5
+            (0..6).forEachIndexed {index,_ ->
+                // Draw bar bg
+                val barX = spacing + index * spacePerday + (spacePerday - barWidth) / 2f
+                drawRoundRect(
+                    color = dummyBarColor,
+                    topLeft = Offset(barX, 0f),
+                    size = Size(barWidth, chartHeight),
+                    cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
+                )
+            }
+            //real infos
             infos.forEachIndexed { index, info ->
                 val ratio = (info.effortLevel - lowerValue) / (upperValue - lowerValue)
                 val barHeight = ratio * chartHeight
