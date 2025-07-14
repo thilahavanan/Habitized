@@ -221,22 +221,33 @@ class HomeViewModel @Inject constructor(
         )
     }
     suspend fun finishTimer(){
-        if(_uiState.value.ongoingHabit != null && _uiState.value.ongoingHabit!!.habit.type == HabitType.Duration){
-            _uiState.value.ongoingHabit?.let {
-                repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
-                updateStreak(_uiState.value.ongoingHabit!!)
+        val ongoingHabit = _uiState.value.ongoingHabit
+
+        if(ongoingHabit != null) {
+            if(ongoingHabit.habit.type == HabitType.Duration) {
+                repo.onDoneHabitProgress(ongoingHabit.progress.progressId)
+                updateStreak(ongoingHabit)
+            } else {
+                val prevCount = ongoingHabit.progress.currentCount
+                val targetCount = ongoingHabit.progress.targetCount
+
+                if(prevCount != null) {
+                    val newCount = prevCount + 1
+                    //on update the counter
+                    repo.onUpdateCounterHabitProgress(newCount,ongoingHabit.progress.progressId)
+
+                    if(newCount == targetCount) {
+                        repo.onDoneHabitProgress(ongoingHabit.progress.progressId)
+                        updateStreak(ongoingHabit)
+                    } else {
+                        repo.onNotStartedHabitProgress(ongoingHabit.progress.progressId)
+                    }
+                } else {
+                    Log.e("TimerFinish", "ERROR: prevCount is null!")
+                }
             }
-        }else if(_uiState.value.ongoingHabit != null){
-            //session
-            var prevCount = _uiState.value.ongoingHabit!!.progress.currentCount
-            val targetCount = _uiState.value.ongoingHabit!!.progress.targetCount
-            prevCount = prevCount!! + 1
-            if(prevCount == targetCount){
-                repo.onDoneHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
-                updateStreak(_uiState.value.ongoingHabit!!)
-            }else{
-                repo.onNotStartedHabitProgress(_uiState.value.ongoingHabit!!.progress.progressId)
-            }
+        } else {
+            Log.w("TimerFinish", "WARNING: ongoingHabit is null!")
         }
     }
 
