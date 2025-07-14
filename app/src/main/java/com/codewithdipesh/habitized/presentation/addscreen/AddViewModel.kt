@@ -100,9 +100,9 @@ class AddViewModel @Inject constructor(
                 )
                 if(!result.error){
                     val alarmItem = AlarmItem(
-                        id = _habitUiState.value.habit_id!!,
+                        id = _habitUiState.value.habit_id,
                         time = result.nextDateTime,
-                        text = getDeterministicNotificationMessage(_habitUiState.value.habit_id!!), // Use habitId here
+                        text = getDeterministicNotificationMessage(_habitUiState.value.habit_id), // Use habitId here
                         title = "Its time to do ${_habitUiState.value.title}",
                         frequency = _habitUiState.value.frequency,
                         daysOfWeek = WeekDayMapToInt( _habitUiState.value.days_of_week),

@@ -22,6 +22,7 @@ class AndroidAlarmScheduler (
     override fun schedule(item: AlarmItem) {
         val requestCode = item.id.hashCode()
         val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra("id",item.id.toString())
             putExtra("text",item.text)
             putExtra("title",item.title)
             putExtra("frequency",item.frequency.displayName)

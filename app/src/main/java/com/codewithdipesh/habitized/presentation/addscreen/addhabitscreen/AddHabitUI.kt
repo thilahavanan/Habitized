@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 data class AddHabitUI(
-    val habit_id: UUID? = null,
+    val habit_id: UUID = UUID.randomUUID(),
     val title: String = "",
     val description: String = "",
     val type: HabitType = HabitType.Count,
