@@ -20,6 +20,7 @@ class AndroidAlarmScheduler (
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(item: AlarmItem) {
+        val requestCode = item.id.hashCode()
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("text",item.text)
             putExtra("title",item.title)
@@ -33,7 +34,7 @@ class AndroidAlarmScheduler (
             item.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
-                item.hashCode(),
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
@@ -44,7 +45,7 @@ class AndroidAlarmScheduler (
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
-                item.hashCode(),
+                item.id.hashCode(),
                 Intent(context, AlarmReceiver::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

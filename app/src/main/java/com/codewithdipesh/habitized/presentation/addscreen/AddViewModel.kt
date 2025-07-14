@@ -13,6 +13,7 @@ import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
+import com.codewithdipesh.habitized.domain.util.getNextAlarmDateTime
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalUI
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitUI
 import com.codewithdipesh.habitized.presentation.util.Days
@@ -36,6 +37,7 @@ import java.time.LocalTime
 import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 import java.util.UUID
+import kotlin.math.absoluteValue
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
@@ -88,68 +90,19 @@ class AddViewModel @Inject constructor(
 
             //schedule alarm
             if(_habitUiState.value.reminder_time != null){
-                val now = LocalDateTime.of(date, LocalTime.now()) //actually now means when the habit is created
-                val reminderTime = _habitUiState.value.reminder_time // LocalTime
-
-                var nextDateTime : LocalDateTime = LocalDateTime.now()
-                var error = false
-                when (_habitUiState.value.frequency) {
-                    Frequency.Daily -> {
-                        nextDateTime = LocalDateTime.of(date,reminderTime ) //exact time of today
-                        if (nextDateTime.isBefore(now)) {
-                            nextDateTime = nextDateTime.plusDays(1) //if it already passed then next day
-                        }
-                    }
-                    Frequency.Weekly -> {
-                        val selectedDays = _habitUiState.value.days_of_week // Map<Days, Boolean>
-                        nextDateTime = LocalDateTime.MAX //initializing with max for calculating the min among days
-                        Days.entries.forEach { day ->
-                            if (selectedDays[day] == true) {
-                                //get the next mon...sat day
-                                //(date.with) it will get the next __ day from $date
-                                val nextDate = date.with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
-                                var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-                                //if the day is today and passed then next week dame day else today only
-                                if(potentialDateTime.isBefore(now)){
-                                    potentialDateTime = potentialDateTime.plusWeeks(1)
-                                }
-                                nextDateTime = minOf(potentialDateTime,nextDateTime) //minimum of all potential days
-                            }
-                        }
-                    }
-                    Frequency.Monthly -> {
-                        val selectedDays = _habitUiState.value.daysOfMonth // List<Int>
-                        nextDateTime = LocalDateTime.MAX
-                        selectedDays.forEach { dayOfMonth ->
-                            try {
-                                //same as month
-                                val nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
-                                var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-                                //the date has passed already s0 -> next month same date
-                                if(potentialDateTime.isBefore(now) || potentialDateTime.isEqual(now)){
-                                    try {
-                                        val nextMonthDate = now.toLocalDate().plusMonths(1).withDayOfMonth(dayOfMonth)
-                                        potentialDateTime = LocalDateTime.of(nextMonthDate, reminderTime)
-                                    } catch (e: DateTimeException) {
-                                        //for  exceptional like Feb 31
-                                        // If next month doesn't have this day, skip to the month after
-                                        val monthAfterNext = now.toLocalDate().plusMonths(2).withDayOfMonth(dayOfMonth)
-                                        potentialDateTime = LocalDateTime.of(monthAfterNext, reminderTime)
-                                    }
-                                }
-                                nextDateTime = minOf(potentialDateTime,nextDateTime)
-                            } catch (e: DateTimeException) {
-                                // Handle invalid dates (e.g., Feb 30th)
-                                // Skip this day of month
-                                error = true
-                            }
-                        }
-                    }
-                }
-                if(!error){
+                val result = getNextAlarmDateTime(
+                    date = date,
+                    now = LocalDateTime.of(date, LocalTime.now()),
+                    frequency = _habitUiState.value.frequency,
+                    reminderTime = _habitUiState.value.reminder_time!!,
+                    daysOfWeek = _habitUiState.value.days_of_week, // Map<Days, Boolean>
+                    daysOfMonth = _habitUiState.value.daysOfMonth
+                )
+                if(!result.error){
                     val alarmItem = AlarmItem(
-                        time = nextDateTime,
-                        text = getRandomNotificationMessage(),
+                        id = _habitUiState.value.habit_id!!,
+                        time = result.nextDateTime,
+                        text = getDeterministicNotificationMessage(_habitUiState.value.habit_id!!), // Use habitId here
                         title = "Its time to do ${_habitUiState.value.title}",
                         frequency = _habitUiState.value.frequency,
                         daysOfWeek = WeekDayMapToInt( _habitUiState.value.days_of_week),
@@ -479,7 +432,7 @@ class AddViewModel @Inject constructor(
         _goalUiState.value = AddGoalUI()
     }
 
-    private fun getRandomNotificationMessage() : String{
+    private fun getDeterministicNotificationMessage(habitId: UUID): String {
         val messages = listOf(
             "🔥 Streak check! Don’t break it now",
             "One more tap to greatness 📊",
@@ -487,8 +440,9 @@ class AddViewModel @Inject constructor(
             "You’re on a roll! Don’t stop the momentum 🌀",
             "Finish strong, legend 💥"
         )
-
-        return messages.random()
+        // Use the habitId's hash to always pick the same message for this habit
+        val index = (habitId.hashCode().absoluteValue) % messages.size
+        return messages[index]
     }
 
 

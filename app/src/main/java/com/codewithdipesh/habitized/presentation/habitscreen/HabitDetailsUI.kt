@@ -19,6 +19,7 @@ data class HabitDetailsUI(
     val targetCount :Int? = 0,
     val countParam: CountParam? = null,
     val targetTime : LocalTime? = null,
+    val reminder_time : LocalTime? = null,
     val currentStreak :Int = 0,
     val maximumStreak :Int = 0,
     val totalCompleted :Int = 0,

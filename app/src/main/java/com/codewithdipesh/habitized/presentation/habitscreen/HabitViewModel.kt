@@ -1,11 +1,17 @@
 package com.codewithdipesh.habitized.presentation.habitscreen
 
+import android.app.AlarmManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codewithdipesh.habitized.domain.alarmManager.AlarmItem
+import com.codewithdipesh.habitized.domain.alarmManager.AlarmScheduler
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
+import com.codewithdipesh.habitized.domain.util.getNextAlarmDateTime
+import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
+import com.codewithdipesh.habitized.presentation.util.WeekDayMapToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -13,12 +19,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.String
 
 @HiltViewModel
 class HabitViewModel @Inject constructor(
-    private val repo : HabitRepository
+    private val repo : HabitRepository,
+    private val alarmScheduler: AlarmScheduler
 ): ViewModel() {
 
     private val _state = MutableStateFlow(HabitDetailsUI())
@@ -37,6 +45,7 @@ class HabitViewModel @Inject constructor(
             countParam = habit.countParam,
             days_of_week = habit.days_of_week,
             daysOfMonth = habit.daysOfMonth ?: emptyList(),
+            reminder_time = habit.reminder_time,
             currentStreak = habit.currentStreak,
             maximumStreak = habit.maxStreak
         )
@@ -88,6 +97,21 @@ class HabitViewModel @Inject constructor(
     }
     suspend fun deleteHabit(id: UUID){
         repo.deleteHabit(id)
+        //canceling the alarm if present
+        if(_state.value.reminder_time != null){
+            val alarmItem = AlarmItem(
+                id = id,
+                //only id is needed as request code is this
+                //other details are dummy
+                time = LocalDateTime.now(),
+                title = "",
+                text = "",
+                frequency = Frequency.Daily,
+                daysOfWeek = emptyList(),
+                daysOfMonth = emptyList()
+            )
+            alarmScheduler.cancel(alarmItem)
+        }
     }
 
     fun clearUi(){
