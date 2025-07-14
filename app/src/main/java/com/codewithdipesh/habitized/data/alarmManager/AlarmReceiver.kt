@@ -23,12 +23,14 @@ import java.time.DateTimeException
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.TemporalAdjusters
+import java.util.UUID
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         //check first
         if(context == null || intent == null) return
         //extracting
+        val id = intent.getStringExtra("id") ?: ""
         val title = intent.getStringExtra("title") ?: ""
         val text =  intent.getStringExtra("text") ?: "Don't let the streak die"
         val frequency =  intent.getStringExtra("frequency") ?: ""
@@ -44,6 +46,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if(frequency.isNotEmpty() && reminderTime.isNotEmpty()){
             scheduleNextAlarm(
                 context,
+                UUID.fromString(id),
                 title,
                 text,
                 Frequency.fromString(frequency),
@@ -95,6 +98,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun scheduleNextAlarm(
         context: Context,
+        id:UUID,
         title : String,
         text : String,
         frequency: Frequency,
@@ -150,6 +154,7 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         val alarmManager = AndroidAlarmScheduler(context)
         val alarmItem = AlarmItem(
+            id = id,
             time = nextDateTime,
             text = text,
             title = title,
