@@ -1,26 +1,19 @@
-template: |
-  ## What’s Changed
-  $CHANGES
+name: Release Drafter
 
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [closed]
 
-categories:
-  - title: '🚀 Features'
-    labels:
-      - 'feat'
-  - title: '🐛 Bug Fixes'
-    labels:
-      - 'bug'
-  - title: '🛠 Improvements'
-    labels:
-      - 'enhancement'
-  - title: '🧹 Chore'
-    labels:
-      - 'chore'
-  - title: '📄 Docs Changes'
-    labels:
-      - 'docs'
-
-change-template: '- $TITLE (#$NUMBER)'
-no-changes-template: '* No changes'
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Release Drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

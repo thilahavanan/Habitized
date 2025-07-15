@@ -1,5 +1,13 @@
+template: |
+  ## What’s Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...$RESOLVED_VERSION
+
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
+
 categories:
   - title: '🚀 Features'
     labels:
@@ -13,7 +21,9 @@ categories:
   - title: '🧹 Chore'
     labels:
       - 'chore'
-  - title : '📄Docs Changes'
+  - title: '📄 Docs Changes'
     labels:
       - 'docs'
+
 change-template: '- $TITLE (#$NUMBER)'
+no-changes-template: '* No changes'
