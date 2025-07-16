@@ -89,7 +89,7 @@ class AddViewModel @Inject constructor(
 
 
             //schedule alarm
-            if(_habitUiState.value.reminder_time != null){
+            if(_habitUiState.value.isShowReminderTime){
                 val result = getNextAlarmDateTime(
                     date = date,
                     now = LocalDateTime.of(date, LocalTime.now()),
