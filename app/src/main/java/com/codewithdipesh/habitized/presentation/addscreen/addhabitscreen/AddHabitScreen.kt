@@ -1,6 +1,9 @@
 package com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen
 
+import android.app.AlarmManager
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
@@ -80,6 +83,7 @@ import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
+import androidx.core.net.toUri
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,6 +116,22 @@ fun AddHabitScreen(
         viewmodel.getGoals()
         if(id != null){
             viewmodel.init(id)
+        }
+    }
+    //check if alarm permission is granted or not
+    LaunchedEffect(state.isShowReminderTime){
+        if(state.isShowReminderTime){
+            val permission = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
+            }else {
+                true
+            }
+            if(!permission){
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                    data = "package:${context.packageName}".toUri()
+                }
+                context.startActivity(intent)
+            }
         }
     }
 

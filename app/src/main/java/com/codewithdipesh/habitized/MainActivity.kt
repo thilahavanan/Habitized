@@ -45,7 +45,9 @@ class MainActivity : ComponentActivity() {
                     Manifest.permission.POST_NOTIFICATIONS,
                     Manifest.permission.FOREGROUND_SERVICE,
                     Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC,
-                    Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK
+                    Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK,
+                    Manifest.permission.SCHEDULE_EXACT_ALARM,
+                    Manifest.permission.USE_EXACT_ALARM,
                 ),
                 0
             )
