@@ -199,7 +199,12 @@ class SessionViewModel @Inject constructor(
         val updatedHabit = current.copy(subtasks = updatedSubtasks)
 
         _state.value = _state.value.copy(habitWithProgress = updatedHabit)
-
+        //if removed the temp one
+        if(id == _state.value.tempSubTask){
+            _state.value = _state.value.copy(
+                tempSubTask = null
+            )
+        }
         repo.deleteSubtask(id)
     }
 

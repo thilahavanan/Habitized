@@ -352,7 +352,7 @@ fun SessionScreen(
                 ){
                     Column(
                         modifier = Modifier
-                            .padding(top =  (height/2).dp + 16.dp )
+                            .padding(top =  (height/2).dp + 28.dp )
                             .fillMaxWidth(0.8f)
                             .verticalScroll(scrollState),
                         verticalArrangement = Arrangement.Center,
