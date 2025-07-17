@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -133,32 +135,6 @@ fun AddGoalScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(start = 30.dp)
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
-                    .clip(RoundedCornerShape(20.dp))
-                    .clickable{
-                        scope.launch {
-                            viewmodel.addGoal()
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "Done",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
-                    )
-                )
-            }
         }
     ){innerPadding->
 
@@ -188,220 +164,267 @@ fun AddGoalScreen(
             )
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 120.dp)
-                .verticalScroll(scrollstate),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ){
-            //heading
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Text(
-                    text = "Create",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 22.sp
-                    )
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "Goal",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        fontSize = 28.sp
-                    )
-                )
-            }
-            //title
-            InputElement(
-                color = if(state.title.isEmpty()) MaterialTheme.colorScheme.surface
-                else MaterialTheme.colorScheme.secondary
+        Box(modifier = Modifier.fillMaxSize()){
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 120.dp)
+                    .align(Alignment.Center)
+                    .verticalScroll(scrollstate),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ){
-                Box {
-                    BasicTextField(
-                        value = state.title,
-                        onValueChange = {
-                            viewmodel.setGoalTitle(it)
-                        },
-                        textStyle = TextStyle(
+                //heading
+                Row(verticalAlignment = Alignment.CenterVertically){
+                    Text(
+                        text = "Create",
+                        style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        singleLine = false,
-                        maxLines = 1,
-                        cursorBrush = SolidColor(colorResource(R.color.primary)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Placeholder shown only when title is empty
-                    if (state.title.isEmpty()) {
-                        Text(
-                            text = "Title",
-                            style = TextStyle(
-                                color = colorResource(R.color.light_gray), // make it look like a placeholder
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
-                            )
+                            fontSize = 22.sp
                         )
-                    }
-                }
-            }
-            //description
-            InputElement(
-                color = if(state.description.isEmpty()) MaterialTheme.colorScheme.surface
-                else MaterialTheme.colorScheme.secondary
-            ){
-                Box {
-                    BasicTextField(
-                        value = state.description,
-                        onValueChange = {
-                            viewmodel.setGoalDescription(it)
-                        },
-                        textStyle = TextStyle(
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = "Goal",
+                        style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        singleLine = false,
-                        maxLines = 5,
-                        cursorBrush = SolidColor(colorResource(R.color.primary)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Placeholder shown only when title is empty
-                    if (state.description.isEmpty()) {
-                        Text(
-                            text = "Describe your Goal",
-                            style = TextStyle(
-                                color = colorResource(R.color.light_gray), // make it look like a placeholder
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 16.sp
-                            )
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 28.sp
                         )
-                    }
+                    )
                 }
-            }
-            //Target Date
-            InputElement{
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                //title
+                InputElement(
+                    color = if(state.title.isEmpty()) MaterialTheme.colorScheme.surface
+                    else MaterialTheme.colorScheme.secondary
                 ){
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Target Date",
-                            style = TextStyle(
+                    Box {
+                        BasicTextField(
+                            value = state.title,
+                            onValueChange = {
+                                viewmodel.setGoalTitle(it)
+                            },
+                            textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontFamily = regular,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 16.sp
+                            ),
+                            singleLine = false,
+                            maxLines = 1,
+                            cursorBrush = SolidColor(colorResource(R.color.primary)),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Placeholder shown only when title is empty
+                        if (state.title.isEmpty()) {
+                            Text(
+                                text = "Title",
+                                style = TextStyle(
+                                    color = colorResource(R.color.light_gray), // make it look like a placeholder
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
                             )
-                        )
-                        SlidingButton(
-                            isSelected = state.isTargetDateVisible,
-                            onToggle = {
-                                viewmodel.toggleGoalTargetDateOption()
-                            }
-                        )
+                        }
                     }
-                    //date
-                    AnimatedVisibility(
-                        visible = state.isTargetDateVisible
+                }
+                //description
+                InputElement(
+                    color = if(state.description.isEmpty()) MaterialTheme.colorScheme.surface
+                    else MaterialTheme.colorScheme.secondary
+                ){
+                    Box {
+                        BasicTextField(
+                            value = state.description,
+                            onValueChange = {
+                                viewmodel.setGoalDescription(it)
+                            },
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp
+                            ),
+                            singleLine = false,
+                            maxLines = 5,
+                            cursorBrush = SolidColor(colorResource(R.color.primary)),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Placeholder shown only when title is empty
+                        if (state.description.isEmpty()) {
+                            Text(
+                                text = "Describe your Goal",
+                                style = TextStyle(
+                                    color = colorResource(R.color.light_gray), // make it look like a placeholder
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
+                            )
+                        }
+                    }
+                }
+                //Target Date
+                InputElement{
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Target Date",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
+                            )
+                            SlidingButton(
+                                isSelected = state.isTargetDateVisible,
+                                onToggle = {
+                                    viewmodel.toggleGoalTargetDateOption()
+                                }
+                            )
+                        }
+                        //date
+                        AnimatedVisibility(
+                            visible = state.isTargetDateVisible
+                        ) {
+                            TargetDatePicker(
+                                date = state.target_date,
+                                onSelect = {
+                                    viewmodel.setTargetDate(it)
+                                }
+                            )
+                        }
+
+                    }
+                }
+                //link habits
+                InputElement {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        maxLines = 3,
+                        overflow = FlowRowOverflow.Clip,
                     ) {
-                        TargetDatePicker(
-                            date = state.target_date,
-                            onSelect = {
-                                viewmodel.setTargetDate(it)
+                        state.habits.take(6).forEach { habit ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = habit.title,
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
                             }
+                        }
+                        if (state.habits.size > 6) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .clickable {
+                                        isShowingLinkedHabits = true
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "+${state.habits.size - 6}",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+                    if(state.habits.isNotEmpty()){
+                        Spacer(Modifier.height((8.dp)))
+                    }
+                    Text(
+                        text = "+ link existing habits",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = regular,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        ),
+                        modifier = Modifier.clickable{
+                            isShowingExistingHabits = true
+                        }
+                    )
+                }
+
+            }
+            //button
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(MaterialTheme.colorScheme.background)
+                    .align(Alignment.BottomCenter),
+                contentAlignment = Alignment.TopCenter
+            ){
+                //add button
+                Column(
+                    modifier = Modifier.wrapContentSize()
+                        .padding(vertical = 16.dp)
+                        .padding(bottom = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(horizontal = 24.dp)
+                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(20.dp))
+                            .clickable{
+                                scope.launch {
+                                    viewmodel.addGoal()
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "Done",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.inverseOnSurface,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 20.sp
+                            ),
+                            modifier = Modifier.padding(vertical = 16.dp)
                         )
                     }
-
                 }
             }
-            //link habits
-            InputElement {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    maxLines = 3,
-                    overflow = FlowRowOverflow.Clip,
-                ) {
-                    state.habits.take(6).forEach { habit ->
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = habit.title,
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 16.sp
-                                ),
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-                    if (state.habits.size > 6) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable {
-                                    isShowingLinkedHabits = true
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "+${state.habits.size - 6}",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 16.sp
-                                ),
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-                }
-                if(state.habits.isNotEmpty()){
-                    Spacer(Modifier.height((8.dp)))
-                }
-                Text(
-                    text = "+ link existing habits",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp
-                    ),
-                    modifier = Modifier.clickable{
-                        isShowingExistingHabits = true
-                    }
-                )
-            }
-
         }
     }
 

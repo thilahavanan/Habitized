@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -167,32 +168,6 @@ fun AddHabitScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(start = 30.dp)
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
-                    .clip(RoundedCornerShape(20.dp))
-                    .clickable{
-                        scope.launch {
-                            viewmodel.addHabit(date)
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "Done",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp
-                    )
-                )
-            }
         }
     ){innerPadding->
 
@@ -240,388 +215,124 @@ fun AddHabitScreen(
             )
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 120.dp)
-                .verticalScroll(scrollstate),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Box(modifier = Modifier
+            .fillMaxSize()
         ){
-            //heading
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Text(
-                    text = if(id == null) "Create" else "Edit",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = regular,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "Habit",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        fontSize = 28.sp
-                    )
-                )
-            }
-            //title
-            InputElement(
-                color = if(state.title.isEmpty()) MaterialTheme.colorScheme.surface
-                else MaterialTheme.colorScheme.secondary
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp)
+                    .align(Alignment.TopCenter)
+                    .verticalScroll(scrollstate),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ){
-                Box {
-                    BasicTextField(
-                        value = state.title,
-                        onValueChange = {
-                            viewmodel.setHabitTitle(it)
-                        },
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 20.sp
-                        ),
-                        singleLine = false,
-                        maxLines = 1,
-                        cursorBrush = SolidColor(colorResource(R.color.primary)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Placeholder shown only when title is empty
-                    if (state.title.isEmpty()) {
-                        Text(
-                            text = "Title",
-                            style = TextStyle(
-                                color = colorResource(R.color.light_gray), // make it look like a placeholder
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 20.sp
-                            )
-                        )
-                    }
-                }
-            }
-            //description
-            InputElement(
-                color = if(state.description.isEmpty()) MaterialTheme.colorScheme.surface
-                else MaterialTheme.colorScheme.secondary
-            ){
-                Box {
-                    BasicTextField(
-                        value = state.description,
-                        onValueChange = {
-                            viewmodel.setHabitDescription(it)
-                        },
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 20.sp
-                        ),
-                        singleLine = false,
-                        maxLines = 5 ,
-                        cursorBrush = SolidColor(colorResource(R.color.primary)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Placeholder shown only when title is empty
-                    if (state.description.isEmpty()) {
-                        Text(
-                            text = "Description",
-                            style = TextStyle(
-                                color = colorResource(R.color.light_gray), // make it look like a placeholder
-                                fontFamily = regular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 20.sp
-                            )
-                        )
-                    }
-                }
-            }
-            //choose color
-            InputElement {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    //Text
+                //heading
+                Row(verticalAlignment = Alignment.CenterVertically){
                     Text(
-                        text = "Color",
+                        text = if(id == null) "Create" else "Edit",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = regular,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 22.sp
                         )
                     )
-                    //color chooser
-                    Box(
-                        modifier = modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .background(
-                                colorResource(state.colorOptions.entries.first { it.value == state.colorKey }.key)
-                            )
-                            .clickable{
-                                viewmodel.toggleHabitColorOption()
-                            }
-                    )
-
-                }
-            }
-            //choose type
-            InputElement(
-                title = "Type",
-            ){
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ){
-                    Selector(
-                        options = HabitType.getHabitTypes().map { it },
-                        selectedOption = state.type,
-                        onOptionSelected = {
-                            //todo reset timer and count viewmodel.setTargetCount(0)
-                            viewmodel.setType(it)
-                        },
-                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        selectedOptionColor = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    //input of targets
-                    //choose param
-                    if(state.type != HabitType.OneTime && state.type != HabitType.Duration){
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            Column(
-                                modifier = Modifier.width(40.dp)
-                            ){
-                                BasicTextField(
-                                    value = if(state.countTarget != null && state.countTarget != 0) state.countTarget.toString() else "",
-                                    onValueChange = {
-                                        if(it.isEmpty() || it.toIntOrNull() != null){
-                                            if(it.isNotEmpty()){
-                                                if(it.toInt() < 999 ) viewmodel.setTargetCount(it.toInt())
-                                            }else{
-                                                viewmodel.setTargetCount(0)
-                                            }
-                                        }
-                                    },
-                                    textStyle = TextStyle(
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        fontFamily = regular,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 18.sp
-                                    ),
-                                    singleLine = true,
-                                    maxLines = 1,
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Number
-                                    ),
-                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                DashedDivider(
-                                    thickness = 2.dp,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = state.countParam?.displayName ?: "choose",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = regular,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 16.sp
-                                )
-                            )
-                            IconButton(
-                                onClick = {
-                                    viewmodel.toggleParamOption()
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.option_up_down_icon),
-                                    contentDescription = "drop down",
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-
-                        }
-                    }
-                    if(state.type == HabitType.Duration || state.type == HabitType.Session){
-                        if(state.type == HabitType.Session){
-                            Text(
-                                text = "For Each",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = regular,
-                                    fontSize = 16.sp
-                                ),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
-                            )
-                        }
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            //hour
-                            TimePicker(
-                                width = 80.dp,
-                                itemHeight = 24.dp,
-                                numberOfDisplayItems = 3,
-                                items = (0..12).toList(),
-                                initialItem = state.selectedHour,
-                                itemScaleFont = 1.5f,
-                                fontSize = 16,
-                                textFont = regular,
-                                textWeight = FontWeight.Normal,
-                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-                                onItemSelected = {item->
-                                  viewmodel.setHours(item)
-                                }
-                            )
-                            Text(
-                                text = ":",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = regular,
-                                    fontSize = 16.sp
-                                )
-                            )
-                            //minutes
-                            TimePicker(
-                                width = 80.dp,
-                                itemHeight = 24.dp,
-                                numberOfDisplayItems = 3,
-                                items = (0..59).toList(),
-                                initialItem = state.selectedMinute,
-                                itemScaleFont = 1.5f,
-                                fontSize = 16,
-                                textFont = regular,
-                                textWeight = FontWeight.Normal,
-                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-                                onItemSelected = {item->
-                                    viewmodel.setMinutes(item)
-                                }
-                            )
-                            Text(
-                                text = ":",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontFamily = regular,
-                                    fontSize = 16.sp
-                                )
-                            )
-                            //seconds
-                            TimePicker(
-                                width = 80.dp,
-                                itemHeight = 24.dp,
-                                numberOfDisplayItems = 3,
-                                items = (0..59).toList(),
-                                initialItem = state.selectedSeconds,
-                                itemScaleFont = 1.5f,
-                                fontSize = 16,
-                                textFont = regular,
-                                textWeight = FontWeight.Normal,
-                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-                                onItemSelected = {item->
-                                    viewmodel.setSeconds(item)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-            //link goal
-            InputElement {
-                //Text
-                Box(modifier = Modifier.fillMaxWidth()){
+                    Spacer(Modifier.width(4.dp))
                     Text(
-                        text = if(state.goal_id == null) "+ Link Goal" else state.goal_name,
+                        text = "Habit",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        modifier = Modifier.clickable{
-                            isShowingGoals = true
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 28.sp
+                        )
+                    )
+                }
+                //title
+                InputElement(
+                    color = if(state.title.isEmpty()) MaterialTheme.colorScheme.surface
+                    else MaterialTheme.colorScheme.secondary
+                ){
+                    Box {
+                        BasicTextField(
+                            value = state.title,
+                            onValueChange = {
+                                viewmodel.setHabitTitle(it)
+                            },
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 20.sp
+                            ),
+                            singleLine = false,
+                            maxLines = 1,
+                            cursorBrush = SolidColor(colorResource(R.color.primary)),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Placeholder shown only when title is empty
+                        if (state.title.isEmpty()) {
+                            Text(
+                                text = "Title",
+                                style = TextStyle(
+                                    color = colorResource(R.color.light_gray), // make it look like a placeholder
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 20.sp
+                                )
+                            )
                         }
-                    )
-                }
-            }
-            //frequency
-            InputElement(
-                title = "Frequency"
-            ){
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ){
-                    Selector(
-                        options = Frequency.getTypes().map { it },
-                        selectedOption = state.frequency,
-                        onOptionSelected = {
-                            viewmodel.setFrequency(it)
-                        },
-                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        selectedOptionColor = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if(state.frequency == Frequency.Weekly){
-                        WeekDaySelector(
-                            daysMap = state.days_of_week,
-                            onSelect = {
-                                viewmodel.onSelectWeekday(it)
-                            }
-                        )
-                    }
-                    if(state.frequency == Frequency.Monthly){
-                        MonthlyDaySelector(
-                            selectedDays = state.daysOfMonth,
-                            onDaySelected = {
-                                viewmodel.onSelectDayofMonth(it)
-                            }
-                        )
                     }
                 }
-            }
-            //Reminder
-            InputElement{
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                //description
+                InputElement(
+                    color = if(state.description.isEmpty()) MaterialTheme.colorScheme.surface
+                    else MaterialTheme.colorScheme.secondary
                 ){
+                    Box {
+                        BasicTextField(
+                            value = state.description,
+                            onValueChange = {
+                                viewmodel.setHabitDescription(it)
+                            },
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 20.sp
+                            ),
+                            singleLine = false,
+                            maxLines = 5 ,
+                            cursorBrush = SolidColor(colorResource(R.color.primary)),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Placeholder shown only when title is empty
+                        if (state.description.isEmpty()) {
+                            Text(
+                                text = "Description",
+                                style = TextStyle(
+                                    color = colorResource(R.color.light_gray), // make it look like a placeholder
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 20.sp
+                                )
+                            )
+                        }
+                    }
+                }
+                //choose color
+                InputElement {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ){
+                        //Text
                         Text(
-                            text = "Reminder",
+                            text = "Color",
                             style = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontFamily = regular,
@@ -629,22 +340,339 @@ fun AddHabitScreen(
                                 fontSize = 16.sp
                             )
                         )
-                        SlidingButton(
-                            isSelected = state.isShowReminderTime,
-                            onToggle = {
-                                viewmodel.toggleReminderOption()
+                        //color chooser
+                        Box(
+                            modifier = modifier
+                                .size(30.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    colorResource(state.colorOptions.entries.first { it.value == state.colorKey }.key)
+                                )
+                                .clickable{
+                                    viewmodel.toggleHabitColorOption()
+                                }
+                        )
+
+                    }
+                }
+                //choose type
+                InputElement(
+                    title = "Type",
+                ){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
+                        Selector(
+                            options = HabitType.getHabitTypes().map { it },
+                            selectedOption = state.type,
+                            onOptionSelected = {
+                                //todo reset timer and count viewmodel.setTargetCount(0)
+                                viewmodel.setType(it)
+                            },
+                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedOptionColor = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        //input of targets
+                        //choose param
+                        if(state.type != HabitType.OneTime && state.type != HabitType.Duration){
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Column(
+                                    modifier = Modifier.width(40.dp)
+                                ){
+                                    BasicTextField(
+                                        value = if(state.countTarget != null && state.countTarget != 0) state.countTarget.toString() else "",
+                                        onValueChange = {
+                                            if(it.isEmpty() || it.toIntOrNull() != null){
+                                                if(it.isNotEmpty()){
+                                                    if(it.toInt() < 999 ) viewmodel.setTargetCount(it.toInt())
+                                                }else{
+                                                    viewmodel.setTargetCount(0)
+                                                }
+                                            }
+                                        },
+                                        textStyle = TextStyle(
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            fontFamily = regular,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 18.sp
+                                        ),
+                                        singleLine = true,
+                                        maxLines = 1,
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Number
+                                        ),
+                                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    DashedDivider(
+                                        thickness = 2.dp,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = state.countParam?.displayName ?: "choose",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                                IconButton(
+                                    onClick = {
+                                        viewmodel.toggleParamOption()
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.option_up_down_icon),
+                                        contentDescription = "drop down",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+
+                            }
+                        }
+                        if(state.type == HabitType.Duration || state.type == HabitType.Session){
+                            if(state.type == HabitType.Session){
+                                Text(
+                                    text = "For Each",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontSize = 16.sp
+                                    ),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
+                                )
+                            }
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                //hour
+                                TimePicker(
+                                    width = 80.dp,
+                                    itemHeight = 24.dp,
+                                    numberOfDisplayItems = 3,
+                                    items = (0..12).toList(),
+                                    initialItem = state.selectedHour,
+                                    itemScaleFont = 1.5f,
+                                    fontSize = 16,
+                                    textFont = regular,
+                                    textWeight = FontWeight.Normal,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                                    onItemSelected = {item->
+                                        viewmodel.setHours(item)
+                                    }
+                                )
+                                Text(
+                                    text = ":",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                                //minutes
+                                TimePicker(
+                                    width = 80.dp,
+                                    itemHeight = 24.dp,
+                                    numberOfDisplayItems = 3,
+                                    items = (0..59).toList(),
+                                    initialItem = state.selectedMinute,
+                                    itemScaleFont = 1.5f,
+                                    fontSize = 16,
+                                    textFont = regular,
+                                    textWeight = FontWeight.Normal,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                                    onItemSelected = {item->
+                                        viewmodel.setMinutes(item)
+                                    }
+                                )
+                                Text(
+                                    text = ":",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                                //seconds
+                                TimePicker(
+                                    width = 80.dp,
+                                    itemHeight = 24.dp,
+                                    numberOfDisplayItems = 3,
+                                    items = (0..59).toList(),
+                                    initialItem = state.selectedSeconds,
+                                    itemScaleFont = 1.5f,
+                                    fontSize = 16,
+                                    textFont = regular,
+                                    textWeight = FontWeight.Normal,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    nonSelectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                                    onItemSelected = {item->
+                                        viewmodel.setSeconds(item)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                //link goal
+                InputElement {
+                    //Text
+                    Box(modifier = Modifier.fillMaxWidth()){
+                        Text(
+                            text = if(state.goal_id == null) "+ Link Goal" else state.goal_name,
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp
+                            ),
+                            modifier = Modifier.clickable{
+                                isShowingGoals = true
                             }
                         )
                     }
-                    //timer
-                    ReminderTimePicker(
-                        reminderTime = state.reminder_time,
-                        onSelect = {
-                            viewmodel.setReminderTime(it)
-                        },
-                        isReminderEnabled = state.isShowReminderTime
-                    )
+                }
+                //frequency
+                InputElement(
+                    title = "Frequency"
+                ){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
+                        Selector(
+                            options = Frequency.getTypes().map { it },
+                            selectedOption = state.frequency,
+                            onOptionSelected = {
+                                viewmodel.setFrequency(it)
+                            },
+                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedOptionColor = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if(state.frequency == Frequency.Weekly){
+                            WeekDaySelector(
+                                daysMap = state.days_of_week,
+                                onSelect = {
+                                    viewmodel.onSelectWeekday(it)
+                                }
+                            )
+                        }
+                        if(state.frequency == Frequency.Monthly){
+                            MonthlyDaySelector(
+                                selectedDays = state.daysOfMonth,
+                                onDaySelected = {
+                                    viewmodel.onSelectDayofMonth(it)
+                                }
+                            )
+                        }
+                    }
+                }
+                //Reminder
+                InputElement{
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(
+                                text = "Reminder",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontFamily = regular,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            )
+                            SlidingButton(
+                                isSelected = state.isShowReminderTime,
+                                onToggle = {
+                                    viewmodel.toggleReminderOption()
+                                    scope.launch {
+                                        scrollstate.scrollTo(scrollstate.maxValue)
+                                    }
+                                }
+                            )
+                        }
+                        //timer
+                        ReminderTimePicker(
+                            reminderTime = state.reminder_time,
+                            onSelect = {
+                                viewmodel.setReminderTime(it)
+                            },
+                            isReminderEnabled = state.isShowReminderTime
+                        )
 
+                    }
+                }
+                Spacer(Modifier.height(90.dp))
+
+            }
+            //button
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(MaterialTheme.colorScheme.background)
+                    .align(Alignment.BottomCenter),
+                contentAlignment = Alignment.TopCenter
+            ){
+                //add button
+                Column(
+                    modifier = Modifier.wrapContentSize()
+                        .padding(vertical = 16.dp)
+                        .padding(bottom = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(horizontal = 24.dp)
+                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(20.dp))
+                            .clickable{
+                                scope.launch {
+                                    viewmodel.addHabit(date)
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "Done",
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.inverseOnSurface,
+                                fontFamily = regular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 20.sp
+                            ),
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    }
                 }
             }
 
