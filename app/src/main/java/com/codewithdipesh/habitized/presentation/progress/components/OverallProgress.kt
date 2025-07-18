@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +61,7 @@ fun OverallProgress(
     onClick : () ->Unit,
     modifier: Modifier = Modifier
 ) {
+    val width = LocalConfiguration.current.screenWidthDp - 64 //as padding on start and end
     Progress(
         habit = habit,
         color = MaterialTheme.colorScheme.secondary,
@@ -90,6 +92,7 @@ fun OverallProgress(
                         week.forEach { day ->
                             val progress = progresses.find { it.date == day }
                             OverAllCell(
+                               size = width/19,
                                color = getOriginalColorFromKey(habit.colorKey),
                                isActive = habitDayList.contains(day),
                                isSelect = (progress != null && progress.status == Status.Done)
@@ -105,15 +108,16 @@ fun OverallProgress(
 @Composable
 fun OverAllCell(
     modifier: Modifier = Modifier,
+    size : Int,
     color: Color,
     isSelect: Boolean,
     isActive :Boolean
 ){
     Box(
         modifier = Modifier
-            .size(16.dp)
+            .size(size.dp)
             .padding(1.5.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape((size/4).dp))
             .background(
                 if (!isActive) color.copy(0.15f)
                 else if (isSelect) color
