@@ -16,8 +16,8 @@ android {
         applicationId = "com.codewithdipesh.habitized"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.0"
+        versionCode = 7
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
