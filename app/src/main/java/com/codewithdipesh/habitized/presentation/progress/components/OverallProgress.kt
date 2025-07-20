@@ -92,7 +92,7 @@ fun OverallProgress(
                         week.forEach { day ->
                             val progress = progresses.find { it.date == day }
                             OverAllCell(
-                               size = width/19,
+                               size = width/20,
                                color = getOriginalColorFromKey(habit.colorKey),
                                isActive = habitDayList.contains(day),
                                isSelect = (progress != null && progress.status == Status.Done)
