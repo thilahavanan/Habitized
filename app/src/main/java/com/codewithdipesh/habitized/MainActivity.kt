@@ -107,13 +107,14 @@ class MainActivity : ComponentActivity() {
         }
     }
      override fun onStop() {
-         updateAllWidgets()
          super.onStop()
+         updateAllWidgets()
      }
 
      override fun onDestroy() {
-         updateAllWidgets()
          super.onDestroy()
+         updateAllWidgets()
+
      }
 
     private fun updateAllWidgets() {
