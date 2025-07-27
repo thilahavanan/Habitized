@@ -8,23 +8,15 @@ import jakarta.inject.Inject
 
 @AndroidEntryPoint
 class WeeklyHabitWidgetProvider : GlanceAppWidgetReceiver() {
-
-    @Inject
-    lateinit var repository: HabitWidgetRepository
-
     override val glanceAppWidget: GlanceAppWidget
-        get() = WeeklyHabitWidget(repository) // Pass injected repository
+        get() = WeeklyHabitWidget()
 }
-
 @AndroidEntryPoint
 class MonthlyHabitWidgetProvider : GlanceAppWidgetReceiver() {
-
-    @Inject
-    lateinit var repository: HabitWidgetRepository
-
     override val glanceAppWidget: GlanceAppWidget
-        get() = MonthlyHabitWidget(repository) // Pass injected repository
+        get() = MonthlyHabitWidget()
 }
+
 
 
 enum class WidgetType { Weekly, Overall }

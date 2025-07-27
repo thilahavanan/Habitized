@@ -28,7 +28,7 @@ class HabitWidgetRepository(
                             Status.Companion.fromString(
                                 progresses
                                     .find { progress -> progress.date == it }
-                                    ?.status!!
+                                    ?.status ?: Status.NotStarted.toString()
                             )
                         )
                     )

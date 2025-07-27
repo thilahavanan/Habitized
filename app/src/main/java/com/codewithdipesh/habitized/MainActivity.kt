@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
          lifecycleScope.launch {
              try {
                  // update widgets
-                 MonthlyHabitWidget(repository).updateAll(this@MainActivity)
+                 MonthlyHabitWidget().updateAll(this@MainActivity)
              } catch (e: Exception) {
                  Log.e("WidgetUpdate", "Failed: ${e.message}")
              }

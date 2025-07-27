@@ -16,6 +16,7 @@ import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
@@ -93,4 +94,10 @@ object Module {
     ): HabitWidgetRepository =
         HabitWidgetRepository(habitDao, progressDao)
 
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface WidgetRepositoryEntryPoint {
+    fun habitWidgetRepository(): HabitWidgetRepository
 }

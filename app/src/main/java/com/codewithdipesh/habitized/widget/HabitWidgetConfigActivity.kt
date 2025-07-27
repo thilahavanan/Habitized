@@ -122,7 +122,7 @@ class HabitWidgetConfigActivity : ComponentActivity() {
                 habitId = habit.habit_id!!
             )
             //force update to avoid ( fetching before saving and null error)
-            MonthlyHabitWidget(repository).updateAll(this@HabitWidgetConfigActivity)
+            MonthlyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
 
             val resultValue = Intent().apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

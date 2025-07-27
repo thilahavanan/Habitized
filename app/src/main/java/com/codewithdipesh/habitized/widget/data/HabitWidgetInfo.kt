@@ -13,7 +13,7 @@ data class HabitWidgetInfo(
     val daysOfWeek: List<Int> = emptyList(),
     val daysOfMonth: List<Int>? = null,
     val currentStreak: Int = 0,
-    val progress: List<ProgressWidgetData> = emptyList()
+    val progress: List<ProgressWidgetData> = emptyList(),
 )
 
 data class ProgressWidgetData(
