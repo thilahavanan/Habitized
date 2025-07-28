@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.widget.data.HabitWidgetDataStore
 import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
+import com.kizitonwose.calendar.compose.WeekCalendar
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -122,6 +123,7 @@ class HabitWidgetConfigActivity : ComponentActivity() {
                 habitId = habit.habit_id!!
             )
             //force update to avoid ( fetching before saving and null error)
+            WeeklyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
             MonthlyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
 
             val resultValue = Intent().apply {

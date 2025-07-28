@@ -41,8 +41,6 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
-    @Inject
-    lateinit var repository: HabitWidgetRepository
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,6 +119,7 @@ class MainActivity : ComponentActivity() {
          lifecycleScope.launch {
              try {
                  // update widgets
+                 WeeklyHabitWidget().updateAll(this@MainActivity)
                  MonthlyHabitWidget().updateAll(this@MainActivity)
              } catch (e: Exception) {
                  Log.e("WidgetUpdate", "Failed: ${e.message}")

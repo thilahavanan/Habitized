@@ -39,16 +39,17 @@
             </intent-filter>
 
         </activity>
-<!--        <receiver-->
-<!--            android:name=".widget.WeeklyHabitWidgetProvider"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>-->
-<!--            </intent-filter>-->
-<!--            <meta-data-->
-<!--                android:name="android.appwidget.provider"-->
-<!--                android:resource="wee"/>-->
-<!--        </receiver>-->
+
+        <receiver
+            android:name=".widget.WeeklyHabitWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weekly_widget_info"/>
+        </receiver>
 
         <receiver
             android:name=".widget.MonthlyHabitWidgetProvider"
@@ -60,9 +61,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/monthly_widget_info"/>
         </receiver>
-<!--        <activity-->
-<!--            android:name=".widget.WeeklyHabitWidgetConfigActivity"-->
-<!--            android:exported="false"/>-->
 
         <activity
             android:name=".widget.HabitWidgetConfigActivity"

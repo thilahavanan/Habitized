@@ -1,12 +1,19 @@
 package com.codewithdipesh.habitized.widget.elements
 
-import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.glance.layout.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
@@ -27,26 +34,32 @@ import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.action.actionStartActivity
+import androidx.glance.layout.ContentScale
+import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.size
 import androidx.glance.layout.width
+import androidx.glance.layout.wrapContentHeight
 import androidx.glance.unit.ColorProvider
+import androidx.glance.unit.Dimension
 import com.codewithdipesh.habitized.MainActivity
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
 import com.codewithdipesh.habitized.widget.data.HabitWidgetInfo
+import com.codewithdipesh.habitized.widget.data.ProgressWidgetData
+import com.codewithdipesh.habitized.widget.data.WidgetStatus
+import java.time.LocalDate
+import kotlin.collections.chunked
+import kotlin.collections.forEach
 
 @Composable
 fun OverAllHabitWidgetContent(
     habitInfo: HabitWidgetInfo,
     modifier: GlanceModifier = GlanceModifier
 ){
-    // Adaptive sizing
-    val size = LocalSize.current
-    val isCompact = size.width <= 250.dp
-    val titleFontSize = if (isCompact) 16.sp else 16.sp
-    val textFontSize = if (isCompact) 10.sp else 10.sp
-    val streakFontSize = if (isCompact) 20.sp else 18.sp
-    val streakWidth = if (isCompact) 15.dp else 17.dp
-    val spacing = if (isCompact) 3.dp else 7.dp
+    val titleFontSize = 18.sp
+    val streakFontSize = 24.sp
+    val textFontSize = 8.sp
+    val streakWidth = 24.dp
+    val padding = 12.dp
 
     val backgroundColorProvider = when (habitInfo.colorKey) {
         "blue" -> ColorProvider(
@@ -78,17 +91,30 @@ fun OverAllHabitWidgetContent(
             night = Color(0XFF010101)
         )
     }
+    val cellColor = when (habitInfo.colorKey) {
+        "blue" -> Color(0xFF5685A9)
+        "green" -> Color(0xFF60A487)
+        "red" -> Color(0xFFA4647B)
+        "yellow" -> Color(0xFFD48634)
+        "purple" -> Color(0xFF82729F)
+        "see_green" -> Color(0xFF44A9B5)
+        else -> Color(0xFF5685A9)
+    }
 
     Box(
         modifier = GlanceModifier
-            .cornerRadius(15.dp)
+            .cornerRadius(20.dp)
             .background(backgroundColorProvider)
+            .fillMaxSize()
             .clickable(actionStartActivity<MainActivity>()),
         contentAlignment = Alignment.TopStart
     ) {
         Column(
-            modifier = GlanceModifier.wrapContentSize()
-                .padding(16.dp)
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .padding(padding),
+            horizontalAlignment = Alignment.Start,
+            verticalAlignment = Alignment.CenterVertically
         ){
             //title
             Row(
@@ -105,9 +131,10 @@ fun OverAllHabitWidgetContent(
                         fontWeight = FontWeight.Bold
                     )
                 )
+                Spacer(GlanceModifier.defaultWeight())
                 //current streak and icon
                 Column {
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically){
                         Text(
                             text = habitInfo.currentStreak.toString(),
                             style = TextStyle(
@@ -123,8 +150,10 @@ fun OverAllHabitWidgetContent(
                         Image(
                             provider = ImageProvider(R.drawable.fire_icon),
                             contentDescription = "Fire icon",
+                            contentScale = ContentScale.Fit,
                             modifier = GlanceModifier
-                                .width(streakWidth)
+                                .size(streakWidth),
+                            colorFilter = ColorFilter.tint(ColorProvider(cellColor,cellColor))
                         )
                     }
                     Text(
@@ -140,8 +169,130 @@ fun OverAllHabitWidgetContent(
                     )
                 }
             }
-            Spacer(GlanceModifier.height(spacing * 2))
+            Spacer(GlanceModifier.height(16.dp))
             //progress
+            Progress(
+                progress = habitInfo.progress,
+                color = cellColor
+            )
         }
     }
+}
+
+
+@Composable
+fun Progress(
+    modifier: Modifier = Modifier,
+    progress: List<ProgressWidgetData>,
+    color :Color
+) {
+    Row{
+        Box(
+            modifier = GlanceModifier
+                .wrapContentSize()
+        ){
+            //1-49
+            progress.take(49).let {
+                Row {
+                    it.chunked(7).forEach { week->
+                        week.forEach {day->
+                            OverAllCell(
+                                size = 9,
+                                color = color,
+                                isSelect = day.status == WidgetStatus.Done,
+                                isLastIndex = false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ){
+            //50-98
+            progress.drop(49).take(49).let {
+                Row {
+                    it.chunked(7).forEach { week->
+                        week.forEach {day->
+                            OverAllCell(
+                                size = 9,
+                                color = color,
+                                isSelect = day.status == WidgetStatus.Done,
+                                isLastIndex = false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ){
+            //99-105
+            progress.drop(98).take(7).let {
+                Row {
+                    it.chunked(7).forEach { week->
+                        week.forEach {day->
+                            OverAllCell(
+                                size = 9,
+                                color = color,
+                                isSelect = day.status == WidgetStatus.Done,
+                                isLastIndex = false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ){
+            //last 1-7
+            progress.drop(105).let {
+                Row {
+                    it.chunked(7).forEach { week->
+                        week.forEach {day->
+                            OverAllCell(
+                                size = 9,
+                                color = color,
+                                isSelect = day.status == WidgetStatus.Done,
+                                isLastIndex = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+fun OverAllCell(
+    modifier: Modifier = Modifier,
+    size : Int,
+    color: Color,
+    isSelect: Boolean,
+    isLastIndex : Boolean,
+){
+    Box(
+        modifier = GlanceModifier
+            .size(size.dp)
+            .padding(
+                end = if(isLastIndex) 3.dp
+                else 0.dp
+            )
+            .cornerRadius((size/4).dp)
+            .background(
+                if (isSelect) color
+                else color.copy(0.34f)
+            )
+    ){}
 }
