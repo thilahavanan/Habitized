@@ -35,7 +35,9 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
  @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -104,6 +106,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+     override fun onPause(){
+         super.onPause()
+         updateAllWidgets()
+     }
      override fun onStop() {
          super.onStop()
          updateAllWidgets()
@@ -116,15 +122,14 @@ class MainActivity : ComponentActivity() {
      }
 
     private fun updateAllWidgets() {
-         lifecycleScope.launch {
-             try {
-                 // update widgets
-                 WeeklyHabitWidget().updateAll(this@MainActivity)
-                 MonthlyHabitWidget().updateAll(this@MainActivity)
-             } catch (e: Exception) {
-                 Log.e("WidgetUpdate", "Failed: ${e.message}")
-             }
-         }
+        try {
+            runBlocking {
+                WeeklyHabitWidget().updateAll(applicationContext)
+                MonthlyHabitWidget().updateAll(applicationContext)
+            }
+        } catch (e: Exception) {
+            Log.e("WidgetUpdate", "Failed: ${e.message}")
+        }
      }
 }
 
