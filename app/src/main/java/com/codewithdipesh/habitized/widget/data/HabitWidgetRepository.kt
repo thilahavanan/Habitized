@@ -80,7 +80,7 @@ class HabitWidgetRepository(
     }
     private fun getMonthDateRange() : List<LocalDate> {
         val today = LocalDate.now()
-        return (0..(105 + today.dayOfWeek.value) )
+        return (0..(77 + today.dayOfWeek.value) )
             .map{ offset ->
                 today.minusDays(offset.toLong())
             }

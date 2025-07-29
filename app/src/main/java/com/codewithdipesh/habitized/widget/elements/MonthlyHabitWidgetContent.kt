@@ -59,7 +59,7 @@ fun OverAllHabitWidgetContent(
     val streakFontSize = 24.sp
     val textFontSize = 8.sp
     val streakWidth = 24.dp
-    val padding = 12.dp
+    val padding = 16.dp
 
     val backgroundColorProvider = when (habitInfo.colorKey) {
         "blue" -> ColorProvider(
@@ -113,7 +113,7 @@ fun OverAllHabitWidgetContent(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .padding(padding),
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically
         ){
             //title
@@ -169,11 +169,11 @@ fun OverAllHabitWidgetContent(
                     )
                 }
             }
-            Spacer(GlanceModifier.height(16.dp))
+            Spacer(GlanceModifier.height(8.dp))
             //progress
             Progress(
                 progress = habitInfo.progress,
-                size = 13,
+                size = 18,
                 color = cellColor
             )
         }
@@ -221,30 +221,8 @@ fun Progress(
             modifier = GlanceModifier
                 .wrapContentSize()
         ){
-            //50-98
-            progress.drop(49).take(49).let {
-                Row {
-                    it.chunked(7).forEach { week->
-                        Column {
-                            week.forEach {day->
-                                OverAllCell(
-                                    size = size,
-                                    color = color,
-                                    isSelect = day.status == WidgetStatus.Done,
-                                    isLastIndex = false
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Box(
-            modifier = GlanceModifier
-                .wrapContentSize()
-        ){
-            //99-105
-            progress.drop(98).take(7).let {
+            //49-77
+            progress.drop(49).take(28).let {
                 Row {
                     it.chunked(7).forEach { week->
                         Column {
@@ -266,7 +244,7 @@ fun Progress(
                 .wrapContentSize()
         ){
             //last 1-7
-            progress.drop(105).let {
+            progress.drop(77).let {
                 Row {
                     it.chunked(7).forEach { week->
                         Column {
@@ -302,7 +280,7 @@ fun OverAllCell(
     ) {
         Box(
             modifier = GlanceModifier
-                .size((size - 2).dp)
+                .size((size - 3).dp)
                 .cornerRadius((size/4).dp)
                 .background(
                     if (isSelect) color
