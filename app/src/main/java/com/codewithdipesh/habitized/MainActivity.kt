@@ -123,7 +123,7 @@ class MainActivity : ComponentActivity() {
 
     private fun updateAllWidgets() {
         try {
-            runBlocking {
+            lifecycleScope.launch {
                 WeeklyHabitWidget().updateAll(applicationContext)
                 MonthlyHabitWidget().updateAll(applicationContext)
             }

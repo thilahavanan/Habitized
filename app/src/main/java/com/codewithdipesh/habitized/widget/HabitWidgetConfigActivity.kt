@@ -13,13 +13,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
 import com.codewithdipesh.habitized.domain.model.Habit
+import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
+import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.regular
 import com.codewithdipesh.habitized.widget.data.HabitWidgetDataStore
 import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
 import com.kizitonwose.calendar.compose.WeekCalendar
@@ -52,7 +60,7 @@ class HabitWidgetConfigActivity : ComponentActivity() {
         }
 
         setContent {
-            MaterialTheme {
+            HabitizedTheme {
                 HabitSelectionScreen()
             }
         }
@@ -69,41 +77,86 @@ class HabitWidgetConfigActivity : ComponentActivity() {
             isLoading = false
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Select Habit for Widget",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            if (isLoading) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator()
+        Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
+            topBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = "Select Habit",
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = playfair,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 24.sp
+                        ),
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    )
                 }
-            } else {
-                LazyColumn {
-                    items(habits) { habit ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            onClick = { selectHabit(habit) }
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp)
+            }
+        ){
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .padding(16.dp)
+            ) {
+                if (isLoading) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn {
+                        items(habits) { habit ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
+                                onClick = { selectHabit(habit) }
                             ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
+                                    Text(
+                                        text = habit.title,
+                                        style = TextStyle(
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            fontFamily = regular,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp
+                                        )
+                                    )
+                                    Text(
+                                        text = "Current Streak: ${habit.currentStreak}",
+                                        style = TextStyle(
+                                            color = Color.Gray,
+                                            fontFamily = regular,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 12.sp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        if(habits.isEmpty()){
+                            item{
                                 Text(
-                                    text = habit.title,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Current Streak: ${habit.currentStreak}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Gray
+                                    text = "Pls Add a Habit First",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontFamily = regular,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
                                 )
                             }
                         }
