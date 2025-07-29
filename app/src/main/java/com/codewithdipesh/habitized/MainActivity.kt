@@ -3,6 +3,7 @@
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.core.app.ActivityCompat
+import androidx.glance.appwidget.updateAll
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
@@ -24,15 +27,23 @@ import com.codewithdipesh.habitized.presentation.progress.ProgressViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.durationScreen.DurationViewModel
 import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.SessionViewModel
 import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
+import com.codewithdipesh.habitized.widget.MonthlyHabitWidget
+import com.codewithdipesh.habitized.widget.WeeklyHabitWidget
+import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
  @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,5 +106,30 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+     override fun onPause(){
+         super.onPause()
+         updateAllWidgets()
+     }
+     override fun onStop() {
+         super.onStop()
+         updateAllWidgets()
+     }
+
+     override fun onDestroy() {
+         super.onDestroy()
+         updateAllWidgets()
+
+     }
+
+    private fun updateAllWidgets() {
+        try {
+            lifecycleScope.launch {
+                WeeklyHabitWidget().updateAll(applicationContext)
+                MonthlyHabitWidget().updateAll(applicationContext)
+            }
+        } catch (e: Exception) {
+            Log.e("WidgetUpdate", "Failed: ${e.message}")
+        }
+     }
 }
 
