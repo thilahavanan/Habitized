@@ -173,6 +173,7 @@ fun OverAllHabitWidgetContent(
             //progress
             Progress(
                 progress = habitInfo.progress,
+                size = 13,
                 color = cellColor
             )
         }
@@ -184,9 +185,16 @@ fun OverAllHabitWidgetContent(
 fun Progress(
     modifier: Modifier = Modifier,
     progress: List<ProgressWidgetData>,
+    size : Int,
     color :Color
 ) {
-    Row{
+    Row(
+        modifier = GlanceModifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.Top,
+    ){
         Box(
             modifier = GlanceModifier
                 .wrapContentSize()
@@ -195,13 +203,15 @@ fun Progress(
             progress.take(49).let {
                 Row {
                     it.chunked(7).forEach { week->
-                        week.forEach {day->
-                            OverAllCell(
-                                size = 9,
-                                color = color,
-                                isSelect = day.status == WidgetStatus.Done,
-                                isLastIndex = false
-                            )
+                        Column {
+                            week.forEach {day->
+                                OverAllCell(
+                                    size = size,
+                                    color = color,
+                                    isSelect = day.status == WidgetStatus.Done,
+                                    isLastIndex = false
+                                )
+                            }
                         }
                     }
                 }
@@ -209,20 +219,21 @@ fun Progress(
         }
         Box(
             modifier = GlanceModifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+                .wrapContentSize()
         ){
             //50-98
             progress.drop(49).take(49).let {
                 Row {
                     it.chunked(7).forEach { week->
-                        week.forEach {day->
-                            OverAllCell(
-                                size = 9,
-                                color = color,
-                                isSelect = day.status == WidgetStatus.Done,
-                                isLastIndex = false
-                            )
+                        Column {
+                            week.forEach {day->
+                                OverAllCell(
+                                    size = size,
+                                    color = color,
+                                    isSelect = day.status == WidgetStatus.Done,
+                                    isLastIndex = false
+                                )
+                            }
                         }
                     }
                 }
@@ -230,20 +241,21 @@ fun Progress(
         }
         Box(
             modifier = GlanceModifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+                .wrapContentSize()
         ){
             //99-105
             progress.drop(98).take(7).let {
                 Row {
                     it.chunked(7).forEach { week->
-                        week.forEach {day->
-                            OverAllCell(
-                                size = 9,
-                                color = color,
-                                isSelect = day.status == WidgetStatus.Done,
-                                isLastIndex = false
-                            )
+                        Column {
+                            week.forEach {day->
+                                OverAllCell(
+                                    size = size,
+                                    color = color,
+                                    isSelect = day.status == WidgetStatus.Done,
+                                    isLastIndex = false
+                                )
+                            }
                         }
                     }
                 }
@@ -251,20 +263,21 @@ fun Progress(
         }
         Box(
             modifier = GlanceModifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+                .wrapContentSize()
         ){
             //last 1-7
             progress.drop(105).let {
                 Row {
                     it.chunked(7).forEach { week->
-                        week.forEach {day->
-                            OverAllCell(
-                                size = 9,
-                                color = color,
-                                isSelect = day.status == WidgetStatus.Done,
-                                isLastIndex = true
-                            )
+                        Column {
+                            week.forEach {day->
+                                OverAllCell(
+                                    size = size,
+                                    color = color,
+                                    isSelect = day.status == WidgetStatus.Done,
+                                    isLastIndex = true
+                                )
+                            }
                         }
                     }
                 }
@@ -285,14 +298,16 @@ fun OverAllCell(
     Box(
         modifier = GlanceModifier
             .size(size.dp)
-            .padding(
-                end = if(isLastIndex) 3.dp
-                else 0.dp
-            )
-            .cornerRadius((size/4).dp)
-            .background(
-                if (isSelect) color
-                else color.copy(0.34f)
-            )
-    ){}
+            .background(Color.Transparent)
+    ) {
+        Box(
+            modifier = GlanceModifier
+                .size((size - 2).dp)
+                .cornerRadius((size/4).dp)
+                .background(
+                    if (isSelect) color
+                    else color.copy(0.34f)
+                )
+        ) {}
+    }
 }
