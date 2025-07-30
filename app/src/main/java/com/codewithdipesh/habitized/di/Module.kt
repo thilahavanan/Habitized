@@ -13,8 +13,10 @@ import com.codewithdipesh.habitized.data.repository.HabitRepoImpl
 import com.codewithdipesh.habitized.data.sharedPref.HabitPreference
 import com.codewithdipesh.habitized.domain.alarmManager.AlarmScheduler
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
+import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
@@ -86,4 +88,16 @@ object Module {
         return AndroidAlarmScheduler(context)
     }
 
+    @Provides fun provideHabitWidgetRepository(
+        habitDao: HabitDao,
+        progressDao: HabitProgressDao
+    ): HabitWidgetRepository =
+        HabitWidgetRepository(habitDao, progressDao)
+
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface WidgetRepositoryEntryPoint {
+    fun habitWidgetRepository(): HabitWidgetRepository
 }
