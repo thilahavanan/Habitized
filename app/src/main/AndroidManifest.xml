@@ -42,7 +42,8 @@
 
         <receiver
             android:name=".widget.WeeklyHabitWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/weekly_habit_widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -53,7 +54,8 @@
 
         <receiver
             android:name=".widget.MonthlyHabitWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/monthly_habit_widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -64,7 +66,11 @@
 
         <activity
             android:name=".widget.HabitWidgetConfigActivity"
-            android:exported="false"/>
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
 
         <receiver android:name=".data.alarmManager.AlarmReceiver"
             android:enabled="true"

@@ -2,9 +2,11 @@ package com.codewithdipesh.habitized.widget
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -33,7 +35,9 @@ import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
 import com.kizitonwose.calendar.compose.WeekCalendar
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @AndroidEntryPoint
 class HabitWidgetConfigActivity : ComponentActivity() {
@@ -169,21 +173,23 @@ class HabitWidgetConfigActivity : ComponentActivity() {
     // SAVE is called here when user selects habit
     private fun selectHabit(habit: Habit) {
         lifecycleScope.launch {
-            //save
-            HabitWidgetDataStore.saveHabitIdForWidget(
-                context = this@HabitWidgetConfigActivity,
-                widgetId = appWidgetId,
-                habitId = habit.habit_id!!
-            )
-            //force update to avoid ( fetching before saving and null error)
-            WeeklyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
-            MonthlyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
+            try {
+                val habitUUID = habit.habit_id!! // Save the habit ID
+                HabitWidgetDataStore.saveHabitIdForWidget(
+                    context = this@HabitWidgetConfigActivity,
+                    widgetId = appWidgetId,
+                    habitId = habitUUID
+                )
+                val resultValue = Intent().apply {
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                }
+                setResult(Activity.RESULT_OK, resultValue)
+                finish()
 
-            val resultValue = Intent().apply {
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            } catch (e: Exception) {
+                Log.e("WidgetConfig", "Error saving habit: ${e.message}")
             }
-            setResult(Activity.RESULT_OK, resultValue)
-            finish()
         }
     }
+
 }
