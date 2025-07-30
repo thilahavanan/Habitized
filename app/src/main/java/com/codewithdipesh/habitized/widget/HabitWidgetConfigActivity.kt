@@ -2,6 +2,7 @@ package com.codewithdipesh.habitized.widget
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -36,6 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @AndroidEntryPoint
 class HabitWidgetConfigActivity : ComponentActivity() {
@@ -172,20 +174,12 @@ class HabitWidgetConfigActivity : ComponentActivity() {
     private fun selectHabit(habit: Habit) {
         lifecycleScope.launch {
             try {
-                // WAIT for save to complete
+                val habitUUID = habit.habit_id!! // Save the habit ID
                 HabitWidgetDataStore.saveHabitIdForWidget(
                     context = this@HabitWidgetConfigActivity,
                     widgetId = appWidgetId,
-                    habitId = habit.habit_id!!
+                    habitId = habitUUID
                 )
-
-                // Add a small delay to ensure DataStore commit is complete
-                delay(100)
-
-                // Now update widgets
-                WeeklyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
-                MonthlyHabitWidget().updateAll(this@HabitWidgetConfigActivity)
-
                 val resultValue = Intent().apply {
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                 }
