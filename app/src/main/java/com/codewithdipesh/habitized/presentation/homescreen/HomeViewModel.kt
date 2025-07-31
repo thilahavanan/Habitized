@@ -318,6 +318,27 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
+
+    /**
+     *  Copy of addTodo() but with title as Argument instead of empty string
+     */
+    fun addTodoWithTitle(title: String){
+        if(_uiState.value.todos.find { it.title == "" } == null){
+            val todoList = _uiState.value.todos.toMutableList()
+            val newTodo = OneTimeTask(
+                taskId = UUID.randomUUID(),
+                title = title,
+                isCompleted = false,
+                date = _uiState.value.selectedDate,
+                reminder_time = null
+            )
+            _uiState.value = _uiState.value.copy(
+                todos = todoList + newTodo
+            )
+            //Add New Task
+            viewModelScope.launch { repo.addOneTimeTask(newTodo) }
+        }
+    }
     fun updateTodo(title : String,id : UUID){
         val todoList = _uiState.value.todos.toMutableList()
         val updatedList = todoList

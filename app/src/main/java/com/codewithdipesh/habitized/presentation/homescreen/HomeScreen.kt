@@ -182,8 +182,8 @@ fun HomeScreen(
                         modifier = Modifier,
                         onDismiss = {
                             showAddingOptions = false
-                        }
-
+                        },
+                        viewModel = viewmodel
                     )
                 }
             }
@@ -423,7 +423,11 @@ fun HomeScreen(
                     if (state.ongoingHabit != null) {
                         Spacer(Modifier.height(150.dp))
                     }
-                } else {//todos
+                } else {
+
+                    /**
+                     *  Listing Todo's tasks
+                     */
                     Spacer(Modifier.height(16.dp))
                     state.todos
                         .forEach { todo ->
@@ -439,163 +443,116 @@ fun HomeScreen(
                                     viewmodel.deleteTodo(it)
                                 }
                             )
-                            Spacer(Modifier.height(10.dp))
+                            // Spacer(Modifier.height(10.dp))
                         }
-                    Text(
-                        text = "+ Add Todos",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.scrim,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .clickable {
-                                viewmodel.addTodo()
-                            }
-                    )
                 }
-            }
 
+            }
         }
 
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopStart
-        ) {  //date picker
             Box(
-                modifier = Modifier.padding(top = 120.dp)
-            ) {
-                AnimatedVisibility(
-                    visible = state.isShowingDatePicker,
-                    enter = expandVertically(),
-                    exit = shrinkVertically(animationSpec = tween(100))
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopStart
+            ) {  //date picker
+                Box(
+                    modifier = Modifier.padding(top = 120.dp)
                 ) {
-                    DatePicker(
-                        currentDate = state.selectedDate,
-                        onChange = {
-                            viewmodel.onDateSelected(it)
-                            viewmodel.closeDatePicker()
-                        },
-                        onScrollChanged = {
-                            hideJob?.cancel()
-                            if (!it) {
-                                hideJob = scope.launch {
-                                    delay(2000)
-                                    viewmodel.closeDatePicker()
+                    AnimatedVisibility(
+                        visible = state.isShowingDatePicker,
+                        enter = expandVertically(),
+                        exit = shrinkVertically(animationSpec = tween(100))
+                    ) {
+                        DatePicker(
+                            currentDate = state.selectedDate,
+                            onChange = {
+                                viewmodel.onDateSelected(it)
+                                viewmodel.closeDatePicker()
+                            },
+                            onScrollChanged = {
+                                hideJob?.cancel()
+                                if (!it) {
+                                    hideJob = scope.launch {
+                                        delay(2000)
+                                        viewmodel.closeDatePicker()
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
 
+                    }
                 }
-            }
-            Box(modifier.align(Alignment.BottomCenter)) {
-                if (state.habitWithProgressList.isEmpty() && state.selectedOption == HomeScreenOption.Habits) {
-                    Icon(
-                        painter = painterResource(R.drawable.empty_habit_icon),
-                        contentDescription = "empty habit",
-                        tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 90.dp)
-                    )
-                }
-            }
-            //ongoing timer
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                contentAlignment = Alignment.Center
-            ) {
-                AnimatedVisibility(
-                    visible = state.ongoingHabit != null,
-                    enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                ) {
-                    state.ongoingHabit?.let {
-                        RunningTimer(
-                            habitWithProgress = state.ongoingHabit!!,
-                            hour = state.ongoingHour,
-                            minute = state.ongoingMinute,
-                            second = state.ongoingSecond,
-                            onUpdateTimer = { h, m, s ->
-                                viewmodel.updateOngoingTimer(h, m, s)
-                            },
-                            onClick = {
-                                if (state.ongoingHabit!!.habit.type == HabitType.Session) {
-                                    navController.navigate(Screen.SessionScreen.createRoute(it))
-                                } else {
-                                    navController.navigate(Screen.DurationScreen.createRoute(it))
-                                }
-                            },
-                            onTimerFinished = {
-                                scope.launch {
-                                    viewmodel.finishTimer()
-                                    viewmodel.loadHomePage(state.selectedDate)
-                                }
-                            },
+                Box(modifier.align(Alignment.BottomCenter)) {
+                    if (state.habitWithProgressList.isEmpty() && state.selectedOption == HomeScreenOption.Habits) {
+                        Icon(
+                            painter = painterResource(R.drawable.empty_habit_icon),
+                            contentDescription = "empty habit",
+                            tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(bottom = 90.dp)
                         )
                     }
                 }
-            }
-            //BottomNavBar
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                contentAlignment = Alignment.Center
-            ) {
-                BottomNavBar(
-                    selectedScreen = Screen.Home,
-                    onAddClick = { showAddingOptions = !showAddingOptions },
-                    onNavigate = {
-                        if (it == Screen.Home) {
-                            navController.navigate(it.route) {
-                                popUpTo(0)
-                                launchSingleTop = true
-                            }
-                        } else {
-                            navController.navigate(it.route)
+                //ongoing timer
+                Box(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AnimatedVisibility(
+                        visible = state.ongoingHabit != null,
+                        enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                    ) {
+                        state.ongoingHabit?.let {
+                            RunningTimer(
+                                habitWithProgress = state.ongoingHabit!!,
+                                hour = state.ongoingHour,
+                                minute = state.ongoingMinute,
+                                second = state.ongoingSecond,
+                                onUpdateTimer = { h, m, s ->
+                                    viewmodel.updateOngoingTimer(h, m, s)
+                                },
+                                onClick = {
+                                    if (state.ongoingHabit!!.habit.type == HabitType.Session) {
+                                        navController.navigate(Screen.SessionScreen.createRoute(it))
+                                    } else {
+                                        navController.navigate(Screen.DurationScreen.createRoute(it))
+                                    }
+                                },
+                                onTimerFinished = {
+                                    scope.launch {
+                                        viewmodel.finishTimer()
+                                        viewmodel.loadHomePage(state.selectedDate)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .padding(bottom = 90.dp)
+                            )
                         }
                     }
-                )
+                }
+                //BottomNavBar
+                Box(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BottomNavBar(
+                        selectedScreen = Screen.Home,
+                        onAddClick = { showAddingOptions = !showAddingOptions },
+                        onNavigate = {
+                            if (it == Screen.Home) {
+                                navController.navigate(it.route) {
+                                    popUpTo(0)
+                                    launchSingleTop = true
+                                }
+                            } else {
+                                navController.navigate(it.route)
+                            }
+                        }
+                    )
+                }
             }
-        }
 
-    }
-
-}
-
-@Composable
-fun HomeScreenOptions(
-    state: HomeScreenUI,
-    navController: NavController
-) {
-    when (state.selectedOption) {
-        HomeScreenOption.Habits -> {
-            AddingOption(
-                onDismiss = {
-
-                },
-                onAddHabitClicked = {
-                    navController.navigate(Screen.AddHabit.createRoute(date = state.selectedDate))
-                },
-                onAddGoalClicked = {
-                    navController.navigate(Screen.AddGoal.createRoute())
-                }
-            )
-        }
-
-        HomeScreenOption.Todos -> {
-            AddTask(
-                modifier = Modifier,
-                onDismiss = {
-                    // showAddingOptions = false
-                }
-
-            )
-        }
     }
 }
 
