@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Habitized</string>
+    <string name="weekly_widget_description">View your weekly habit progress</string>
+    <string name="monthly_widget_description">See your complete monthly habit tracking</string>
+
+    <string name="weekly_habit_widget_label">Weekly Progress</string>
+    <string name="monthly_habit_widget_label">Monthly Progress</string>
 </resources>

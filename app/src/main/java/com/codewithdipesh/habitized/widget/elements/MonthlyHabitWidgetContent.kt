@@ -17,6 +17,7 @@ import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.cornerRadius
@@ -55,11 +56,21 @@ fun OverAllHabitWidgetContent(
     habitInfo: HabitWidgetInfo,
     modifier: GlanceModifier = GlanceModifier
 ){
-    val titleFontSize = 18.sp
-    val streakFontSize = 24.sp
-    val textFontSize = 8.sp
-    val streakWidth = 24.dp
-    val padding = 16.dp
+    val context = LocalContext.current
+    val displayMetrics = context.resources.displayMetrics
+    val density = displayMetrics.density
+
+    // Calculate responsive sizes based on device characteristics
+    val isLargeScreen = displayMetrics.widthPixels > 1080
+    val isHighDensity = density > 2.5f
+
+    // Adaptive sizing
+    val titleFontSize = if (isLargeScreen) 20.sp else 16.sp
+    val streakFontSize = if (isLargeScreen) 28.sp else 22.sp
+    val textFontSize = if (isLargeScreen) 12.sp else 9.sp
+    val streakWidth = if (isLargeScreen) 28.dp else 22.dp
+    val padding = if (isLargeScreen) 20.dp else 14.dp
+    val cellSize = if (isLargeScreen) 22 else 16
 
     val backgroundColorProvider = when (habitInfo.colorKey) {
         "blue" -> ColorProvider(
