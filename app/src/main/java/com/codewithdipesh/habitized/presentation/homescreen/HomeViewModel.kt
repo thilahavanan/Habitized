@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
     fun loadHomePage(date: LocalDate){
         viewModelScope.launch(Dispatchers.IO){
             val habits = repo.getHabitsForDay(date)
-            val todos = repo.getTasksForDay(date)
+            val oneTimeTasksUIState = repo.getTasksForDay(date)
             //checking for ongoing duration or session habit
             val ongoingHabit = habits
                 .asSequence()
@@ -66,8 +66,10 @@ class HomeViewModel @Inject constructor(
             ongoingHabit?.let { addOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
                 habitWithProgressList = habits,
-                todos = todos,
-                ongoingHabit = ongoingHabit
+                ongoingHabit = ongoingHabit,
+                oneTimeTasksUIState = OneTimeTasksUIState(
+                    oneTimeTaskList = oneTimeTasksUIState
+                )
             )
         }
     }
@@ -303,28 +305,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun addTodo(){
-        if(_uiState.value.todos.find { it.title == "" } == null){
-            val todoList = _uiState.value.todos.toMutableList()
-            val newTodo = OneTimeTask(
-                taskId = UUID.randomUUID(),
-                title = "",
-                isCompleted = false,
-                date = _uiState.value.selectedDate,
-                reminder_time = null
-            )
-            _uiState.value = _uiState.value.copy(
-                todos = todoList + newTodo
-            )
-        }
-    }
-
     /**
      *  Copy of addTodo() but with title as Argument instead of empty string
      */
     fun addTodoWithTitle(title: String){
-        if(_uiState.value.todos.find { it.title == "" } == null){
-            val todoList = _uiState.value.todos.toMutableList()
+            val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
             val newTodo = OneTimeTask(
                 taskId = UUID.randomUUID(),
                 title = title,
@@ -333,40 +318,40 @@ class HomeViewModel @Inject constructor(
                 reminder_time = null
             )
             _uiState.value = _uiState.value.copy(
-                todos = todoList + newTodo
+                oneTimeTasksUIState = OneTimeTasksUIState(todoList + newTodo)
             )
             //Add New Task
             viewModelScope.launch { repo.addOneTimeTask(newTodo) }
-        }
     }
+
     fun updateTodo(title : String,id : UUID){
-        val todoList = _uiState.value.todos.toMutableList()
+        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
         val updatedList = todoList
             .map { if(it.taskId == id) it.copy(title = title) else it }
         _uiState.value = _uiState.value.copy(
-            todos = updatedList
+            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
         )
         //update repo
-        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.todos.find { it.taskId == id }!!) }
+        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.oneTimeTasksUIState.oneTimeTaskList.find { it.taskId == id }!!) }
     }
     fun deleteTodo(id : UUID){
-        val todoList = _uiState.value.todos.toMutableList()
+        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
         val updatedList = todoList.filter { it.taskId != id }
         _uiState.value = _uiState.value.copy(
-            todos = updatedList
+            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
         )
         //update repo
         viewModelScope.launch { repo.deleteOneTimeTask(id) }
     }
     fun toggleTodo(id : UUID){
-        val todoList = _uiState.value.todos.toMutableList()
+        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
         val updatedList = todoList
             .map {
                 if(it.taskId == id) it.copy(isCompleted = !it.isCompleted)
                 else it
             }
         _uiState.value = _uiState.value.copy(
-            todos = updatedList
+            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
         )
         //update repo
         viewModelScope.launch { repo.toggleOneTimeTask(id) }

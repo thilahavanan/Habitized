@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -424,135 +425,215 @@ fun HomeScreen(
                         Spacer(Modifier.height(150.dp))
                     }
                 } else {
-
-                    /**
-                     *  Listing Todo's tasks
-                     */
-                    Spacer(Modifier.height(16.dp))
-                    state.todos
-                        .forEach { todo ->
-                            TodoEditor(
-                                todo = todo,
-                                onChange = {
-                                    viewmodel.updateTodo(it, todo.taskId)
-                                },
-                                onToggle = {
-                                    viewmodel.toggleTodo(todo.taskId)
-                                },
-                                onDelete = {
-                                    viewmodel.deleteTodo(it)
-                                }
-                            )
-                            // Spacer(Modifier.height(10.dp))
-                        }
+                    TodoTaskListSections(
+                        modifier = Modifier,
+                        homeViewModel = viewmodel,
+                        uiState = state
+                    )
                 }
 
             }
         }
 
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopStart
+        ) {  //date picker
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopStart
-            ) {  //date picker
-                Box(
-                    modifier = Modifier.padding(top = 120.dp)
+                modifier = Modifier.padding(top = 120.dp)
+            ) {
+                AnimatedVisibility(
+                    visible = state.isShowingDatePicker,
+                    enter = expandVertically(),
+                    exit = shrinkVertically(animationSpec = tween(100))
                 ) {
-                    AnimatedVisibility(
-                        visible = state.isShowingDatePicker,
-                        enter = expandVertically(),
-                        exit = shrinkVertically(animationSpec = tween(100))
-                    ) {
-                        DatePicker(
-                            currentDate = state.selectedDate,
-                            onChange = {
-                                viewmodel.onDateSelected(it)
-                                viewmodel.closeDatePicker()
-                            },
-                            onScrollChanged = {
-                                hideJob?.cancel()
-                                if (!it) {
-                                    hideJob = scope.launch {
-                                        delay(2000)
-                                        viewmodel.closeDatePicker()
-                                    }
+                    DatePicker(
+                        currentDate = state.selectedDate,
+                        onChange = {
+                            viewmodel.onDateSelected(it)
+                            viewmodel.closeDatePicker()
+                        },
+                        onScrollChanged = {
+                            hideJob?.cancel()
+                            if (!it) {
+                                hideJob = scope.launch {
+                                    delay(2000)
+                                    viewmodel.closeDatePicker()
                                 }
                             }
-                        )
+                        }
+                    )
 
-                    }
                 }
-                Box(modifier.align(Alignment.BottomCenter)) {
-                    if (state.habitWithProgressList.isEmpty() && state.selectedOption == HomeScreenOption.Habits) {
-                        Icon(
-                            painter = painterResource(R.drawable.empty_habit_icon),
-                            contentDescription = "empty habit",
-                            tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
+            }
+            Box(modifier.align(Alignment.BottomCenter)) {
+                if (state.habitWithProgressList.isEmpty() && state.selectedOption == HomeScreenOption.Habits) {
+                    Icon(
+                        painter = painterResource(R.drawable.empty_habit_icon),
+                        contentDescription = "empty habit",
+                        tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 90.dp)
+                    )
+                }
+            }
+            //ongoing timer
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedVisibility(
+                    visible = state.ongoingHabit != null,
+                    enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                ) {
+                    state.ongoingHabit?.let {
+                        RunningTimer(
+                            habitWithProgress = state.ongoingHabit!!,
+                            hour = state.ongoingHour,
+                            minute = state.ongoingMinute,
+                            second = state.ongoingSecond,
+                            onUpdateTimer = { h, m, s ->
+                                viewmodel.updateOngoingTimer(h, m, s)
+                            },
+                            onClick = {
+                                if (state.ongoingHabit!!.habit.type == HabitType.Session) {
+                                    navController.navigate(Screen.SessionScreen.createRoute(it))
+                                } else {
+                                    navController.navigate(Screen.DurationScreen.createRoute(it))
+                                }
+                            },
+                            onTimerFinished = {
+                                scope.launch {
+                                    viewmodel.finishTimer()
+                                    viewmodel.loadHomePage(state.selectedDate)
+                                }
+                            },
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .padding(bottom = 90.dp)
                         )
                     }
                 }
-                //ongoing timer
-                Box(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AnimatedVisibility(
-                        visible = state.ongoingHabit != null,
-                        enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                    ) {
-                        state.ongoingHabit?.let {
-                            RunningTimer(
-                                habitWithProgress = state.ongoingHabit!!,
-                                hour = state.ongoingHour,
-                                minute = state.ongoingMinute,
-                                second = state.ongoingSecond,
-                                onUpdateTimer = { h, m, s ->
-                                    viewmodel.updateOngoingTimer(h, m, s)
-                                },
-                                onClick = {
-                                    if (state.ongoingHabit!!.habit.type == HabitType.Session) {
-                                        navController.navigate(Screen.SessionScreen.createRoute(it))
-                                    } else {
-                                        navController.navigate(Screen.DurationScreen.createRoute(it))
-                                    }
-                                },
-                                onTimerFinished = {
-                                    scope.launch {
-                                        viewmodel.finishTimer()
-                                        viewmodel.loadHomePage(state.selectedDate)
-                                    }
-                                },
-                                modifier = Modifier
-                                    .padding(bottom = 90.dp)
-                            )
+            }
+            //BottomNavBar
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                contentAlignment = Alignment.Center
+            ) {
+                BottomNavBar(
+                    selectedScreen = Screen.Home,
+                    onAddClick = { showAddingOptions = !showAddingOptions },
+                    onNavigate = {
+                        if (it == Screen.Home) {
+                            navController.navigate(it.route) {
+                                popUpTo(0)
+                                launchSingleTop = true
+                            }
+                        } else {
+                            navController.navigate(it.route)
                         }
                     }
-                }
-                //BottomNavBar
-                Box(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    contentAlignment = Alignment.Center
-                ) {
-                    BottomNavBar(
-                        selectedScreen = Screen.Home,
-                        onAddClick = { showAddingOptions = !showAddingOptions },
-                        onNavigate = {
-                            if (it == Screen.Home) {
-                                navController.navigate(it.route) {
-                                    popUpTo(0)
-                                    launchSingleTop = true
-                                }
-                            } else {
-                                navController.navigate(it.route)
-                            }
-                        }
-                    )
-                }
+                )
             }
+        }
 
     }
+}
+
+@Composable
+fun TodoTaskListSections(
+    modifier: Modifier = Modifier,
+    uiState: HomeScreenUI,
+    homeViewModel: HomeViewModel
+) {
+
+    /**
+     *  OverDues OneTime Task Section
+     */
+    Spacer(Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.padding(start = 8.dp), text = "OverDue", style = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontFamily = playfair,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            fontSize = 20.sp
+        )
+    )
+    uiState.oneTimeTasksUIState.getOverDueOneTimeTasks()
+        .forEach { todo ->
+            TodoEditor(
+                todo = todo,
+                onChange = {
+                    homeViewModel.updateTodo(it, todo.taskId)
+                },
+                onToggle = {
+                    homeViewModel.toggleTodo(todo.taskId)
+                },
+                onDelete = {
+                    homeViewModel.deleteTodo(it)
+                }
+            )
+        }
+
+    /**
+     *  Today OneTime Task Section
+     */
+    Spacer(Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.padding(start = 8.dp), text = "Today", style = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontFamily = playfair,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            fontSize = 20.sp
+        )
+    )
+    uiState.oneTimeTasksUIState.getTodayOneTimeTasks()
+        .forEach { todo ->
+            TodoEditor(
+                todo = todo,
+                onChange = {
+                    homeViewModel.updateTodo(it, todo.taskId)
+                },
+                onToggle = {
+                    homeViewModel.toggleTodo(todo.taskId)
+                },
+                onDelete = {
+                    homeViewModel.deleteTodo(it)
+                }
+            )
+        }
+
+    /**
+     *  Completed OneTime Task Section
+     */
+    Spacer(Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.padding(start = 8.dp), text = "Completed",
+        style = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontFamily = playfair,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            fontSize = 20.sp
+        )
+    )
+   uiState.oneTimeTasksUIState.getCompletedOneTimeTasks()
+        .forEach { todo ->
+            TodoEditor(
+                todo = todo,
+                onChange = {
+                    homeViewModel.updateTodo(it, todo.taskId)
+                },
+                onToggle = {
+                    homeViewModel.toggleTodo(todo.taskId)
+                },
+                onDelete = {
+                    homeViewModel.deleteTodo(it)
+                }
+            )
+        }
 }
 

@@ -1,5 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen.component
 
+
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -25,20 +28,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -179,9 +178,6 @@ fun SubTaskEditor(
 fun TodoEditor(
     modifier: Modifier = Modifier,
     todo: OneTimeTask,
-    textSize :Int = 16,
-    textColor : Color =MaterialTheme.colorScheme.onPrimary,
-    onSurface: Color = MaterialTheme.colorScheme.primary,
     onChange : (String) ->Unit = {},
     onToggle : () -> Unit= {},
     onDelete : (UUID) -> Unit = {}
@@ -194,11 +190,16 @@ fun TodoEditor(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
+            modifier = modifier.weight(1f).toggleable(
+                    value = todo.isCompleted,
+                    onValueChange = { onToggle()},
+                    role = Role.Checkbox
+                )
         ) {
             Checkbox(
                 checked = todo.isCompleted,
-                onCheckedChange = {}
+                onCheckedChange = {},
+                enabled = !todo.isCompleted,
             )
 
             Text(
@@ -207,15 +208,15 @@ fun TodoEditor(
                     .padding(start = 8.dp)
                     .weight(1f),
                 style = TextStyle(
-                    color = if (todo.isCompleted) textColor.copy(0.7f) else textColor,
+                    color = if (todo.isCompleted) MaterialTheme.colorScheme.primary.copy(0.7f) else MaterialTheme.colorScheme.primary,
                     fontFamily = regular,
                     fontWeight = FontWeight.Normal,
-                    fontSize = textSize.sp
+                    fontSize = 16.sp
                 ),
                 maxLines = 3,
             )
-            //More Menu
-            TaskMoreMenu(onChange=onChange, onDelete = {
+            //More Menu option for Edit and Delete Task
+            TaskMoreMenu(onEdit=onChange, onDelete = {
                 onDelete(it)},
                 currentTask= todo
             )
@@ -232,7 +233,7 @@ fun TodoEditor(
  */
 @Composable
 fun TaskMoreMenu(
-    onChange: (String) -> Unit={},
+    onEdit: (String) -> Unit={},
     onDelete : (UUID) -> Unit = {},
     currentTask: OneTimeTask
 ) {
