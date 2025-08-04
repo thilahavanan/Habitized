@@ -444,6 +444,22 @@ class HomeViewModel @Inject constructor(
     fun getMyThoughts(navController: NavController){
         navController.navigate(Screen.MyThoughts.route)
     }
+    fun addWidget(navController: NavController){
+        navController.navigate(Screen.AddWidget.route)
+    }
+    fun shareApp(context: Context){
+        val link = "https://habitized.diprssn.xyz"
+        val sharedMessage = "Hey! I've built an amazing habit-building streak with Habitized! You can too! Try it out: $link"
+
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT,sharedMessage)
+            type = "text/plain"
+        }
+        val chooserIntent = Intent.createChooser(shareIntent, "Share with")
+        context.startActivity(chooserIntent)
+
+    }
     private fun getAppVersion(context: Context): String {
         return try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)

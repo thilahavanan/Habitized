@@ -208,6 +208,11 @@ fun HabitizedNavHost(
                 navController = navController
             )
         }
+        composable(Screen.AddWidget.route) {
+            AddWidgetScreen(
+                navController = navController
+            )
+        }
         composable(
             Screen.HabitScreen.route,
             arguments = listOf(
