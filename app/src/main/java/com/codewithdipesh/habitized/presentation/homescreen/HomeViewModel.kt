@@ -1,6 +1,7 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.R.attr.phoneNumber
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -31,8 +32,10 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.max
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import com.codewithdipesh.habitized.EMAIL_TO
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.presentation.navigation.Screen
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -437,6 +440,9 @@ class HomeViewModel @Inject constructor(
 
         val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(uriString))
         context.startActivity(Intent.createChooser(intent, "Send bug report"))
+    }
+    fun getMyThoughts(navController: NavController){
+        navController.navigate(Screen.MyThoughts.route)
     }
     private fun getAppVersion(context: Context): String {
         return try {

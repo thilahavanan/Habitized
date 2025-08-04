@@ -18,6 +18,8 @@ import androidx.navigation.navDeepLink
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalScreen
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
+import com.codewithdipesh.habitized.presentation.drawer.AddWidgetScreen
+import com.codewithdipesh.habitized.presentation.drawer.ThoughtsScreen
 import com.codewithdipesh.habitized.presentation.goalscreen.GoalDetails
 import com.codewithdipesh.habitized.presentation.goalscreen.GoalViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitDetails
@@ -199,6 +201,11 @@ fun HabitizedNavHost(
             ProgressScreen(
                 navController = navController,
                 viewmodel = progressViewModel
+            )
+        }
+        composable(Screen.MyThoughts.route) {
+            ThoughtsScreen(
+                navController = navController
             )
         }
         composable(

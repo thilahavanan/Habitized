@@ -22,7 +22,8 @@ val ndot = FontFamily(
 
 val playfair = FontFamily(
     Font(R.font.playfair_bolditalic, FontWeight.Bold, FontStyle.Italic),
-    Font(R.font.playfair_bold, FontWeight.Bold)
+    Font(R.font.playfair_bold, FontWeight.Bold),
+    Font(R.font.playfair_normal, FontWeight.Normal)
 )
 
 val Typography = Typography(
