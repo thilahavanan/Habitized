@@ -338,7 +338,7 @@ fun HomeScreen(
                                     },
                                     onFutureTaskStateChange = {
                                         scope.launch {
-                                            Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context,"Can't start Future Tasks", Toast.LENGTH_SHORT).show()
                                         }
                                     },
                                     onHabitClick = {
@@ -374,7 +374,7 @@ fun HomeScreen(
                                     },
                                     onFutureTaskStateChange = {
                                         scope.launch {
-                                            Toast.makeText(context,"Can't start Future/Past Tasks", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context,"Can't start Future Tasks", Toast.LENGTH_SHORT).show()
                                         }
                                     },
                                     onHabitClick = {

@@ -96,7 +96,7 @@ fun HabitCard(
                         }
                     )
                 },
-                swipable = habitWithProgress.progress.date == LocalDate.now(),
+                swipable = habitWithProgress.progress.date <= LocalDate.now(),
                 onDeny = onFutureTaskStateChange,
                 isReminder = habitWithProgress.habit.reminder_time != null,
                 height = 60
@@ -234,7 +234,7 @@ fun CountHabit(
                             shape = CircleShape
                         )
                         .clickable {
-                            if(habitWithProgress.progress.date == LocalDate.now()){
+                            if(habitWithProgress.progress.date <= LocalDate.now()){
                                 onAddCounter()
                             }else{
                                 onDeny()
@@ -291,7 +291,7 @@ fun DurationHabit(
                            else MaterialTheme.colorScheme.scrim,
                            RoundedCornerShape(10.dp))
                        .clickable{
-                           if(habitWithProgress.progress.date == LocalDate.now()){
+                           if(habitWithProgress.progress.date <= LocalDate.now()){
                                onStart(habitWithProgress)
                            }else{
                                onDeny()
@@ -409,7 +409,7 @@ fun SessionHabit(
                             RoundedCornerShape(10.dp)
                         )
                         .clickable{
-                            if(habitWithProgress.progress.date == LocalDate.now()){
+                            if(habitWithProgress.progress.date <= LocalDate.now()){
                                 onStartSession(habitWithProgress)
                             }else{
                                 onDeny()
