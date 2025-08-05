@@ -53,6 +53,8 @@ sealed class Screen(val route : String){
         }
     }
     object Progress : Screen("progress")
+    object MyThoughts : Screen("myThoughts")
+    object AddWidget : Screen("addWidget")
     object HabitScreen : Screen("habit_screen/{id}/{title}/{color}"){
         fun createRoute(habit: Habit): String {
             val id = habit.habit_id
