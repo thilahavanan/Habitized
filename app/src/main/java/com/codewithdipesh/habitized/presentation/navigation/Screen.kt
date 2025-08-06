@@ -7,6 +7,8 @@ import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 sealed class Screen(val route : String){
     object Home : Screen("home")
@@ -16,9 +18,10 @@ sealed class Screen(val route : String){
         }
     }
     object DurationScreen : Screen("duration/{id}/{title}/{target}/{color}") {
+        @OptIn(ExperimentalEncodingApi::class)
         fun createRoute(habitWithProgress: HabitWithProgress): String {
             val id = habitWithProgress.progress.progressId
-            val title = habitWithProgress.habit.title
+            val title = Base64.encode(habitWithProgress.habit.title.toByteArray())
 
             val time = habitWithProgress.progress.targetDurationValue
             val hour = time!!.hour
@@ -33,9 +36,10 @@ sealed class Screen(val route : String){
             "duration/$id/$title/$target/$color"
     }
     object SessionScreen : Screen("session_screen/{id}/{title}/{target}/{color}") {
+        @OptIn(ExperimentalEncodingApi::class)
         fun createRoute(habitWithProgress: HabitWithProgress): String {
             val id = habitWithProgress.progress.progressId
-            val title = habitWithProgress.habit.title
+            val title = Base64.encode(habitWithProgress.habit.title.toByteArray())
 
             val time = habitWithProgress.progress.targetDurationValue
             val hour = time!!.hour
@@ -56,17 +60,20 @@ sealed class Screen(val route : String){
     object MyThoughts : Screen("myThoughts")
     object AddWidget : Screen("addWidget")
     object HabitScreen : Screen("habit_screen/{id}/{title}/{color}"){
+        @OptIn(ExperimentalEncodingApi::class)
         fun createRoute(habit: Habit): String {
             val id = habit.habit_id
-            val title = habit.title
+            val title = Base64.encode(habit.title.toByteArray())
             val color = habit.colorKey
             return "habit_screen/$id/$title/$color"
         }
     }
     object GoalScreen : Screen("goal_screen/{id}/{title}"){
+        @OptIn(ExperimentalEncodingApi::class)
         fun createRoute(goal: Goal?): String {
             val id = goal?.id ?: ""
-            val title = goal?.title ?: "Overall Goal"
+            val title = if(goal != null) Base64.encode(goal.title.toByteArray())
+                else "Overall Goal"
             return "goal_screen/$id/$title"
         }
     }

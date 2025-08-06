@@ -35,9 +35,11 @@ import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.Sessi
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalEncodingApi::class)
 @Composable
 fun HabitizedNavHost(
     modifier: Modifier = Modifier,
@@ -121,7 +123,8 @@ fun HabitizedNavHost(
             )
         ){ entry ->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
             val color = entry.arguments?.getString("color")
             val targetSeconds = entry.arguments?.getString("target")!!.toInt()
 
@@ -179,7 +182,8 @@ fun HabitizedNavHost(
             )
         ){ entry ->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
             val color = entry.arguments?.getString("color")
             val targetSeconds = entry.arguments?.getString("target")!!.toInt()
 
@@ -228,7 +232,8 @@ fun HabitizedNavHost(
             )
         ) {entry->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
             val color = entry.arguments?.getString("color")
 
             HabitDetails(
@@ -251,7 +256,8 @@ fun HabitizedNavHost(
             )
         ) {entry->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
 
             GoalDetails(
                 id = if(id.isNullOrEmpty()) null else UUID.fromString(id),
