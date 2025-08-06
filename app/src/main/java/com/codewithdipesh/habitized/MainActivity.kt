@@ -89,7 +89,10 @@ class MainActivity : ComponentActivity() {
                     DrawerItem(R.drawable.report_bug,"Report a bug"){
                         homeViewModel.openMail(this)
                     },
-                    DrawerItem(R.drawable.feedback,"Suggest Improvement"){
+                    DrawerItem(R.drawable.baseline_rate_review_24,"Rate us on PlayStore"){
+                        homeViewModel.openPlayStoreForRating(this)
+                    },
+                    DrawerItem(R.drawable.feedback,"Give Feedback"){
                         homeViewModel.sendFeedback(this)
                     },
                 )
