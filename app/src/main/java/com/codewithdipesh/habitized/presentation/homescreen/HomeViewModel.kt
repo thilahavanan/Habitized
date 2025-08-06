@@ -2,6 +2,7 @@ package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.R.attr.phoneNumber
 import android.appwidget.AppWidgetManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -458,6 +459,20 @@ class HomeViewModel @Inject constructor(
         }
         val chooserIntent = Intent.createChooser(shareIntent, "Share with")
         context.startActivity(chooserIntent)
+
+    }
+    fun openPlayStoreForRating(context:Context){
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+        intent.setPackage("com.android.vending")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(fallbackIntent)
+        }
 
     }
     private fun getAppVersion(context: Context): String {
