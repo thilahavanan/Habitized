@@ -129,6 +129,7 @@ fun DurationScreen(
             AddScreenTopBar(
                 isShowingLeftIcon = true,
                 isShowingRightIcon = true,
+                height = 150,
                 leftIcon = {
                     IconButton(
                         onClick = {
