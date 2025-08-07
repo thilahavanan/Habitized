@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +47,10 @@ fun <T> Selector(
     selectedTextColor: Color,
     selectedOptionColor: Color,
     height: Int = 44,
+    showBadge : Boolean = false,
+    badgeColor : Color = MaterialTheme.colorScheme.primary,
+    badgeText : String = "",
+    badgePosition : Alignment = Alignment.TopEnd,
     shape: Shape = RoundedCornerShape(15.dp)
 ) {
     // Remember the width of the Selector container
@@ -117,6 +122,27 @@ fun <T> Selector(
                         )
                     )
                 }
+            }
+        }
+        if(showBadge){
+            Box(
+                modifier = Modifier
+                    .align(badgePosition)
+                    .padding(end = 10.dp,top = 4.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(badgeColor.copy(0.6f))
+            ){
+                Text(
+                    text = badgeText,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = playfair,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 8.sp
+                    ),
+                    modifier = Modifier.padding(horizontal = 6.dp,vertical=2.dp)
+                )
             }
         }
     }
