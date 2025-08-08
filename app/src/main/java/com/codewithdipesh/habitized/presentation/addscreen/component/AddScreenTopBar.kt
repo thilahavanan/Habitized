@@ -25,13 +25,14 @@ fun AddScreenTopBar(
     modifier: Modifier = Modifier,
     title : @Composable () -> Unit = {},
     isShowingLeftIcon : Boolean = false,
+    height : Int = 80,
     isShowingRightIcon : Boolean = false,
     leftIcon : @Composable () -> Unit = {},
     rightIcon : @Composable () -> Unit = {}
 ){
     Box(
         modifier = Modifier.fillMaxWidth()
-            .height(80.dp),
+            .height(height.dp),
         contentAlignment = Alignment.CenterStart
     ){
         Row(modifier = Modifier.fillMaxWidth(),
@@ -41,7 +42,7 @@ fun AddScreenTopBar(
                 else Arrangement.End
         ){
             //left icon and title
-            Row{
+            Row(modifier = Modifier.fillMaxWidth(0.7f)){
                 leftIcon()
                 Spacer(Modifier.width(16.dp))
                 title()

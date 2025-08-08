@@ -1,6 +1,8 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.R.attr.phoneNumber
+import android.appwidget.AppWidgetManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -31,8 +33,10 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.max
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import com.codewithdipesh.habitized.EMAIL_TO
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.presentation.navigation.Screen
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -443,6 +447,39 @@ class HomeViewModel @Inject constructor(
 
         val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(uriString))
         context.startActivity(Intent.createChooser(intent, "Send bug report"))
+    }
+    fun getMyThoughts(navController: NavController){
+        navController.navigate(Screen.MyThoughts.route)
+    }
+    fun addWidget(navController: NavController){
+        navController.navigate(Screen.AddWidget.route)
+    }
+    fun shareApp(context: Context){
+        val link = "https://habitized.diprssn.xyz"
+        val sharedMessage = "Hey! I've built an amazing habit-building streak with Habitized! You can too! Try it out: $link"
+
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT,sharedMessage)
+            type = "text/plain"
+        }
+        val chooserIntent = Intent.createChooser(shareIntent, "Share with")
+        context.startActivity(chooserIntent)
+
+    }
+    fun openPlayStoreForRating(context:Context){
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+        intent.setPackage("com.android.vending")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(fallbackIntent)
+        }
+
     }
     private fun getAppVersion(context: Context): String {
         return try {

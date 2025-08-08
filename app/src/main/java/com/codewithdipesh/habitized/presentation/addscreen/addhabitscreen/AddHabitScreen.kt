@@ -225,7 +225,7 @@ fun AddHabitScreen(
                     .align(Alignment.TopCenter)
                     .verticalScroll(scrollstate),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
+            ) {
                 //heading
                 Row(verticalAlignment = Alignment.CenterVertically){
                     Text(
@@ -370,6 +370,9 @@ fun AddHabitScreen(
                                 //todo reset timer and count viewmodel.setTargetCount(0)
                                 viewmodel.setType(it)
                             },
+                            showBadge = true,
+                            badgeText = "Deep Focus",
+                            height = 56,
                             backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                             selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                             selectedOptionColor = MaterialTheme.colorScheme.tertiary,

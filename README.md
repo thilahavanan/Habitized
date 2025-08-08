@@ -42,6 +42,7 @@ A modern and minimalist habit tracker built with Jetpack Compose — designed to
 ## 📸 Screenshots
 
 <div align="center">
+  <img src="https://res.cloudinary.com/daw9ly1fj/image/upload/v1753966871/6th_vbm3os.png" width="170"/>
   <img src="https://res.cloudinary.com/daw9ly1fj/image/upload/v1752572606/1st_c4njzr.png" width="170"/>
   <img src="https://res.cloudinary.com/daw9ly1fj/image/upload/v1752572605/2nd_ukdtuw.png" width="170"/>
   <img src="https://res.cloudinary.com/daw9ly1fj/image/upload/v1752572607/3rd_f49ect.png" width="170"/>
