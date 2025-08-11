@@ -12,6 +12,7 @@ import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.domain.model.ReminderType
 import com.codewithdipesh.habitized.domain.repository.HabitRepository
 import com.codewithdipesh.habitized.domain.util.getNextAlarmDateTime
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalUI
@@ -72,7 +73,7 @@ class AddViewModel @Inject constructor(
                 days_of_week = if( _habitUiState.value.frequency == Frequency.Weekly) WeekDayMapToInt( _habitUiState.value.days_of_week)
                 else mutableListOf(0,0,0,0,0,0,0),
                 daysOfMonth = _habitUiState.value.daysOfMonth,
-                reminder_time = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminder_time else null,
+                reminderType = if(_habitUiState.value.isShowReminderTime) _habitUiState.value.reminderType else null,
                 is_active = _habitUiState.value.is_active,
                 colorKey = _habitUiState.value.colorKey,
                 countParam = _habitUiState.value.countParam,
@@ -94,14 +95,15 @@ class AddViewModel @Inject constructor(
                     date = date,
                     now = LocalDateTime.of(date, LocalTime.now()),
                     frequency = _habitUiState.value.frequency,
-                    reminderTime = _habitUiState.value.reminder_time!!,
+                    reminderType = _habitUiState.value.reminderType!!,
                     daysOfWeek = _habitUiState.value.days_of_week, // Map<Days, Boolean>
                     daysOfMonth = _habitUiState.value.daysOfMonth
                 )
                 if(!result.error){
                     val alarmItem = AlarmItem(
                         id = _habitUiState.value.habit_id,
-                        time = result.nextDateTime,
+                        reminderType = _habitUiState.value.reminderType!!,
+                        nextAlarmDateTime = result.nextDateTime,
                         text = getDeterministicNotificationMessage(_habitUiState.value.habit_id), // Use habitId here
                         title = "Its time to do ${_habitUiState.value.title}",
                         frequency = _habitUiState.value.frequency,
@@ -128,9 +130,9 @@ class AddViewModel @Inject constructor(
                 frequency = habit.frequency,
                 days_of_week = IntToWeekDayMap(habit.days_of_week),
                 daysOfMonth = habit.daysOfMonth ?: emptyList(),
-                reminder_time = habit.reminder_time,
+                reminderType = habit.reminderType,
                 is_active = habit.is_active,
-                isShowReminderTime = habit.reminder_time != null,
+                isShowReminderTime = habit.reminderType != null,
                 colorKey = habit.colorKey,
                 countParam = habit.countParam,
                 countTarget = habit.countTarget,
@@ -219,15 +221,67 @@ class AddViewModel @Inject constructor(
     }
 
     fun toggleReminderOption(){
+        val newShowReminderTime = !_habitUiState.value.isShowReminderTime
+
         _habitUiState.value = _habitUiState.value.copy(
-            isShowReminderTime = !_habitUiState.value.isShowReminderTime
+            isShowReminderTime = newShowReminderTime,
+            reminderType = if(newShowReminderTime){
+                ReminderType.Once( LocalTime.now())
+            }else{
+                null
+            }
         )
     }
 
+    fun setReminderType(reminderType: ReminderType){
+        if(_habitUiState.value.isShowReminderTime){
+            _habitUiState.value = _habitUiState.value.copy(
+                reminderType = reminderType
+            )
+        }
+    }
+
     fun setReminderTime(time : LocalTime){
-        _habitUiState.value = _habitUiState.value.copy(
-            reminder_time = time
-        )
+        if(_habitUiState.value.reminderType != null && _habitUiState.value.reminderType is ReminderType.Once){
+           _habitUiState.value = _habitUiState.value.copy(
+               reminderType = ReminderType.Once(time)
+           )
+        }
+    }
+
+    fun setIntervalReminder(interval : Int){
+        if(_habitUiState.value.reminderType != null && _habitUiState.value.reminderType is ReminderType.Interval){
+            _habitUiState.value = _habitUiState.value.copy(
+                reminderType = ReminderType.Interval(
+                    interval = interval,
+                    fromTime = (_habitUiState.value.reminderType as ReminderType.Interval).fromTime,
+                    toTime = (_habitUiState.value.reminderType as ReminderType.Interval).toTime
+                )
+            )
+        }
+        Log.d("AddViewModel", "setIntervalReminder: ${_habitUiState.value.reminderType}")
+    }
+    fun setIntervalFrom(time : LocalTime){
+        if(_habitUiState.value.reminderType != null && _habitUiState.value.reminderType is ReminderType.Interval){
+            _habitUiState.value = _habitUiState.value.copy(
+                reminderType = ReminderType.Interval(
+                    interval = (_habitUiState.value.reminderType as ReminderType.Interval).interval,
+                    fromTime = time,
+                    toTime = (_habitUiState.value.reminderType as ReminderType.Interval).toTime
+                )
+            )
+        }
+    }
+    fun setIntervalTo(time : LocalTime){
+        if(_habitUiState.value.reminderType != null && _habitUiState.value.reminderType is ReminderType.Interval){
+            _habitUiState.value = _habitUiState.value.copy(
+                reminderType = ReminderType.Interval(
+                    interval = (_habitUiState.value.reminderType as ReminderType.Interval).interval,
+                    fromTime = (_habitUiState.value.reminderType as ReminderType.Interval).fromTime,
+                    toTime = time
+                )
+            )
+        }
     }
 
     fun setHabitTitle(title : String){
@@ -322,7 +376,21 @@ class AddViewModel @Inject constructor(
             }
             else -> {}
         }
-
+        if(state.reminderType != null){
+            when(state.reminderType){
+                is ReminderType.Once -> {}
+                is ReminderType.Interval -> {
+                    if(state.reminderType.fromTime >= state.reminderType.toTime){
+                        sendEvent("start time should be before end time")
+                        return false
+                    }
+                    if(state.reminderType.interval < 1){
+                        sendEvent("Interval should be greater")
+                        return false
+                    }
+                }
+            }
+        }
         //everything is okay
         return true
     }

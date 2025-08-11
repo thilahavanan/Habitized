@@ -621,13 +621,16 @@ fun AddHabitScreen(
                             )
                         }
                         //timer
-                        ReminderTimePicker(
-                            reminderTime = state.reminder_time,
-                            onSelect = {
-                                viewmodel.setReminderTime(it)
-                            },
-                            isReminderEnabled = state.isShowReminderTime
-                        )
+                        if(state.isShowReminderTime && state.reminderType != null){
+                            ReminderTimePicker(
+                                reminderType = state.reminderType!!,
+                                onSelectReminderType = {viewmodel.setReminderType(it)},
+                                onSelectReminderFrom = {viewmodel.setIntervalFrom(it)},
+                                onSelectReminderTo = {viewmodel.setIntervalTo(it)},
+                                onSelectReminderInterval = {viewmodel.setIntervalReminder(it)},
+                                onSelectReminderTime = {viewmodel.setReminderTime(it)}
+                            )
+                        }
 
                     }
                 }
