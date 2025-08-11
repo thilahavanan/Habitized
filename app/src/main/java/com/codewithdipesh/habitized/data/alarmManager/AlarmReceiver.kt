@@ -15,6 +15,8 @@ import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.ALARM_NOTIFICATION_ID
 import com.codewithdipesh.habitized.domain.alarmManager.AlarmItem
 import com.codewithdipesh.habitized.domain.model.Frequency
+import com.codewithdipesh.habitized.domain.model.ReminderType
+import com.codewithdipesh.habitized.domain.util.getNextAlarmDateTime
 import com.codewithdipesh.habitized.presentation.util.Days
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.toDaysOfWeek
@@ -34,6 +36,10 @@ class AlarmReceiver : BroadcastReceiver() {
         val title = intent.getStringExtra("title") ?: ""
         val text =  intent.getStringExtra("text") ?: "Don't let the streak die"
         val frequency =  intent.getStringExtra("frequency") ?: ""
+        val reminderTypeStr =  intent.getStringExtra("reminderType") ?: ""
+        val reminderInterval =  intent.getIntExtra("reminderInterval",120)
+        val reminderFrom =  intent.getStringExtra("reminderFrom") ?: ""
+        val reminderTo =  intent.getStringExtra("reminderTo") ?: ""
         val reminderTime =  intent.getStringExtra("reminderTime") ?: ""
         val daysOfWeek =  intent.getIntArrayExtra("daysOfWeek")?.toList() ?: emptyList<Int>()
         val daysOfMonth =  intent.getIntArrayExtra("daysOfMonth")?.toList() ?:emptyList<Int>()
@@ -42,8 +48,21 @@ class AlarmReceiver : BroadcastReceiver() {
         //notification
         showNotification(context,title,text)
 
+        val reminderType: ReminderType? = when (reminderTypeStr) {
+            "Once" -> {
+                val time = try { LocalTime.parse(reminderTime) } catch (e: Exception) { null }
+                time?.let { ReminderType.Once(it) }
+            }
+            "Interval" -> {
+                val interval = reminderInterval
+                val from = try { LocalTime.parse(reminderFrom) } catch (e: Exception) { null }
+                val to = try { LocalTime.parse(reminderTo) } catch (e: Exception) { null }
+                if (interval > 0 && from != null && to != null) ReminderType.Interval(interval, from, to) else null
+            }
+            else -> null
+        }
         //schedule next alarm
-        if(frequency.isNotEmpty() && reminderTime.isNotEmpty()){
+        if(frequency.isNotEmpty() && reminderType != null){
             scheduleNextAlarm(
                 context,
                 UUID.fromString(id),
@@ -51,7 +70,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 text,
                 Frequency.fromString(frequency),
                 LocalDateTime.now(),
-                reminderTime.toLocalTime(),
+                reminderType,
                 daysOfWeek,
                 daysOfMonth
             )
@@ -98,71 +117,41 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun scheduleNextAlarm(
         context: Context,
-        id:UUID,
-        title : String,
-        text : String,
+        id: UUID,
+        title: String,
+        text: String,
         frequency: Frequency,
         now: LocalDateTime,
-        reminderTime: LocalTime,
+        reminderType: ReminderType,
         daysOfWeek: List<Int>,
         daysOfMonth: List<Int>
     ) {
         val selectedDays = IntToWeekDayMap(daysOfWeek)
-        var nextDateTime: LocalDateTime = LocalDateTime.now()
-        var error = false
-        when (frequency) {
-            Frequency.Daily -> {
-                //reschedule for just next day only
-                nextDateTime = nextDateTime.plusDays(1)
-            }
-            Frequency.Weekly -> {
-                //logic is same as AddViewModel ->addHabit func -> schedule alarm
-                nextDateTime = LocalDateTime.MAX
-                Days.entries.forEach { day ->
-                    if (selectedDays[day] == true) {
-                        val nextDate = now.toLocalDate().with(TemporalAdjusters.nextOrSame(day.toDaysOfWeek()))
-                        var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-                        if(potentialDateTime.isBefore(now)){
-                            potentialDateTime = potentialDateTime.plusWeeks(1)
-                        }
-                        nextDateTime = minOf(potentialDateTime,nextDateTime)
-                    }
-                }
-            }
-            Frequency.Monthly -> {
-                //logic is same as AddViewModel ->addHabit func -> schedule alarm
-                nextDateTime = LocalDateTime.MAX
-                daysOfMonth.forEach { dayOfMonth ->
-                    try {
-                        val nextDate = now.toLocalDate().withDayOfMonth(dayOfMonth)
-                        var potentialDateTime = LocalDateTime.of(nextDate, reminderTime)
-                        if(potentialDateTime.isBefore(now) || potentialDateTime.isEqual(now)){
-                            try {
-                                val nextMonthDate = now.toLocalDate().plusMonths(1).withDayOfMonth(dayOfMonth)
-                                potentialDateTime = LocalDateTime.of(nextMonthDate, reminderTime)
-                            } catch (e: DateTimeException) {
-                                val monthAfterNext = now.toLocalDate().plusMonths(2).withDayOfMonth(dayOfMonth)
-                                potentialDateTime = LocalDateTime.of(monthAfterNext, reminderTime)
-                            }
-                        }
-                        nextDateTime = minOf(potentialDateTime,nextDateTime)
-                    } catch (e: DateTimeException) {
-                        error = true
-                    }
-                }
-            }
-        }
-        val alarmManager = AndroidAlarmScheduler(context)
-        val alarmItem = AlarmItem(
-            id = id,
-            time = nextDateTime,
-            text = text,
-            title = title,
+
+        // Use getNextAlarmDateTime to compute the next time (reuses logic, handles both types)
+        val result = getNextAlarmDateTime(
+            date = now.toLocalDate(),
+            now = now,
             frequency = frequency,
-            daysOfWeek = daysOfWeek,
+            reminderType = reminderType,
+            daysOfWeek = selectedDays,
             daysOfMonth = daysOfMonth
         )
-        alarmManager.schedule(alarmItem)
+
+        if (!result.error) {
+            val alarmScheduler = AndroidAlarmScheduler(context)
+            val alarmItem = AlarmItem(
+                id = id,
+                nextAlarmDateTime = result.nextDateTime,
+                text = text,
+                title = title,
+                frequency = frequency,
+                daysOfWeek = daysOfWeek,
+                daysOfMonth = daysOfMonth,
+                reminderType = reminderType
+            )
+            alarmScheduler.schedule(alarmItem)
+        }
     }
 
 }

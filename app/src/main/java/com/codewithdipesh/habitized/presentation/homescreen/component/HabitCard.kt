@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
+import com.codewithdipesh.habitized.domain.model.ReminderType
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
@@ -98,7 +99,7 @@ fun HabitCard(
                 },
                 swipable = habitWithProgress.progress.date <= LocalDate.now(),
                 onDeny = onFutureTaskStateChange,
-                isReminder = habitWithProgress.habit.reminder_time != null,
+                isReminder = habitWithProgress.habit.reminderType != null,
                 height = 60
             )
         }
@@ -129,7 +130,10 @@ fun OneTimeHabit(
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
+        reminder = when(habitWithProgress.habit.reminderType){
+            is ReminderType.Once -> habitWithProgress.habit.reminderType.reminderTime
+            else -> null
+        },
         isDone = habitWithProgress.progress.status != Status.NotStarted,
         clickable = true,
         onClick = onClick
@@ -164,7 +168,10 @@ fun CountHabit(
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
+        reminder = when(habitWithProgress.habit.reminderType){
+            is ReminderType.Once -> habitWithProgress.habit.reminderType.reminderTime
+            else -> null
+        },
         isDone = habitWithProgress.progress.status != Status.NotStarted,
         clickable = true,
         onClick = onClick
@@ -266,7 +273,10 @@ fun DurationHabit(
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
+        reminder = when(habitWithProgress.habit.reminderType){
+            is ReminderType.Once -> habitWithProgress.habit.reminderType.reminderTime
+            else -> null
+        },
         isDone = habitWithProgress.progress.status != Status.NotStarted,
         clickable = true,
         onClick = onClick
@@ -379,7 +389,10 @@ fun SessionHabit(
 ) {
     HabitElement(
         color = getThemedColorFromKey(habitWithProgress.habit.colorKey),
-        reminder = habitWithProgress.habit.reminder_time,
+        reminder = when(habitWithProgress.habit.reminderType){
+            is ReminderType.Once -> habitWithProgress.habit.reminderType.reminderTime
+            else -> null
+        },
         isDone = habitWithProgress.progress.status != Status.NotStarted,
         clickable = true,
         onClick = onClick

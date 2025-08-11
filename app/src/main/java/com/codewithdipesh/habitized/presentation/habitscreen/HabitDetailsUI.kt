@@ -5,6 +5,7 @@ import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitProgress
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
+import com.codewithdipesh.habitized.domain.model.ReminderType
 import java.time.LocalTime
 import java.util.UUID
 
@@ -19,7 +20,7 @@ data class HabitDetailsUI(
     val targetCount :Int? = 0,
     val countParam: CountParam? = null,
     val targetTime : LocalTime? = null,
-    val reminder_time : LocalTime? = null,
+    val reminderType : ReminderType? = null,
     val currentStreak :Int = 0,
     val maximumStreak :Int = 0,
     val totalCompleted :Int = 0,
