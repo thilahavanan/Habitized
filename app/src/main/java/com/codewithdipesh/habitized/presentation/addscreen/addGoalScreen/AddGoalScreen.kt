@@ -2,7 +2,6 @@ package com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen
 
 import android.os.Build
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -63,7 +62,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.HabitsForGo
 import com.codewithdipesh.habitized.presentation.addscreen.component.InputElement
 import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
 import com.codewithdipesh.habitized.presentation.addscreen.component.TargetDatePicker
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -190,7 +189,7 @@ fun AddGoalScreen(
                         text = "Goal",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 28.sp

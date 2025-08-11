@@ -2,7 +2,6 @@ package com.codewithdipesh.habitized.widget
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -23,21 +22,16 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.ui.theme.HabitizedTheme
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import com.codewithdipesh.habitized.widget.data.HabitWidgetDataStore
 import com.codewithdipesh.habitized.widget.data.HabitWidgetRepository
-import com.kizitonwose.calendar.compose.WeekCalendar
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 @AndroidEntryPoint
 class HabitWidgetConfigActivity : ComponentActivity() {
@@ -94,7 +88,7 @@ class HabitWidgetConfigActivity : ComponentActivity() {
                         text = "Select Habit",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 24.sp

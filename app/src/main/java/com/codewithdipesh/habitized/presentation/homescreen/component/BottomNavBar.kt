@@ -47,21 +47,23 @@ fun BottomNavBar(
                 onClick = { onNavigate(Screen.Home) },
                 icon = {
                     Icon(
-                        painter = if(selectedScreen == Screen.Home) painterResource(R.drawable.home_filled)
-                        else painterResource(R.drawable.home_normal),
+                        painter = painterResource(R.drawable.home_filled),
                         contentDescription = "Home",
+                        modifier = Modifier
+                            .height(30.dp)
+                            .padding(8.dp)
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent,
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface
+                    indicatorColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedIconColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary
                 )
 
             )
 
             // Spacer for central Add button
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             // Custom Add button (centered manually)
             AnimatedVisibility(
@@ -90,15 +92,17 @@ fun BottomNavBar(
                 onClick = { onNavigate(Screen.Progress) },
                 icon = {
                     Icon(
-                        painter = if(selectedScreen == Screen.Progress) painterResource(R.drawable.habit_filled)
-                        else painterResource(R.drawable.habit_normal),
-                        contentDescription = "Progress"
+                        painter = painterResource(R.drawable.habit_filled),
+                        contentDescription = "Progress",
+                        modifier = Modifier
+                            .height(30.dp)
+                            .padding(8.dp)
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent,
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface
+                    indicatorColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedIconColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }

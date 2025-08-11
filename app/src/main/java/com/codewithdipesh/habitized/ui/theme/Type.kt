@@ -11,19 +11,19 @@ import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
 val regular = FontFamily(
-    Font(R.font.inter_regular, FontWeight.Normal),
-    Font(R.font.inter_light,FontWeight.Light),
-    Font(R.font.inter_bold,FontWeight.Bold)
+    Font(R.font.bricolage_grotesque_regular, FontWeight.Normal),
+    Font(R.font.bricolage_grotesque_light,FontWeight.Light),
+    Font(R.font.bricolage_grotesque_bold,FontWeight.Bold)
 )
 
 val ndot = FontFamily(
     Font(R.font.ndot_mono, FontWeight.Normal)
 )
 
-val playfair = FontFamily(
-    Font(R.font.playfair_bolditalic, FontWeight.Bold, FontStyle.Italic),
-    Font(R.font.playfair_bold, FontWeight.Bold),
-    Font(R.font.playfair_normal, FontWeight.Normal)
+val instrumentSerif = FontFamily(
+    Font(R.font.instrument_serif_italic, FontWeight.Bold, FontStyle.Italic),
+    Font(R.font.instrument_serif_italic, FontWeight.Bold),
+    Font(R.font.instrument_serif_regular, FontWeight.Normal)
 )
 
 val Typography = Typography(

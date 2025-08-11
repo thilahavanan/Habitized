@@ -33,7 +33,7 @@ fun AddScreenTopBar(
     Box(
         modifier = Modifier.fillMaxWidth()
             .height(height.dp),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.TopStart
     ){
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement =

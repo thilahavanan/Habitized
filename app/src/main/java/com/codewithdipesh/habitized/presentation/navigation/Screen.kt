@@ -73,7 +73,7 @@ sealed class Screen(val route : String){
         fun createRoute(goal: Goal?): String {
             val id = goal?.id ?: ""
             val title = if(goal != null) Base64.encode(goal.title.toByteArray())
-                else "Overall Goal"
+                else Base64.encode("Overall Goal".toByteArray())
             return "goal_screen/$id/$title"
         }
     }

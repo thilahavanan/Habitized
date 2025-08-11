@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -78,8 +77,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
 import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
 import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
-import com.codewithdipesh.habitized.presentation.navigation.Screen
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -242,7 +240,7 @@ fun AddHabitScreen(
                         text = "Habit",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 28.sp

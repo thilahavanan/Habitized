@@ -1,6 +1,5 @@
 package com.codewithdipesh.habitized.presentation.progress
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,31 +24,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
-import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
-import com.codewithdipesh.habitized.presentation.homescreen.component.RunningTimer
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.presentation.progress.components.OverallProgress
 import com.codewithdipesh.habitized.presentation.progress.components.WeeklyProgress
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 
@@ -84,7 +74,7 @@ fun ProgressScreen(
                     text = "Progress",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
+                        fontFamily = instrumentSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
                         fontSize = 24.sp
@@ -130,7 +120,7 @@ fun ProgressScreen(
                                     style = TextStyle(
                                         color = if(state.selectedGoal == null) MaterialTheme.colorScheme.inverseOnSurface
                                         else MaterialTheme.colorScheme.onPrimary,
-                                        fontFamily = playfair,
+                                        fontFamily = regular,
                                         fontWeight = FontWeight.Bold,
                                         fontStyle = FontStyle.Italic,
                                         fontSize = 13.sp
@@ -158,7 +148,7 @@ fun ProgressScreen(
                                     style = TextStyle(
                                         color = if(state.selectedGoal == goal) MaterialTheme.colorScheme.inverseOnSurface
                                         else MaterialTheme.colorScheme.onPrimary,
-                                        fontFamily = playfair,
+                                        fontFamily = regular,
                                         fontWeight = FontWeight.Bold,
                                         fontStyle = FontStyle.Italic,
                                         fontSize = 13.sp
@@ -182,7 +172,7 @@ fun ProgressScreen(
                         text = if(state.selectedGoal != null ) "Habits related to the Goal" else "All Habits",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 14.sp
@@ -195,7 +185,7 @@ fun ProgressScreen(
                         text = "Analytics >",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.primary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 14.sp
@@ -272,7 +262,7 @@ fun ProgressScreen(
                         text = "Create a habit to see progress here",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         ),

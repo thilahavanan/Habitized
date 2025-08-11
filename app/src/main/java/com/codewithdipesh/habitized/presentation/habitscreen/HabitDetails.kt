@@ -1,9 +1,7 @@
 package com.codewithdipesh.habitized.presentation.habitscreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -26,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -38,8 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -47,31 +41,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.ImageProgress
-import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
 import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
 import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
-import com.codewithdipesh.habitized.presentation.habitscreen.components.DeleteAlertBox
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
-import com.codewithdipesh.habitized.presentation.timerscreen.TimerState
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
-import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.Locale
 import java.util.UUID
 
 @Composable
@@ -132,7 +120,7 @@ fun HabitDetails(
                     text = "Habit",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
+                        fontFamily = instrumentSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
                         fontSize = 20.sp
@@ -332,7 +320,7 @@ fun HabitDetails(
                             text = "${state.currentStreak} days",
                             style = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = playfair,
+                                fontFamily = instrumentSerif,
                                 fontWeight = FontWeight.Bold,
                                 fontStyle = FontStyle.Italic,
                                 fontSize = 20.sp

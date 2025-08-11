@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -34,13 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 
 @Composable
@@ -100,7 +98,7 @@ fun ThoughtsScreen(
                 text = "My Thoughts",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
                     fontSize = 28.sp
@@ -149,7 +147,7 @@ fun ThoughtsScreen(
                 },
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -189,7 +187,7 @@ fun ThoughtsScreen(
                 },
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -223,7 +221,7 @@ fun ThoughtsScreen(
                 },
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -257,7 +255,7 @@ fun ThoughtsScreen(
                 },
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -291,7 +289,7 @@ fun ThoughtsScreen(
                 },
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )

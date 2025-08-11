@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 
 @Composable
 fun <T> Selector(
@@ -115,7 +115,7 @@ fun <T> Selector(
                         text = option.toString(),
                         style = TextStyle(
                             color = if (option == selectedOption) selectedTextColor else selectedTextColor.copy(0.8f),
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 16.sp
@@ -136,7 +136,7 @@ fun <T> Selector(
                     text = badgeText,
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
+                        fontFamily = instrumentSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
                         fontSize = 8.sp
