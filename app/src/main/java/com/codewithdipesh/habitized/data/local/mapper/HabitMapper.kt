@@ -1,10 +1,12 @@
 package com.codewithdipesh.habitized.data.local.mapper
 
+import android.util.Log
 import com.codewithdipesh.habitized.data.local.entity.HabitEntity
 import com.codewithdipesh.habitized.domain.model.CountParam
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.domain.model.ReminderType
 import com.codewithdipesh.habitized.presentation.util.SingleString
 import com.codewithdipesh.habitized.presentation.util.toColor
 import com.codewithdipesh.habitized.presentation.util.toInt
@@ -14,8 +16,9 @@ import java.util.UUID
 import kotlin.math.max
 
 fun Habit.toEntity(): HabitEntity {
+    Log.d("HabitMapper", "Converting Habit to Entity with reminderType: $reminderType")
     val days_of_Month = daysOfMonth?.joinToString(",")
-    return HabitEntity(
+    val entity = HabitEntity(
         habit_id = habit_id ?: UUID.randomUUID(),
         title = title,
         description = description,
@@ -25,7 +28,11 @@ fun Habit.toEntity(): HabitEntity {
         frequency = frequency.displayName,
         days_of_week = days_of_week.joinToString(","),
         daysOfMonth = days_of_Month,
-        reminder_time = reminder_time,
+        reminderType = if(reminderType != null) reminderType.displayName else null,
+        reminderFrom = if(reminderType is ReminderType.Interval) reminderType.fromTime else null,
+        reminderTo = if(reminderType is ReminderType.Interval) reminderType.toTime else null,
+        reminderInterval = if(reminderType is ReminderType.Interval) reminderType.interval else null,
+        reminder_time = if(reminderType is ReminderType.Once) reminderType.reminderTime else null,
         is_active = is_active,
         colorKey = colorKey,
         countParam = countParam.toString(),
@@ -34,9 +41,13 @@ fun Habit.toEntity(): HabitEntity {
         currentStreak = currentStreak,
         maxStreak = maxStreak
     )
+    Log.d("HabitMapper", "Created entity with reminderType: ${entity.reminderType}, reminderFrom: ${entity.reminderFrom}, reminderTo: ${entity.reminderTo}, reminderInterval: ${entity.reminderInterval}, reminder_time: ${entity.reminder_time}")
+    return entity
 }
 
-fun HabitEntity.toHabit() : Habit {
+fun HabitEntity.toHabit(): Habit {
+    Log.d("HabitEntity", "toHabit: $this")
+
     return Habit(
         habit_id = habit_id,
         title = title,
@@ -47,7 +58,37 @@ fun HabitEntity.toHabit() : Habit {
         frequency = Frequency.fromString(frequency),
         days_of_week = days_of_week.split(",").map { it.toInt() },
         daysOfMonth = if(daysOfMonth != "") daysOfMonth?.split(",")?.map{it.toInt()} else null,
-        reminder_time = reminder_time,
+        reminderType = when {
+            reminderType != null -> {
+                when (reminderType.lowercase()) {
+                    "once" -> {
+                        if (reminder_time != null) {
+                            ReminderType.Once(reminder_time)
+                        } else {
+                            Log.w("HabitMapper", "reminder_time is null for Once type in habit $habit_id")
+                            null
+                        }
+                    }
+                    "interval" -> {
+                        if (reminderInterval != null && reminderFrom != null && reminderTo != null) {
+                            ReminderType.Interval(
+                                interval = reminderInterval,
+                                fromTime = reminderFrom,
+                                toTime = reminderTo
+                            )
+                        } else {
+                            Log.w("HabitMapper", "Interval fields are null for Interval type in habit $habit_id: interval=$reminderInterval, from=$reminderFrom, to=$reminderTo")
+                            null
+                        }
+                    }
+                    else -> {
+                        Log.w("HabitMapper", "Unknown reminder type: $reminderType for habit $habit_id")
+                        null
+                    }
+                }
+            }
+            else -> null
+        },
         is_active = is_active,
         colorKey = colorKey,
         countParam = CountParam.fromString(countParam),

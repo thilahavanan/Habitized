@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.codewithdipesh.habitized.DATABASE_VERSION
 import com.codewithdipesh.habitized.data.local.converter.Converters
@@ -54,7 +55,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habit_tracker_db"
                 )
-                    .fallbackToDestructiveMigration(false)  // Handles DB version upgrades
+                    .addMigrations(MIGRATION_10_11)
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onOpen(db: SupportSQLiteDatabase) {
                             super.onOpen(db)
@@ -67,5 +68,19 @@ abstract class AppDatabase : RoomDatabase() {
                 instance
             }
         }
+    }
+}
+
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE habits ADD COLUMN reminderType TEXT")
+        db.execSQL("""
+             UPDATE habits
+             SET reminderType = 'Once'
+             WHERE reminder_time IS NOT NULL
+        """.trimIndent())
+        db.execSQL("ALTER TABLE habits ADD COLUMN reminderFrom TEXT")
+        db.execSQL("ALTER TABLE habits ADD COLUMN reminderTo TEXT")
+        db.execSQL("ALTER TABLE habits ADD COLUMN reminderInterval INTEGER")
     }
 }
