@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreenOption
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 
 @Composable
 fun OptionSelector(
@@ -66,7 +66,7 @@ fun OptionSelector(
                     color = if (selectedOption == HomeScreenOption.Habits) MaterialTheme.colorScheme.inverseOnSurface
                             else MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic
                 )
@@ -97,7 +97,7 @@ fun OptionSelector(
                     color = if (selectedOption == HomeScreenOption.Todos) MaterialTheme.colorScheme.inverseOnSurface
                     else MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic
                 )

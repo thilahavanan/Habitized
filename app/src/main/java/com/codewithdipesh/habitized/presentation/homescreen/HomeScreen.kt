@@ -1,7 +1,6 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,15 +20,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +34,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,18 +52,16 @@ import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddingOption
-import com.codewithdipesh.habitized.presentation.homescreen.component.AppDrawer
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
 import com.codewithdipesh.habitized.presentation.homescreen.component.CountUpdater
 import com.codewithdipesh.habitized.presentation.homescreen.component.DatePicker
-import com.codewithdipesh.habitized.presentation.homescreen.component.DrawerItem
 import com.codewithdipesh.habitized.presentation.homescreen.component.HabitCard
 import com.codewithdipesh.habitized.presentation.homescreen.component.OptionSelector
 import com.codewithdipesh.habitized.presentation.homescreen.component.RunningTimer
 import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertDialog
 import com.codewithdipesh.habitized.presentation.homescreen.component.TodoEditor
 import com.codewithdipesh.habitized.presentation.navigation.Screen
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -242,7 +235,7 @@ fun HomeScreen(
                         text = if(state.selectedDate == LocalDate.now()) "Today,$date" else "$date",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 24.sp

@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -27,16 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
-import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
 import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +93,7 @@ fun HabitsShowcase(
                     text = title,
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
+                        fontFamily = instrumentSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
                         fontSize = 24.sp

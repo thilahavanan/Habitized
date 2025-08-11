@@ -38,7 +38,7 @@ import com.codewithdipesh.habitized.domain.model.Status
 import com.codewithdipesh.habitized.domain.model.SubTask
 import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
 import com.codewithdipesh.habitized.presentation.util.toWord
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import java.time.LocalDate
 
@@ -320,7 +320,7 @@ fun DurationHabit(
                                 Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
                                 Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
                             },
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 12.sp
@@ -441,7 +441,7 @@ fun SessionHabit(
                                 Status.NotStarted -> MaterialTheme.colorScheme.onPrimary
                                 Status.Ongoing -> MaterialTheme.colorScheme.onPrimary
                             },
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 12.sp

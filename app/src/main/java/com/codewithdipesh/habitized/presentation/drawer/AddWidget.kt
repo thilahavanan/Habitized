@@ -19,29 +19,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.ParagraphStyle
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextIndent
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.presentation.addscreen.component.AddScreenTopBar
-import com.codewithdipesh.habitized.ui.theme.playfair
-import com.codewithdipesh.habitized.ui.theme.regular
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 
 @Composable
 fun AddWidgetScreen(
@@ -100,7 +91,7 @@ fun AddWidgetScreen(
                 text = "Widget Process",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
                     fontSize = 28.sp
@@ -111,7 +102,7 @@ fun AddWidgetScreen(
                 text = "1) Tap and Hold on Your Home Screen",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -121,7 +112,7 @@ fun AddWidgetScreen(
                 text = "2) Choose the Widgets Options among them",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -135,7 +126,7 @@ fun AddWidgetScreen(
                 text = "3) Choose Habitized app in the app list",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -149,7 +140,7 @@ fun AddWidgetScreen(
                 text = "4) Select the widget type among all the available",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
@@ -165,7 +156,7 @@ fun AddWidgetScreen(
                 text = "Now U have successfully added a habitized widget in home screen",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp
                 )
