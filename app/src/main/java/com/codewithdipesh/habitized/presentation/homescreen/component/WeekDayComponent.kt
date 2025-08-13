@@ -16,12 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codewithdipesh.habitized.ui.theme.ndot
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import com.kizitonwose.calendar.core.WeekDay
 import java.time.LocalDate
@@ -65,7 +63,7 @@ fun WeekDayComponent(
                 style = TextStyle(
                     color = if(selected) MaterialTheme.colorScheme.outlineVariant
                     else MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
                 )
@@ -75,7 +73,7 @@ fun WeekDayComponent(
                 style = TextStyle(
                     color = if(selected) MaterialTheme.colorScheme.outlineVariant
                     else MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = playfair,
+                    fontFamily = instrumentSerif,
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.sp
                 )

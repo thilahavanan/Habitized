@@ -18,6 +18,8 @@ import androidx.navigation.navDeepLink
 import com.codewithdipesh.habitized.presentation.addscreen.AddViewModel
 import com.codewithdipesh.habitized.presentation.addscreen.addGoalScreen.AddGoalScreen
 import com.codewithdipesh.habitized.presentation.addscreen.addhabitscreen.AddHabitScreen
+import com.codewithdipesh.habitized.presentation.drawer.AddWidgetScreen
+import com.codewithdipesh.habitized.presentation.drawer.ThoughtsScreen
 import com.codewithdipesh.habitized.presentation.goalscreen.GoalDetails
 import com.codewithdipesh.habitized.presentation.goalscreen.GoalViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitDetails
@@ -33,9 +35,11 @@ import com.codewithdipesh.habitized.presentation.timerscreen.sessionScreen.Sessi
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalEncodingApi::class)
 @Composable
 fun HabitizedNavHost(
     modifier: Modifier = Modifier,
@@ -119,7 +123,8 @@ fun HabitizedNavHost(
             )
         ){ entry ->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
             val color = entry.arguments?.getString("color")
             val targetSeconds = entry.arguments?.getString("target")!!.toInt()
 
@@ -177,7 +182,8 @@ fun HabitizedNavHost(
             )
         ){ entry ->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
             val color = entry.arguments?.getString("color")
             val targetSeconds = entry.arguments?.getString("target")!!.toInt()
 
@@ -201,6 +207,16 @@ fun HabitizedNavHost(
                 viewmodel = progressViewModel
             )
         }
+        composable(Screen.MyThoughts.route) {
+            ThoughtsScreen(
+                navController = navController
+            )
+        }
+        composable(Screen.AddWidget.route) {
+            AddWidgetScreen(
+                navController = navController
+            )
+        }
         composable(
             Screen.HabitScreen.route,
             arguments = listOf(
@@ -216,7 +232,8 @@ fun HabitizedNavHost(
             )
         ) {entry->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
             val color = entry.arguments?.getString("color")
 
             HabitDetails(
@@ -239,7 +256,8 @@ fun HabitizedNavHost(
             )
         ) {entry->
             val id = entry.arguments?.getString("id")
-            val title = entry.arguments?.getString("title")
+            val encodedTitle = entry.arguments?.getString("title") ?: ""
+            val title = String(Base64.decode(encodedTitle))
 
             GoalDetails(
                 id = if(id.isNullOrEmpty()) null else UUID.fromString(id),

@@ -45,7 +45,7 @@ class HabitViewModel @Inject constructor(
             countParam = habit.countParam,
             days_of_week = habit.days_of_week,
             daysOfMonth = habit.daysOfMonth ?: emptyList(),
-            reminder_time = habit.reminder_time,
+            reminderType = habit.reminderType,
             currentStreak = habit.currentStreak,
             maximumStreak = habit.maxStreak
         )
@@ -98,12 +98,13 @@ class HabitViewModel @Inject constructor(
     suspend fun deleteHabit(id: UUID){
         repo.deleteHabit(id)
         //canceling the alarm if present
-        if(_state.value.reminder_time != null){
+        if(_state.value.reminderType != null){
             val alarmItem = AlarmItem(
                 id = id,
                 //only id is needed as request code is this
                 //other details are dummy
-                time = LocalDateTime.now(),
+                nextAlarmDateTime = LocalDateTime.now(),
+                reminderType = _state.value.reminderType!!,
                 title = "",
                 text = "",
                 frequency = Frequency.Daily,

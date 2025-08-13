@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -78,8 +77,7 @@ import com.codewithdipesh.habitized.presentation.addscreen.component.Selector
 import com.codewithdipesh.habitized.presentation.addscreen.component.SlidingButton
 import com.codewithdipesh.habitized.presentation.addscreen.component.TimePicker
 import com.codewithdipesh.habitized.presentation.addscreen.component.WeekDaySelector
-import com.codewithdipesh.habitized.presentation.navigation.Screen
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -225,7 +223,7 @@ fun AddHabitScreen(
                     .align(Alignment.TopCenter)
                     .verticalScroll(scrollstate),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
+            ) {
                 //heading
                 Row(verticalAlignment = Alignment.CenterVertically){
                     Text(
@@ -242,7 +240,7 @@ fun AddHabitScreen(
                         text = "Habit",
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 28.sp
@@ -370,6 +368,9 @@ fun AddHabitScreen(
                                 //todo reset timer and count viewmodel.setTargetCount(0)
                                 viewmodel.setType(it)
                             },
+                            showBadge = true,
+                            badgeText = "Deep Focus",
+                            height = 56,
                             backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                             selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                             selectedOptionColor = MaterialTheme.colorScheme.tertiary,
@@ -618,13 +619,16 @@ fun AddHabitScreen(
                             )
                         }
                         //timer
-                        ReminderTimePicker(
-                            reminderTime = state.reminder_time,
-                            onSelect = {
-                                viewmodel.setReminderTime(it)
-                            },
-                            isReminderEnabled = state.isShowReminderTime
-                        )
+                        if(state.isShowReminderTime && state.reminderType != null){
+                            ReminderTimePicker(
+                                reminderType = state.reminderType!!,
+                                onSelectReminderType = {viewmodel.setReminderType(it)},
+                                onSelectReminderFrom = {viewmodel.setIntervalFrom(it)},
+                                onSelectReminderTo = {viewmodel.setIntervalTo(it)},
+                                onSelectReminderInterval = {viewmodel.setIntervalReminder(it)},
+                                onSelectReminderTime = {viewmodel.setReminderTime(it)}
+                            )
+                        }
 
                     }
                 }

@@ -75,6 +75,7 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     implementation("androidx.room:room-paging:$room_version")
+    androidTestImplementation("androidx.room:room-testing:$room_version")
 
     //calendar
     implementation("com.kizitonwose.calendar:compose:2.6.2")

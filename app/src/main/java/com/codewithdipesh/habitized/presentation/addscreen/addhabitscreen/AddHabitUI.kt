@@ -7,6 +7,7 @@ import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Goal
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.domain.model.HabitType
+import com.codewithdipesh.habitized.domain.model.ReminderType
 import com.codewithdipesh.habitized.presentation.util.DailySelected
 import com.codewithdipesh.habitized.presentation.util.Days
 import java.time.LocalDate
@@ -18,14 +19,14 @@ data class AddHabitUI(
     val habit_id: UUID = UUID.randomUUID(),
     val title: String = "",
     val description: String = "",
-    val type: HabitType = HabitType.Count,
+    val type: HabitType = HabitType.OneTime,
     val goal_id: UUID? = null,
     val goal_name: String = "",
     val start_date: LocalDate = LocalDate.now(),
     val frequency: Frequency = Frequency.Daily,
     val days_of_week: Map<Days,Boolean> = DailySelected,
     val daysOfMonth: List<Int> = emptyList(),
-    val reminder_time: LocalTime? = LocalTime.now(),
+    val reminderType: ReminderType? = null,
     val is_active: Boolean = true,
     val colorKey : String = "red",
     val countParam : CountParam? = CountParam.Glasses,

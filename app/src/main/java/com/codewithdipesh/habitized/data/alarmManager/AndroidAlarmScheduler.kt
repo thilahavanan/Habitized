@@ -8,6 +8,7 @@ import android.content.Intent
 import androidx.annotation.RequiresPermission
 import com.codewithdipesh.habitized.domain.alarmManager.AlarmItem
 import com.codewithdipesh.habitized.domain.alarmManager.AlarmScheduler
+import com.codewithdipesh.habitized.domain.model.ReminderType
 import com.codewithdipesh.habitized.presentation.util.SingleString
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,13 +27,28 @@ class AndroidAlarmScheduler (
             putExtra("text",item.text)
             putExtra("title",item.title)
             putExtra("frequency",item.frequency.displayName)
-            putExtra("reminderTime",item.time.toLocalTime().SingleString())
+            when(item.reminderType){
+                is ReminderType.Once -> {
+                    putExtra("reminderType", item.reminderType.displayName)
+                    putExtra("reminderInterval","")
+                    putExtra("reminderFrom", "")
+                    putExtra("reminderTo", "")
+                    putExtra("reminderTime",item.reminderType.reminderTime.toString())
+                }
+                is ReminderType.Interval -> {
+                    putExtra("reminderType", item.reminderType.displayName)
+                    putExtra("reminderInterval", item.reminderType.interval)
+                    putExtra("reminderFrom", item.reminderType.fromTime.toString())
+                    putExtra("reminderTo", item.reminderType.toTime.toString())
+                    putExtra("reminderTime","")
+                }
+            }
             putExtra("daysOfWeek",item.daysOfWeek.toIntArray())
             putExtra("daysOfMonth",item.daysOfMonth.toIntArray())
         }
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            item.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
+            item.nextAlarmDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
                 requestCode,

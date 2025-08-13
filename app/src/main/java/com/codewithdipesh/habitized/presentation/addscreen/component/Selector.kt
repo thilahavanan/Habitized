@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +35,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 
 @Composable
 fun <T> Selector(
@@ -46,6 +47,10 @@ fun <T> Selector(
     selectedTextColor: Color,
     selectedOptionColor: Color,
     height: Int = 44,
+    showBadge : Boolean = false,
+    badgeColor : Color = MaterialTheme.colorScheme.primary,
+    badgeText : String = "",
+    badgePosition : Alignment = Alignment.TopEnd,
     shape: Shape = RoundedCornerShape(15.dp)
 ) {
     // Remember the width of the Selector container
@@ -110,13 +115,34 @@ fun <T> Selector(
                         text = option.toString(),
                         style = TextStyle(
                             color = if (option == selectedOption) selectedTextColor else selectedTextColor.copy(0.8f),
-                            fontFamily = playfair,
+                            fontFamily = instrumentSerif,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
                             fontSize = 16.sp
                         )
                     )
                 }
+            }
+        }
+        if(showBadge){
+            Box(
+                modifier = Modifier
+                    .align(badgePosition)
+                    .padding(end = 10.dp,top = 4.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(badgeColor.copy(0.6f))
+            ){
+                Text(
+                    text = badgeText,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontFamily = instrumentSerif,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 8.sp
+                    ),
+                    modifier = Modifier.padding(horizontal = 6.dp,vertical=2.dp)
+                )
             }
         }
     }

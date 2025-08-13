@@ -1,11 +1,7 @@
 package com.codewithdipesh.habitized.presentation.goalscreen
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,21 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,9 +30,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -57,19 +44,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.codewithdipesh.habitized.R
-import com.codewithdipesh.habitized.domain.model.Frequency
 import com.codewithdipesh.habitized.domain.model.Habit
 import com.codewithdipesh.habitized.presentation.goalscreen.components.CustomChart
 import com.codewithdipesh.habitized.presentation.goalscreen.components.DeleteGoalAlert
@@ -77,24 +60,11 @@ import com.codewithdipesh.habitized.presentation.goalscreen.components.GraphType
 import com.codewithdipesh.habitized.presentation.goalscreen.components.HabitsShowcase
 import com.codewithdipesh.habitized.presentation.goalscreen.components.ShowDeleteOption
 import com.codewithdipesh.habitized.presentation.goalscreen.components.toName
-import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
-import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditImageProgress
-import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
-import com.codewithdipesh.habitized.presentation.habitscreen.components.DeleteAlertBox
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
-import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
-import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
 import com.codewithdipesh.habitized.presentation.navigation.Screen
-import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
-import com.codewithdipesh.habitized.presentation.util.IntToWeekDayMap
-import com.codewithdipesh.habitized.presentation.util.getOriginalColorFromKey
-import com.codewithdipesh.habitized.presentation.util.getThemedColorFromKey
-import com.codewithdipesh.habitized.presentation.util.toWord
-import com.codewithdipesh.habitized.ui.theme.playfair
+import com.codewithdipesh.habitized.ui.theme.instrumentSerif
 import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.Locale
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,7 +130,7 @@ fun GoalDetails(
                     text = "Goal",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = playfair,
+                        fontFamily = instrumentSerif,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
                         fontSize = 20.sp

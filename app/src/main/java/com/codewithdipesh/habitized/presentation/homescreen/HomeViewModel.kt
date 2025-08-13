@@ -1,6 +1,8 @@
 package com.codewithdipesh.habitized.presentation.homescreen
 
 import android.R.attr.phoneNumber
+import android.appwidget.AppWidgetManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -31,8 +33,10 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.max
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import com.codewithdipesh.habitized.EMAIL_TO
 import com.codewithdipesh.habitized.R
+import com.codewithdipesh.habitized.presentation.navigation.Screen
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -53,7 +57,7 @@ class HomeViewModel @Inject constructor(
     fun loadHomePage(date: LocalDate){
         viewModelScope.launch(Dispatchers.IO){
             val habits = repo.getHabitsForDay(date)
-            val todos = repo.getTasksForDay(date)
+            val oneTimeTasksUIState = repo.getAllOneTimeTasks()
             //checking for ongoing duration or session habit
             val ongoingHabit = habits
                 .asSequence()
@@ -66,8 +70,10 @@ class HomeViewModel @Inject constructor(
             ongoingHabit?.let { addOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
                 habitWithProgressList = habits,
-                todos = todos,
-                ongoingHabit = ongoingHabit
+                ongoingHabit = ongoingHabit,
+                oneTimeTasksUIState = OneTimeTasksUIState(
+                    oneTimeTaskList = oneTimeTasksUIState
+                )
             )
         }
     }
@@ -303,49 +309,53 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun addTodo(){
-        if(_uiState.value.todos.find { it.title == "" } == null){
-            val todoList = _uiState.value.todos.toMutableList()
+    /**
+     *  Copy of addTodo() but with title as Argument instead of empty string
+     */
+    fun addTodoWithTitle(title: String){
+            val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
             val newTodo = OneTimeTask(
                 taskId = UUID.randomUUID(),
-                title = "",
+                title = title,
                 isCompleted = false,
                 date = _uiState.value.selectedDate,
                 reminder_time = null
             )
             _uiState.value = _uiState.value.copy(
-                todos = todoList + newTodo
+                oneTimeTasksUIState = OneTimeTasksUIState(todoList + newTodo)
             )
-        }
+            //Add New Task
+            viewModelScope.launch { repo.addOneTimeTask(newTodo) }
     }
+
     fun updateTodo(title : String,id : UUID){
-        val todoList = _uiState.value.todos.toMutableList()
+        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
         val updatedList = todoList
             .map { if(it.taskId == id) it.copy(title = title) else it }
         _uiState.value = _uiState.value.copy(
-            todos = updatedList
+            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
         )
         //update repo
-        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.todos.find { it.taskId == id }!!) }
+        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.oneTimeTasksUIState.oneTimeTaskList.find { it.taskId == id }!!) }
     }
     fun deleteTodo(id : UUID){
-        val todoList = _uiState.value.todos.toMutableList()
+        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
         val updatedList = todoList.filter { it.taskId != id }
         _uiState.value = _uiState.value.copy(
-            todos = updatedList
+            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
         )
         //update repo
         viewModelScope.launch { repo.deleteOneTimeTask(id) }
     }
     fun toggleTodo(id : UUID){
-        val todoList = _uiState.value.todos.toMutableList()
+        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
         val updatedList = todoList
             .map {
                 if(it.taskId == id) it.copy(isCompleted = !it.isCompleted)
                 else it
             }
         _uiState.value = _uiState.value.copy(
-            todos = updatedList
+            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
         )
         //update repo
         viewModelScope.launch { repo.toggleOneTimeTask(id) }
@@ -437,6 +447,39 @@ class HomeViewModel @Inject constructor(
 
         val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(uriString))
         context.startActivity(Intent.createChooser(intent, "Send bug report"))
+    }
+    fun getMyThoughts(navController: NavController){
+        navController.navigate(Screen.MyThoughts.route)
+    }
+    fun addWidget(navController: NavController){
+        navController.navigate(Screen.AddWidget.route)
+    }
+    fun shareApp(context: Context){
+        val link = "https://habitized.diprssn.xyz"
+        val sharedMessage = "Hey! I've built an amazing habit-building streak with Habitized! You can too! Try it out: $link"
+
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT,sharedMessage)
+            type = "text/plain"
+        }
+        val chooserIntent = Intent.createChooser(shareIntent, "Share with")
+        context.startActivity(chooserIntent)
+
+    }
+    fun openPlayStoreForRating(context:Context){
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+        intent.setPackage("com.android.vending")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(fallbackIntent)
+        }
+
     }
     private fun getAppVersion(context: Context): String {
         return try {
