@@ -18,7 +18,10 @@ interface OneTimeTaskDao {
     suspend fun getTaskById(taskId: UUID): OneTimeTaskEntity?
 
     @Query("SELECT * FROM one_time_tasks where date = :date ORDER BY reminder_time ASC")
-    suspend fun getAllTasks(date: LocalDate): List<OneTimeTaskEntity>
+    suspend fun getTodayTasks(date: LocalDate): List<OneTimeTaskEntity>
+
+    @Query("SELECT * FROM one_time_tasks ORDER BY reminder_time ASC")
+    suspend fun getAllTasks(): List<OneTimeTaskEntity>
 
     @Query("DELETE FROM one_time_tasks WHERE taskId = :taskId")
     suspend fun deleteTask(taskId: UUID)
