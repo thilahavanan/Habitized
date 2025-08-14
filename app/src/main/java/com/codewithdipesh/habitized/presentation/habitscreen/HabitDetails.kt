@@ -34,7 +34,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +52,7 @@ import com.codewithdipesh.habitized.presentation.habitscreen.components.AddEditI
 import com.codewithdipesh.habitized.presentation.habitscreen.components.CalendarStat
 import com.codewithdipesh.habitized.presentation.habitscreen.components.Element
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ImageElement
+import com.codewithdipesh.habitized.presentation.habitscreen.components.ShareProgress
 import com.codewithdipesh.habitized.presentation.habitscreen.components.ShowImage
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.presentation.progress.components.FireAnimation
@@ -72,8 +75,11 @@ fun HabitDetails(
     navController:NavController
 ){
     val state by viewmodel.state.collectAsState()
+    val shareCardState by viewmodel.shareCardState.collectAsState()
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
 
     var showImageProgress by remember { mutableStateOf(false) }
     var imageProgress by remember { mutableStateOf<ImageProgress?>(null) }
@@ -131,6 +137,19 @@ fun HabitDetails(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ){
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Screen.HabitShareScreen.route)
+                        },
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_ios_share_24),
+                            contentDescription = "share",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                     IconButton(
                         onClick = {                                             //though date will not use there as id is present
                             navController.navigate(Screen.AddHabit.createRoute(date = LocalDate.now(),id = state.id.toString()))
@@ -457,7 +476,8 @@ fun HabitDetails(
 
              CalendarStat(
                  color = getOriginalColorFromKey(colorKey),
-                 progressList = state.progressList
+                 progressList = state.progressList,
+                 width = screenWidth * 0.85f
              )
             //images
             Element {

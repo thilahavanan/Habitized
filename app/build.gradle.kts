@@ -96,4 +96,7 @@ dependencies {
     implementation("androidx.glance:glance-material:1.1.1")
     implementation("androidx.glance:glance-material3:1.1.1")
 
+    //capturable
+    implementation("dev.shreyaspatil:capturable:2.1.0")
+
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codewithdipesh.habitized.domain.model.HabitProgress
@@ -52,6 +53,10 @@ import java.util.Locale
 fun CalendarStat(
     progressList: List<HabitProgress> = emptyList(),
     color: Color,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondary,
+    height: Int = 300,
+    width: Dp,
+    dayTextSize : Int = 16,
     onclick: (HabitProgress) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -69,6 +74,7 @@ fun CalendarStat(
                     day = day,
                     isSelected = progress != null,
                     color = color,
+                    size = dayTextSize,
                     onclick = {
                         onclick(progress ?: return@Day)
                     }
@@ -84,12 +90,11 @@ fun CalendarStat(
         }
         ,
         monthContainer = { _, container ->
-            val configuration = LocalConfiguration.current
-            val screenWidth = configuration.screenWidthDp.dp
             Element(
+                backgroundColor = backgroundColor,
                 modifier = Modifier
-                    .width(screenWidth * 0.85f)
-                    .height(300.dp)
+                    .width(width)
+                    .height(height.dp)
                     .padding(top = 8.dp, bottom = 8.dp, end = 16.dp)
             ) {
                 container() // Render the provided container!
@@ -122,6 +127,7 @@ fun Day(
     day: CalendarDay,
     isSelected: Boolean = false,
     color: Color,
+    size : Int = 16,
     onclick : (CalendarDay) -> Unit
 ) {
     Box(
@@ -144,7 +150,7 @@ fun Day(
             text = day.date.dayOfMonth.toString(),
             style = androidx.compose.ui.text.TextStyle(
                 color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 16.sp,
+                fontSize = size.sp,
                 fontFamily = regular,
                 fontWeight = FontWeight.Normal
             )
