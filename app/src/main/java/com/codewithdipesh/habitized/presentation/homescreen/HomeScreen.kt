@@ -8,7 +8,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +49,7 @@ import com.codewithdipesh.habitized.R
 import com.codewithdipesh.habitized.domain.model.HabitType
 import com.codewithdipesh.habitized.domain.model.HabitWithProgress
 import com.codewithdipesh.habitized.domain.model.Status
+import com.codewithdipesh.habitized.presentation.homescreen.component.AddOneTimeTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddSubTask
 import com.codewithdipesh.habitized.presentation.homescreen.component.AddingOption
 import com.codewithdipesh.habitized.presentation.homescreen.component.BottomNavBar
@@ -62,7 +62,6 @@ import com.codewithdipesh.habitized.presentation.homescreen.component.SkipAlertD
 import com.codewithdipesh.habitized.presentation.homescreen.component.TodoEditor
 import com.codewithdipesh.habitized.presentation.navigation.Screen
 import com.codewithdipesh.habitized.ui.theme.instrumentSerif
-import com.codewithdipesh.habitized.ui.theme.regular
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -161,18 +160,32 @@ fun HomeScreen(
         }
     ){innerPadding->
         //adding option
-        if(showAddingOptions){
-            AddingOption(
-                onDismiss = {
-                    showAddingOptions = false
-                },
-                onAddHabitClicked = {
-                    navController.navigate(Screen.AddHabit.createRoute(date = state.selectedDate))
-                },
-                onAddGoalClicked = {
-                    navController.navigate(Screen.AddGoal.createRoute())
+        if (showAddingOptions) {
+            when (state.selectedOption) {
+                HomeScreenOption.Habits -> {
+                    AddingOption(
+                        onDismiss = {
+                            showAddingOptions = false
+                        },
+                        onAddHabitClicked = {
+                            navController.navigate(Screen.AddHabit.createRoute(date = state.selectedDate))
+                        },
+                        onAddGoalClicked = {
+                            navController.navigate(Screen.AddGoal.createRoute())
+                        }
+                    )
                 }
-            )
+
+                HomeScreenOption.Todos -> {
+                    AddOneTimeTask(
+                        modifier = Modifier,
+                        onDismiss = {
+                            showAddingOptions = false
+                        },
+                        viewModel = viewmodel
+                    )
+                }
+            }
         }
         //session habit
         if(showingSubtaskAdding && habitForSubTaskAdding != null){
@@ -383,37 +396,12 @@ fun HomeScreen(
                         Spacer(Modifier.height(150.dp))
                     }
                 }
-                else{//todos
-                    Spacer(Modifier.height(16.dp))
-                    state.todos
-                        .forEach { todo->
-                            TodoEditor(
-                                todo = todo,
-                                onChange = {
-                                    viewmodel.updateTodo(it,todo.taskId)
-                                },
-                                onToggle = {
-                                    viewmodel.toggleTodo(todo.taskId)
-                                },
-                                onDelete = {
-                                    viewmodel.deleteTodo(it)
-                                }
-                            )
-                            Spacer(Modifier.height(10.dp))
-                        }
-                    Text(
-                        text = "+ Add Todos",
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.scrim,
-                            fontFamily = regular,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .clickable{
-                                viewmodel.addTodo()
-                            }
+                else{
+                    //Todo List Sections
+                    TodoTaskListSections(
+                        modifier = Modifier,
+                        homeViewModel = viewmodel,
+                        uiState = state
                     )
                 }
             }
@@ -456,7 +444,8 @@ fun HomeScreen(
                         painter = painterResource(R.drawable.empty_habit_icon),
                         contentDescription = "empty habit",
                         tint = MaterialTheme.colorScheme.onPrimary.copy(0.6f),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(bottom = 90.dp)
                     )
                 }
@@ -523,6 +512,102 @@ fun HomeScreen(
 
     }
 
+}
+
+@Composable
+fun TodoTaskListSections(
+    modifier: Modifier = Modifier,
+    uiState: HomeScreenUI,
+    homeViewModel: HomeViewModel
+) {
+
+    /**
+     *  OverDues OneTime Task Section
+     */
+    Spacer(Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.padding(start = 8.dp), text = "OverDue", style = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontFamily = instrumentSerif,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            fontSize = 20.sp
+        )
+    )
+    uiState.oneTimeTasksUIState.getOverDueOneTimeTasks()
+        .forEach { todo ->
+            TodoEditor(
+                todo = todo,
+                onChange = {
+                    homeViewModel.updateTodo(it, todo.taskId)
+                },
+                onToggle = {
+                    homeViewModel.toggleTodo(todo.taskId)
+                },
+                onDelete = {
+                    homeViewModel.deleteTodo(it)
+                }
+            )
+        }
+
+    /**
+     *  Today OneTime Task Section
+     */
+    Spacer(Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.padding(start = 8.dp), text = "Today", style = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontFamily = instrumentSerif,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            fontSize = 20.sp
+        )
+    )
+    uiState.oneTimeTasksUIState.getTodayOneTimeTasks()
+        .forEach { todo ->
+            TodoEditor(
+                todo = todo,
+                onChange = {
+                    homeViewModel.updateTodo(it, todo.taskId)
+                },
+                onToggle = {
+                    homeViewModel.toggleTodo(todo.taskId)
+                },
+                onDelete = {
+                    homeViewModel.deleteTodo(it)
+                }
+            )
+        }
+
+    /**
+     *  Completed OneTime Task Section
+     */
+    Spacer(Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.padding(start = 8.dp), text = "Completed",
+        style = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontFamily = instrumentSerif,
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Normal,
+            fontSize = 20.sp
+        )
+    )
+    uiState.oneTimeTasksUIState.getCompletedOneTimeTasks()
+        .forEach { todo ->
+            TodoEditor(
+                todo = todo,
+                onChange = {
+                    homeViewModel.updateTodo(it, todo.taskId)
+                },
+                onToggle = {
+                    homeViewModel.toggleTodo(todo.taskId)
+                },
+                onDelete = {
+                    homeViewModel.deleteTodo(it)
+                }
+            )
+        }
 }
 
 

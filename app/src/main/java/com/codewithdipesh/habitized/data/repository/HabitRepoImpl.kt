@@ -317,9 +317,12 @@ class HabitRepoImpl(
 
 
     override suspend  fun getTasksForDay(date: LocalDate): List<OneTimeTask> {
-        return oneTimeTaskDao.getAllTasks(date)
+        return oneTimeTaskDao.getTodayTasks(date)
             .map {it.toOneTimeTask()}
     }
 
+    override suspend fun getAllOneTimeTasks(): List<OneTimeTask> {
+        return oneTimeTaskDao.getAllTasks().map {it.toOneTimeTask()}
+    }
 
 }
