@@ -68,6 +68,7 @@ sealed class Screen(val route : String){
             return "habit_screen/$id/$title/$color"
         }
     }
+    object HabitShareScreen : Screen("habit_screen/share")
     object GoalScreen : Screen("goal_screen/{id}/{title}"){
         @OptIn(ExperimentalEncodingApi::class)
         fun createRoute(goal: Goal?): String {

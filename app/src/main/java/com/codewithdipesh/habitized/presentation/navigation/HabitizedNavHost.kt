@@ -9,6 +9,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,6 +25,7 @@ import com.codewithdipesh.habitized.presentation.goalscreen.GoalDetails
 import com.codewithdipesh.habitized.presentation.goalscreen.GoalViewModel
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitDetails
 import com.codewithdipesh.habitized.presentation.habitscreen.HabitViewModel
+import com.codewithdipesh.habitized.presentation.habitscreen.components.ShareProgress
 import com.codewithdipesh.habitized.presentation.homescreen.HomeScreen
 import com.codewithdipesh.habitized.presentation.homescreen.HomeViewModel
 import com.codewithdipesh.habitized.presentation.progress.ProgressScreen
@@ -242,6 +244,12 @@ fun HabitizedNavHost(
                 colorKey = color!!,
                 navController = navController,
                 viewmodel = habitViewModel
+            )
+        }
+        composable(Screen.HabitShareScreen.route){
+            ShareProgress(
+                navController = navController,
+                viewModel = habitViewModel
             )
         }
         composable(

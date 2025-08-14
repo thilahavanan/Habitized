@@ -82,13 +82,14 @@ fun WeeklyProgress(
 fun WeeklyCell(
     modifier: Modifier = Modifier,
     color: Color,
+    size : Int = 40,
     isSelect: Boolean,
     isActive :Boolean,
     isLater : Boolean,
 ){
     Box(
         modifier = Modifier
-            .size(40.dp)
+            .size(size.dp)
             .clip(CircleShape)
             .background(
                 if (!isActive) MaterialTheme.colorScheme.surfaceContainerLow.copy(0.3f)
