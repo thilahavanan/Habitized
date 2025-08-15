@@ -272,7 +272,7 @@ class HomeViewModel @Inject constructor(
             current = streak,
             max = if (isSkipped) {
                 if (habitWithProgress.habit.maxStreak == habitWithProgress.habit.currentStreak) max(
-                    streak - 1,
+                    streak,
                     0
                 )
                 else max(streak, habitWithProgress.habit.maxStreak)
@@ -285,40 +285,45 @@ class HomeViewModel @Inject constructor(
         habit: Habit,
         completedDatesDesc: List<LocalDate>
     ): Int {
+
+        if (completedDatesDesc.isEmpty()) return 0
+
+        val completedSet = completedDatesDesc.toSet()
+
+        var currentDate = LocalDate.now()
         var streak = 0
-        var expectedDate = LocalDate.now()
+        val maxBackwardDays = 365
+        var iterations = 0
+        var startedCounting = false
 
-        for (date in completedDatesDesc) {
-            // Skip non-scheduled days
-            expectedDate = getPreviousScheduledDate(habit, expectedDate)
-
-            if (date == expectedDate) {
-                streak++
-                expectedDate = expectedDate.minusDays(1)
-            } else {
-                break
+        while (iterations < maxBackwardDays) {
+            if (!isScheduledDay(habit, currentDate)) {
+                currentDate = currentDate.minusDays(1)
+                continue
             }
+            if (completedSet.contains(currentDate)) {
+                streak++
+                startedCounting = true
+            } else if(startedCounting) {
+                break
+            }else{
+                //today is not done
+            }
+            currentDate = currentDate.minusDays(1)
+            iterations++
         }
+
         return streak
     }
-
-    fun getPreviousScheduledDate(habit: Habit, fromDate: LocalDate): LocalDate {
-        var date = fromDate
-        while (true) {
-            when (habit.frequency) {
-                Frequency.Weekly -> {
-                    val frequencyMap = IntToWeekDayMap(habit.days_of_week)
-                    if (frequencyMap[date.dayOfWeek.toDays()] == true) return date
-                }
-
-                Frequency.Monthly -> {
-                    val frequency = habit.daysOfMonth ?: emptyList()
-                    if (frequency.contains(date.dayOfMonth)) return date
-                }
-
-                else -> return date
+    fun isScheduledDay(habit: Habit, date: LocalDate): Boolean {
+        return when (habit.frequency) {
+            Frequency.Daily -> true
+            Frequency.Weekly -> {
+                val frequencyMap = IntToWeekDayMap(habit.days_of_week)
+                frequencyMap[date.dayOfWeek.toDays()] == true
             }
-            date = date.minusDays(1)
+            Frequency.Monthly -> habit.daysOfMonth?.contains(date.dayOfMonth) ?: false
+            else -> false  // Handle other frequencies if needed
         }
     }
 
