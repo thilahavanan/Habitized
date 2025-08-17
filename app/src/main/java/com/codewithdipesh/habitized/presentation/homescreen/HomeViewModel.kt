@@ -40,7 +40,7 @@ import com.codewithdipesh.habitized.presentation.navigation.Screen
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repo: HabitRepository
+    private val repo : HabitRepository
 ) : ViewModel() {
 
 
@@ -54,10 +54,10 @@ class HomeViewModel @Inject constructor(
         loadHomePage(_uiState.value.selectedDate)
     }
 
-    fun loadHomePage(date: LocalDate) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun loadHomePage(date: LocalDate){
+        viewModelScope.launch(Dispatchers.IO){
             val habits = repo.getHabitsForDay(date)
-            val oneTimeTasksUIState = repo.getAllOneTimeTasks()
+            val todos = repo.getTasksForDay(date)
             //checking for ongoing duration or session habit
             val ongoingHabit = habits
                 .asSequence()
@@ -70,15 +70,13 @@ class HomeViewModel @Inject constructor(
             ongoingHabit?.let { addOngoingTimer(it) }
             _uiState.value = _uiState.value.copy(
                 habitWithProgressList = habits,
-                ongoingHabit = ongoingHabit,
-                oneTimeTasksUIState = OneTimeTasksUIState(
-                    oneTimeTaskList = oneTimeTasksUIState
-                )
+                todos = todos,
+                ongoingHabit = ongoingHabit
             )
         }
     }
 
-    fun onOptionSelected(option: HomeScreenOption) {
+    fun onOptionSelected(option: HomeScreenOption){
         _uiState.value = _uiState.value.copy(
             selectedOption = option
         )
@@ -91,27 +89,26 @@ class HomeViewModel @Inject constructor(
         loadHomePage(date)
     }
 
-    fun openDatePicker() {
+    fun openDatePicker(){
         _uiState.value = _uiState.value.copy(
             isShowingDatePicker = true
         )
     }
-
-    fun closeDatePicker() {
+    fun closeDatePicker(){
         _uiState.value = _uiState.value.copy(
             isShowingDatePicker = false
         )
     }
 
-    suspend fun addUpdateSubTasks(subtasks: List<SubTask>, habitProgressId: UUID) {
+    suspend fun addUpdateSubTasks(subtasks : List<SubTask>, habitProgressId : UUID){
         //add on the ui first then add on the database
 
         //change in local first(Ui)
         var updatedList = _uiState.value.habitWithProgressList.toMutableList()
         updatedList = updatedList.map {
-            if (it.progress.progressId == habitProgressId) {
+            if(it.progress.progressId == habitProgressId){
                 it.copy(subtasks = subtasks)
-            } else {
+            }else{
                 it
             }
         } as MutableList<HabitWithProgress>
@@ -119,7 +116,7 @@ class HomeViewModel @Inject constructor(
             habitWithProgressList = updatedList
         )
         //change in room
-        val previous = repo.getSubtasks(habitProgerssId = habitProgressId)
+        val previous = repo.getSubtasks(habitProgerssId = habitProgressId )
 
         val deleted = previous.filter { !subtasks.contains(it) }
         val added = subtasks.filter { !previous.contains(it) }
@@ -142,14 +139,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun toggleSubtask(subtask: SubTask) {
-        val updatedList = _uiState.value.habitWithProgressList.map { habitWithProgress ->
-            if (habitWithProgress.habit.type == HabitType.Session && habitWithProgress.subtasks.contains(
-                    subtask
-                )
-            ) {
-                val updatedSubTasks = habitWithProgress.subtasks.map {
-                    if (it.subtaskId == subtask.subtaskId) it.copy(isCompleted = !it.isCompleted) else it
+    fun toggleSubtask(subtask: SubTask){
+        val updatedList = _uiState.value.habitWithProgressList.map {habitWithProgress->
+            if(habitWithProgress.habit.type == HabitType.Session && habitWithProgress.subtasks.contains(subtask)){
+                val updatedSubTasks = habitWithProgress.subtasks.map{
+                    if(it.subtaskId == subtask.subtaskId) it.copy(isCompleted = !it.isCompleted) else it
                 }
                 habitWithProgress.copy(subtasks = updatedSubTasks)
             } else habitWithProgress
@@ -163,40 +157,38 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onSkipHabit(habitProgress: HabitProgress) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun onSkipHabit(habitProgress : HabitProgress){
+        viewModelScope.launch(Dispatchers.IO){
             repo.onSkipHabitProgress(progressId = habitProgress.progressId)
         }
     }
-
-    fun onDoneHabit(habitWithProgress: HabitWithProgress) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun onDoneHabit(habitWithProgress: HabitWithProgress){
+        viewModelScope.launch(Dispatchers.IO){
             repo.onDoneHabitProgress(progressId = habitWithProgress.progress.progressId)
             updateStreak(habitWithProgress)
         }
     }
-
-    fun onUnSkipDoneHabit(habitWithProgress: HabitWithProgress) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun onUnSkipDoneHabit(habitWithProgress: HabitWithProgress){
+        viewModelScope.launch(Dispatchers.IO){
             repo.onNotStartedHabitProgress(progressId = habitWithProgress.progress.progressId)
-            updateStreak(habitWithProgress, true)
+            updateStreak(habitWithProgress,true)
         }
     }
 
-    fun onUpdateCounter(count: Int, habitWithProgress: HabitWithProgress) {
+    fun onUpdateCounter(count : Int, habitWithProgress : HabitWithProgress){
         //local ui
         val ifDone = count >= (habitWithProgress.progress.targetCount ?: 0)
         val prevStatus = habitWithProgress.progress.status
-        val updatedList = _uiState.value.habitWithProgressList.map { it ->
-            if (it.progress.progressId == habitWithProgress.progress.progressId) {
+        val updatedList = _uiState.value.habitWithProgressList.map {it->
+            if(it.progress.progressId == habitWithProgress.progress.progressId){
                 it.copy(
                     progress = habitWithProgress.progress.copy(
                         currentCount = count,
-                        status = if (ifDone) Status.Done
-                        else Status.NotStarted
+                        status = if(ifDone) Status.Done
+                                 else Status.NotStarted
                     )
                 )
-            } else {
+            }else{
                 it
             }
         }
@@ -204,52 +196,51 @@ class HomeViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(
             habitWithProgressList = updatedList
         )
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.onUpdateCounterHabitProgress(count, habitWithProgress.progress.progressId)
+        viewModelScope.launch(Dispatchers.IO){
+            repo.onUpdateCounterHabitProgress(count,habitWithProgress.progress.progressId)
         }
-        if (ifDone) {
+        if(ifDone) {
             onDoneHabit(habitWithProgress)
-        } else {//update only if prev was done -> then change to not started
-            if (prevStatus != Status.NotStarted) {
+        }
+        else{//update only if prev was done -> then change to not started
+            if(prevStatus != Status.NotStarted){
                 onUnSkipDoneHabit(habitWithProgress)
             }
         }
 
     }
 
-    fun addOngoingTimer(habitWithProgress: HabitWithProgress) {
-        if (_uiState.value.ongoingHabit == null) {
+    fun addOngoingTimer(habitWithProgress: HabitWithProgress){
+        if(_uiState.value.ongoingHabit == null){
             _uiState.value = _uiState.value.copy(
                 ongoingHabit = habitWithProgress
             )
         }
     }
-
-    fun updateOngoingTimer(hour: Int, minute: Int, second: Int) {
+    fun updateOngoingTimer(hour: Int, minute: Int, second: Int){
         _uiState.value = _uiState.value.copy(
             ongoingHour = hour,
             ongoingMinute = minute,
             ongoingSecond = second
         )
     }
-
-    suspend fun finishTimer() {
+    suspend fun finishTimer(){
         val ongoingHabit = _uiState.value.ongoingHabit
 
-        if (ongoingHabit != null) {
-            if (ongoingHabit.habit.type == HabitType.Duration) {
+        if(ongoingHabit != null) {
+            if(ongoingHabit.habit.type == HabitType.Duration) {
                 repo.onDoneHabitProgress(ongoingHabit.progress.progressId)
                 updateStreak(ongoingHabit)
             } else {
                 val prevCount = ongoingHabit.progress.currentCount
                 val targetCount = ongoingHabit.progress.targetCount
 
-                if (prevCount != null) {
+                if(prevCount != null) {
                     val newCount = prevCount + 1
                     //on update the counter
-                    repo.onUpdateCounterHabitProgress(newCount, ongoingHabit.progress.progressId)
+                    repo.onUpdateCounterHabitProgress(newCount,ongoingHabit.progress.progressId)
 
-                    if (newCount == targetCount) {
+                    if(newCount == targetCount) {
                         repo.onDoneHabitProgress(ongoingHabit.progress.progressId)
                         updateStreak(ongoingHabit)
                     } else {
@@ -264,9 +255,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateStreak(habitWithProgress: HabitWithProgress, isSkipped: Boolean = false) {
+    suspend fun updateStreak(habitWithProgress: HabitWithProgress,isSkipped : Boolean = false){
         val completedDates = repo.getAllCompletedDates(habitWithProgress.habit.habit_id!!)
-        val streak = calculateCurrentStreak(habitWithProgress.habit, completedDates)
+        val streak = calculateCurrentStreak(habitWithProgress.habit,completedDates)
         repo.updateStreak(
             habitId = habitWithProgress.habit.habit_id,
             current = streak,
@@ -280,7 +271,6 @@ class HomeViewModel @Inject constructor(
         )
 
     }
-
     fun calculateCurrentStreak(
         habit: Habit,
         completedDatesDesc: List<LocalDate>
@@ -327,54 +317,49 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun addTodoWithTitle(title: String) {
-        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
-        val newTodo = OneTimeTask(
-            taskId = UUID.randomUUID(),
-            title = title,
-            isCompleted = false,
-            date = _uiState.value.selectedDate,
-            reminder_time = null
-        )
-        _uiState.value = _uiState.value.copy(
-            oneTimeTasksUIState = OneTimeTasksUIState(todoList + newTodo)
-        )
-        //Add New Task
-        viewModelScope.launch {
-            repo.addOneTimeTask(newTodo)
+    fun addTodo(){
+        if(_uiState.value.todos.find { it.title == "" } == null){
+            val todoList = _uiState.value.todos.toMutableList()
+            val newTodo = OneTimeTask(
+                taskId = UUID.randomUUID(),
+                title = "",
+                isCompleted = false,
+                date = _uiState.value.selectedDate,
+                reminder_time = null
+            )
+            _uiState.value = _uiState.value.copy(
+                todos = todoList + newTodo
+            )
         }
     }
-
-    fun updateTodo(title: String, id: UUID) {
-        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
+    fun updateTodo(title : String,id : UUID){
+        val todoList = _uiState.value.todos.toMutableList()
         val updatedList = todoList
-            .map { if (it.taskId == id) it.copy(title = title) else it }
+            .map { if(it.taskId == id) it.copy(title = title) else it }
         _uiState.value = _uiState.value.copy(
-            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
+            todos = updatedList
         )
         //update repo
-        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.oneTimeTasksUIState.oneTimeTaskList.find { it.taskId == id }!!) }
+        viewModelScope.launch { repo.updateOneTimeTask(_uiState.value.todos.find { it.taskId == id }!!) }
     }
-
-    fun deleteTodo(id: UUID) {
-        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
+    fun deleteTodo(id : UUID){
+        val todoList = _uiState.value.todos.toMutableList()
         val updatedList = todoList.filter { it.taskId != id }
         _uiState.value = _uiState.value.copy(
-            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
+            todos = updatedList
         )
         //update repo
         viewModelScope.launch { repo.deleteOneTimeTask(id) }
     }
-
-    fun toggleTodo(id: UUID) {
-        val todoList = _uiState.value.oneTimeTasksUIState.oneTimeTaskList.toMutableList()
+    fun toggleTodo(id : UUID){
+        val todoList = _uiState.value.todos.toMutableList()
         val updatedList = todoList
             .map {
-                if (it.taskId == id) it.copy(isCompleted = !it.isCompleted)
+                if(it.taskId == id) it.copy(isCompleted = !it.isCompleted)
                 else it
             }
         _uiState.value = _uiState.value.copy(
-            oneTimeTasksUIState = OneTimeTasksUIState(updatedList)
+            todos = updatedList
         )
         //update repo
         viewModelScope.launch { repo.toggleOneTimeTask(id) }
@@ -382,17 +367,17 @@ class HomeViewModel @Inject constructor(
 
 
     //feedback ,follow and github
-    fun sendFeedback(context: Context) {
+    fun sendFeedback(context : Context){
         try {
             val message = "Hi Dipesh,I've just used Habitized , I wanted to suggest you.."
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = "https://wa.me/917602154121?text=${Uri.encode(message)}".toUri()
                 `package` = "com.whatsapp"
             }
-            if (intent.resolveActivity(context.packageManager) != null) {
+            if(intent.resolveActivity(context.packageManager) != null){
                 //it means whatsapp is installed
                 context.startActivity(intent)
-            } else {
+            }else{
                 // WhatsApp not installed, open in browser
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
@@ -400,20 +385,19 @@ class HomeViewModel @Inject constructor(
                 )
                 context.startActivity(browserIntent)
             }
-        } catch (e: Exception) {
+        }catch (e: Exception){
         }
     }
-
-    fun onFollow(context: Context) {
+    fun onFollow(context : Context){
         try {
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = "https://x.com/diprssn".toUri()
                 `package` = "com.twitter.android"
             }
-            if (intent.resolveActivity(context.packageManager) != null) {
+            if(intent.resolveActivity(context.packageManager) != null){
                 //it means x is installed
                 context.startActivity(intent)
-            } else {
+            }else{
                 // x not installed, open in browser
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
@@ -421,20 +405,19 @@ class HomeViewModel @Inject constructor(
                 )
                 context.startActivity(browserIntent)
             }
-        } catch (e: Exception) {
+        }catch (e: Exception){
         }
     }
-
-    fun onCodeBase(context: Context) {
+    fun onCodeBase(context : Context){
         try {
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = "https://github.com/codewithdipesh/Habitized".toUri()
                 `package` = "com.github.android"
             }
-            if (intent.resolveActivity(context.packageManager) != null) {
+            if(intent.resolveActivity(context.packageManager) != null){
                 //it means x is installed
                 context.startActivity(intent)
-            } else {
+            }else{
                 // x not installed, open in browser
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
@@ -442,7 +425,7 @@ class HomeViewModel @Inject constructor(
                 )
                 context.startActivity(browserIntent)
             }
-        } catch (e: Exception) {
+        }catch (e: Exception){
         }
     }
 
@@ -469,51 +452,39 @@ class HomeViewModel @Inject constructor(
         val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(uriString))
         context.startActivity(Intent.createChooser(intent, "Send bug report"))
     }
-
-    fun getMyThoughts(navController: NavController) {
+    fun getMyThoughts(navController: NavController){
         navController.navigate(Screen.MyThoughts.route)
     }
-
-    fun addWidget(navController: NavController) {
+    fun addWidget(navController: NavController){
         navController.navigate(Screen.AddWidget.route)
     }
-
-    fun shareApp(context: Context) {
+    fun shareApp(context: Context){
         val link = "https://habitized.diprssn.xyz"
-        val sharedMessage =
-            "Hey! I've built an amazing habit-building streak with Habitized! You can too! Try it out: $link"
+        val sharedMessage = "Hey! I've built an amazing habit-building streak with Habitized! You can too! Try it out: $link"
 
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, sharedMessage)
+            putExtra(Intent.EXTRA_TEXT,sharedMessage)
             type = "text/plain"
         }
         val chooserIntent = Intent.createChooser(shareIntent, "Share with")
         context.startActivity(chooserIntent)
 
     }
-
-    fun openPlayStoreForRating(context: Context) {
-        val intent = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
-        )
+    fun openPlayStoreForRating(context:Context){
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
         intent.setPackage("com.android.vending")
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            val fallbackIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
-            )
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
             fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(fallbackIntent)
         }
 
     }
-
     private fun getAppVersion(context: Context): String {
         return try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -522,4 +493,6 @@ class HomeViewModel @Inject constructor(
             "Unknown"
         }
     }
+
+
 }

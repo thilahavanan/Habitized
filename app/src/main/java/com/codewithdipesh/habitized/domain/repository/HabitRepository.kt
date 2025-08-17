@@ -74,5 +74,4 @@ interface HabitRepository {
 
     suspend fun getHabitsForDay(date: LocalDate): List<HabitWithProgress>
     suspend fun getTasksForDay(date: LocalDate): List<OneTimeTask>
-    suspend fun getAllOneTimeTasks(): List<OneTimeTask>
 }
